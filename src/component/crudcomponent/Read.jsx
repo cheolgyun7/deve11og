@@ -2,7 +2,7 @@ import React from 'react';
 import { Section } from 'styles/SharedStyle';
 
 const Read = () => {
-  return <Section>Read</Section>;
+  return <Section>Readdeeeeee</Section>;
 };
 
 export default Read;
