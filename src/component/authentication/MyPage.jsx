@@ -1,20 +1,20 @@
 import styled from 'styled-components';
 import { db, storage } from '../../firebase';
-import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
+import { deleteObject, getDownloadURL, getStorage, ref, uploadBytes } from 'firebase/storage';
 import React, { useEffect, useRef, useState } from 'react';
 import { Section } from 'styles/SharedStyle';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import userDefaultImage from '../../image/userImage.png';
 
 const MyPage = () => {
-  const [selectedFile, setSelectedFile] = useState(null);
-  const [userImage, setUserImage] = useState('');
-  const [userInfo, setUserInfo] = useState('');
+  const [selectedFile, setSelectedFile] = useState(null); //업로드를 위해 선택한 이미지
+  const [userInfo, setUserInfo] = useState(''); //firestore 에서 가져온 user 정보
   const imgRef = useRef(null);
   const TEST_ID = 'GD58BJjuxnlpOTsuXCcP'; //테스트 하실 계정의 식별 가능한 id 값을 넣어주세요! (firestore에서 자동 부여된 값)
 
   //유저 정보 가져오기
   useEffect(() => {
+    console.log('실행');
     const fetchData = async () => {
       const docRef = doc(db, 'user', TEST_ID);
       const docSnap = await getDoc(docRef);
@@ -23,6 +23,7 @@ const MyPage = () => {
         // console.log('data: ', docSnap.data());
         // console.log('docSnap', docSnap.id);
         setUserInfo(docSnap.data());
+        imgRef.current.src = userInfo.image;
       } else {
         console.log('no data!!');
       }
@@ -51,7 +52,13 @@ const MyPage = () => {
 
       //파일 업로드 후 state로 저장
       const downloadURL = await getDownloadURL(imageRef);
-      setUserImage(downloadURL);
+      // setUserImage(downloadURL);
+      setUserInfo((prev) => {
+        return {
+          ...prev,
+          image: downloadURL
+        };
+      });
 
       //파일 업로드 db 업데이트
       const docRef = doc(db, 'user', TEST_ID);
@@ -59,17 +66,53 @@ const MyPage = () => {
         ...userInfo,
         image: downloadURL
       });
+      setSelectedFile(null);
       alert('업로드가 완료되었습니다.');
     } else {
       alert('업로드를 취소했습니다.');
     }
   };
 
+  //이미지 삭제
+  const handleRemove = () => {
+    if (!window.confirm('이미지 삭제를 진행할까요?')) return alert('삭제를 취소하였습니다.');
+    const storage = getStorage();
+    const path = ref(storage, userInfo.image).fullPath;
+    const desertRef = ref(storage, path);
+    deleteObject(desertRef)
+      .then(async () => {
+        //파일 업로드 db 업데이트
+        const docRef = doc(db, 'user', TEST_ID);
+        await setDoc(docRef, {
+          ...userInfo,
+          image: userDefaultImage
+        });
+        // setUserImage(userDefaultImage);
+        setUserInfo((prev) => {
+          return {
+            ...prev,
+            image: userDefaultImage
+          };
+        });
+        alert('삭제를 완료하였습니다.');
+      })
+      .catch((error) => {
+        console.log(error);
+        alert('삭제를 실패하였습니다. 잠시 후 다시 시도해주세요.');
+      });
+  };
+
+  // useEffect(() => {
+  //   //userImage state가 변경될 때 마다 실행
+  //   //userImage 업로드한 이미지로 보여줌
+  //   imgRef.current.src = userImage;
+  // }, [userImage]);
+
+  //userImage state가 변경될 때 마다 실행
+  //userImage 업로드한 이미지로 보여줌
   useEffect(() => {
-    //userImage state가 변경될 때 마다 실행
-    //userImage 업로드한 이미지로 보여줌
-    imgRef.current.src = userImage;
-  }, [userImage]);
+    imgRef.current.src = userInfo.image;
+  }, [userInfo]);
 
   return (
     <Section>
@@ -77,14 +120,14 @@ const MyPage = () => {
         <LeftAreaStyle>
           <FigureStyle>
             {/* TODO: 렌더링 되고 나서 이미지를 가져와서 늦게가져옴... 확인 필요 */}
-            <img src={userInfo.image} alt="유저 이미지" ref={imgRef} />
+            <img src={userInfo.image} ref={imgRef} alt="유저 이미지" />
           </FigureStyle>
           <FileLabelStyle>
             이미지 업로드
             <input type="file" onChange={fileSelect} />
           </FileLabelStyle>
           {!selectedFile ? <></> : <button onClick={handleUpload}>등록</button>}
-          <BtnColorYellowStyle>이미지 제거</BtnColorYellowStyle>
+          <BtnColorYellowStyle onClick={handleRemove}>이미지 제거</BtnColorYellowStyle>
         </LeftAreaStyle>
         <RightAreaStyle>
           <NicknameStyle>{userInfo.nickname}</NicknameStyle>
