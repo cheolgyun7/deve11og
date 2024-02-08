@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { Section } from 'styles/SharedStyle';
 import { db } from '../../firebase';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, getDocs, query } from 'firebase/firestore';
 
 const Write = () => {
   // 게시물 제목과 내용 input state
@@ -16,7 +16,6 @@ const Write = () => {
   const albumImgChanged = (e) => setBoardAlbumImg(e.target.value);
 
   const now = new Date();
-
   const regDate = now.toLocaleDateString('ko-KR', {
     year: 'numeric',
     month: 'long',
@@ -29,24 +28,43 @@ const Write = () => {
   // 게시물 등록 form
   const insertBoardForm = async (e) => {
     e.preventDefault();
-    const newBoard = {
-      albumImg: null,
-      cnt: 0,
-      contents: boardContent,
-      liked: 0,
-      marked: false,
-      regDate,
-      title: boardTitle
-    };
+    // const newBoard = {
+    //   albumImg: null,
+    //   cnt: 0,
+    //   contents: boardContent,
+    //   liked: 0,
+    //   marked: false,
+    //   regDate,
+    //   title: boardTitle
+    // };
+  };
+
+  const test = async () => {
+    const col = collection(db, 'board');
+    const docs = await getDocs(col);
+    console.log('docs', docs);
+    // const items = [...docs].map((doc) => doc.data());
+    // console.log('items', items);
   };
 
   // firebase DB연결
   useEffect(() => {
+    test();
     const fetchData = async () => {
-      const querySnapshot = await getDocs(collection(db, 'board'));
+      const q = query(collection(db, 'board'));
+      const querySnapshot = await getDocs(q);
+
+      const initialTodos = [];
+
+      // document의 id와 데이터를 initialTodos에 저장합니다.
+      // doc.id의 경우 따로 지정하지 않는 한 자동으로 생성되는 id입니다.
+      // doc.data()를 실행하면 해당 document의 데이터를 가져올 수 있습니다.
       querySnapshot.forEach((doc) => {
-        console.log(`${doc.id} => ${doc.data()}`);
+        initialTodos.push({ id: doc.id, ...doc.data() });
       });
+
+      // firestore에서 가져온 데이터를 state에 전달
+      console.log(initialTodos);
     };
     fetchData();
   }, []);
