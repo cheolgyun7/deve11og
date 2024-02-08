@@ -156,7 +156,7 @@ const FigureStyle = styled.figure`
   margin-bottom: 1rem;
   width: 150px;
   height: 150px;
-  background-color: #999999;
+  background-color: #ffffff;
   border-radius: 50%;
   text-align: center;
   overflow: hidden;
