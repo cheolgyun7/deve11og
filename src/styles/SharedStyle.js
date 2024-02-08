@@ -25,7 +25,7 @@ export const FooterBox = styled.footer`
   left: 0;
   right: 0;
   padding: 1rem 0;
-  background: #000;
+  background: #060606;
 `;
 
 export const Section = styled.section`
@@ -33,6 +33,7 @@ export const Section = styled.section`
   width: 100%;
   max-width: 1280px;
   min-height: 90vh;
+  background-color: #111;
 `;
 
 export const LayoutStyle = styled.div`
