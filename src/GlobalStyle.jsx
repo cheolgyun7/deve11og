@@ -88,8 +88,7 @@ const GlobalStyle = createGlobalStyle`
     font-size: 100%;
     font: inherit;
     vertical-align: baseline;
-    font-family: "Pretendard", -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell",
-      "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+    font-family: 'Nanum Gothic', sans-serif;
   }
   /* HTML5 display-role reset for older browsers */
   article,
@@ -108,6 +107,7 @@ const GlobalStyle = createGlobalStyle`
   body {
     position: relative;
     line-height: 1;
+    color: white;
   }
   ol,
   ul {
