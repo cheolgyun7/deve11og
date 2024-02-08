@@ -17,5 +17,4 @@ export const Section = styled.section`
   width: 100%;
   max-width: 1280px;
   flex: 1;
-  background-color: thistle;
 `;
