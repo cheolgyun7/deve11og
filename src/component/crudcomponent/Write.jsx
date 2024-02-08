@@ -27,7 +27,8 @@ const Write = () => {
   });
 
   // 게시물 등록 form
-  const insertBoardForm = () => {
+  const insertBoardForm = async (e) => {
+    e.preventDefault();
     const newBoard = {
       albumImg: null,
       cnt: 0,
@@ -55,9 +56,7 @@ const Write = () => {
       <InsertBoard>
         <InsertBoardForm onSubmit={insertBoardForm}>
           <TitleInput value={boardTitle} onChange={titleChanged} type="text" placeholder="제목을 입력해 주세요" />
-          <ThumbnailDiv>
-            <ImgInput value={boardAlbumImg} onChange={albumImgChanged} type="file" />
-          </ThumbnailDiv>
+          <ImgInput value={boardAlbumImg} onChange={albumImgChanged} type="file" />
           <textarea value={boardContent} onChange={contentChanged} placeholder="내용을 입력해 주세요"></textarea>
           <button type="submit">등록</button>
         </InsertBoardForm>
@@ -91,6 +90,7 @@ const InsertBoardForm = styled.form`
     padding: 1rem;
     background-color: transparent;
     border: none;
+    border-radius: 2rem;
     color: white;
     font-size: 1rem;
   }
@@ -113,21 +113,16 @@ const InsertBoardForm = styled.form`
 const TitleInput = styled.input`
   width: 50%;
   padding: 0.7rem;
-  border: 0.5rem solid black;
-  border-radius: 0.5rem;
-  background-color: black;
+  border: none;
+  border-bottom: 0.1rem solid white;
+  background-color: transparent;
   color: white;
   font-size: 1rem;
 `;
 
 const ImgInput = styled.input`
   position: absolute;
-  top: 41rem;
+  top: 39rem;
   right: -2rem;
   border: none;
-`;
-const ThumbnailDiv = styled.div`
-  width: 50%;
-  height: 10rem;
-  background-color: black;
 `;

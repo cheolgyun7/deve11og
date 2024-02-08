@@ -1,6 +1,3 @@
-<<<<<<< HEAD
-import { Section } from 'styles/SharedStyle';
-=======
 import { getDocs, collection, query } from 'firebase/firestore';
 import React, { useEffect, useState } from 'react';
 import { Section } from 'styles/SharedStyle';
@@ -9,7 +6,6 @@ import Read from './crudcomponent/Read';
 import { useDispatch } from 'react-redux';
 import { setAlbums } from '../redux/modules/album';
 
->>>>>>> e234c833083a1a554938c30c861180f4d3a7b0c5
 const Home = () => {
   const dispatch = useDispatch();
 
