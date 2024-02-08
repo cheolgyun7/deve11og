@@ -3,17 +3,41 @@ import styled from 'styled-components';
 import { Section } from 'styles/SharedStyle';
 import { db } from '../../firebase';
 import { collection, getDocs } from 'firebase/firestore';
+
 const Write = () => {
   // 게시물 제목과 내용 input state
   const [boardTitle, setBoardTitle] = useState('');
   const [boardContent, setBoardContent] = useState('');
+  const [boardAlbumImg, setBoardAlbumImg] = useState('');
 
   // 게시물 제목과 내용 change 이벤트
   const titleChanged = (e) => setBoardTitle(e.target.value);
   const contentChanged = (e) => setBoardContent(e.target.value);
+  const albumImgChanged = (e) => setBoardAlbumImg(e.target.value);
+
+  const now = new Date();
+
+  const regDate = now.toLocaleDateString('ko-KR', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: 'numeric',
+    hour12: false, // 24시간 형식표기
+    minute: '2-digit'
+  });
 
   // 게시물 등록 form
-  const insertBoardForm = () => {};
+  const insertBoardForm = () => {
+    const newBoard = {
+      albumImg: null,
+      cnt: 0,
+      contents: boardContent,
+      liked: 0,
+      marked: false,
+      regDate,
+      title: boardTitle
+    };
+  };
 
   // firebase DB연결
   useEffect(() => {
@@ -30,7 +54,10 @@ const Write = () => {
     <Section>
       <InsertBoard>
         <InsertBoardForm onSubmit={insertBoardForm}>
-          <input value={boardTitle} onChange={titleChanged} type="text" placeholder="제목을 입력해 주세요" />
+          <TitleInput value={boardTitle} onChange={titleChanged} type="text" placeholder="제목을 입력해 주세요" />
+          <ThumbnailDiv>
+            <ImgInput value={boardAlbumImg} onChange={albumImgChanged} type="file" />
+          </ThumbnailDiv>
           <textarea value={boardContent} onChange={contentChanged} placeholder="내용을 입력해 주세요"></textarea>
           <button type="submit">등록</button>
         </InsertBoardForm>
@@ -49,44 +76,58 @@ const InsertBoard = styled.div`
 
 const InsertBoardForm = styled.form`
   width: 80%;
-  height: 80vh;
-  display: flex;
-  flex-direction: column;
-
-  width: 80%;
-  height: 80vh;
+  height: 45rem;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 3rem;
-  justify-content: center;
+  justify-content: space-evenly;
+  background-color: #171717;
+  border-radius: 2rem;
+  position: relative;
 
-  input {
-    width: 50%;
-    padding: 10px;
-    border: none;
-    border-bottom: 2px solid black;
-    background-color: transparent;
-  }
   textarea {
-    width: 50%;
-    height: 60%;
-    padding: 10px;
+    width: 95%;
+    height: 30rem;
+    padding: 1rem;
     background-color: transparent;
-    border-radius: 5px;
+    border: none;
+    color: white;
+    font-size: 1rem;
   }
   button {
-    width: 20%;
-    padding: 10px;
-    background-color: black;
+    width: 15%;
+    padding: 0.8rem;
+    background-color: #8930fe;
     color: white;
     font-size: 1rem;
     border: none;
-    border-radius: 5px;
+    border-radius: 0.5rem;
 
     &:hover {
-      background-color: #eee;
+      background-color: #fefbba;
       color: black;
     }
   }
+`;
+
+const TitleInput = styled.input`
+  width: 50%;
+  padding: 0.7rem;
+  border: 0.5rem solid black;
+  border-radius: 0.5rem;
+  background-color: black;
+  color: white;
+  font-size: 1rem;
+`;
+
+const ImgInput = styled.input`
+  position: absolute;
+  top: 41rem;
+  right: -2rem;
+  border: none;
+`;
+const ThumbnailDiv = styled.div`
+  width: 50%;
+  height: 10rem;
+  background-color: black;
 `;
