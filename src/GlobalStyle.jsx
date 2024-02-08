@@ -107,6 +107,7 @@ const GlobalStyle = createGlobalStyle`
   }
   body {
     line-height: 1;
+    color: white;
   }
   ol,
   ul {

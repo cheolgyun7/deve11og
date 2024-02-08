@@ -4,6 +4,7 @@ export const Body = styled.body`
   display: flex;
   flex-direction: column;
   height: 100vh;
+  background-color: #000000;
 `;
 
 export const HeaderBox = styled.header`
@@ -13,5 +14,4 @@ export const FooterBox = styled.footer``;
 
 export const Section = styled.section`
   flex: 1;
-  background-color: thistle;
 `;
