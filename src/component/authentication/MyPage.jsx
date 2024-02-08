@@ -44,22 +44,98 @@ const MyPage = () => {
 
   return (
     <Section>
-      <figure>
-        <img src="" alt="유저 이미지" ref={imgRef} />
-      </figure>
-      <FileLabelStyle>
-        이미지 업로드
-        <input type="file" onChange={fileSelect} />
-      </FileLabelStyle>
-      {!selectedFile ? <></> : <button onClick={handleUpload}>등록</button>}
+      <TopUserInfoStyle>
+        <LeftAreaStyle>
+          <FigureStyle>
+            <img src="" alt="유저 이미지" ref={imgRef} />
+          </FigureStyle>
+          <FileLabelStyle>
+            이미지 업로드
+            <input type="file" onChange={fileSelect} />
+          </FileLabelStyle>
+          {!selectedFile ? <></> : <button onClick={handleUpload}>등록</button>}
+          <BtnColorYellowStyle>이미지 제거</BtnColorYellowStyle>
+        </LeftAreaStyle>
+        <RightAreaStyle>
+          <NicknameStyle>짱구</NicknameStyle>
+          <DescStyle>이 영역은 설명이 들어갑니다~</DescStyle>
+          <button>수정</button>
+        </RightAreaStyle>
+      </TopUserInfoStyle>
+      <div></div>
     </Section>
   );
 };
 
 export default MyPage;
 
+const TopUserInfoStyle = styled.div`
+  display: flex;
+`;
+
+const FigureStyle = styled.figure`
+  margin-bottom: 1rem;
+  width: 150px;
+  height: 150px;
+  background-color: #999999;
+  border-radius: 50%;
+  text-align: center;
+  overflow: hidden;
+`;
+
 const FileLabelStyle = styled.label`
+  padding: 0.5rem;
+  display: block;
+  text-align: center;
+  border-radius: 5px;
+  background: #fefbba;
+  color: #000;
+  cursor: pointer;
+  transition: 0.3s;
+  font-size: 0.9rem;
+
+  &:hover {
+    background: #e2de92;
+  }
+
   & input {
     display: none;
   }
+`;
+
+const BtnColorYellowStyle = styled.button`
+  margin-top: 0.5rem;
+  padding: 0.5rem;
+  display: block;
+  width: 100%;
+  color: #fefbba;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  transition: 0.3s;
+  font-size: 0.9rem;
+
+  &:hover {
+    border-color: #fefbba;
+    color: #fefbba;
+  }
+`;
+
+const LeftAreaStyle = styled.div`
+  padding: 1rem;
+`;
+
+const RightAreaStyle = styled.div`
+  padding: 1rem;
+  border-left: 1px solid #252525;
+`;
+
+const NicknameStyle = styled.h2`
+  font-weight: bold;
+  font-size: 2rem;
+`;
+
+const DescStyle = styled.p`
+  margin-top: 0.8rem;
+  color: #999;
 `;
