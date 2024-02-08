@@ -1,7 +1,7 @@
 import { getDocs, collection } from 'firebase/firestore';
 import React, { useEffect } from 'react';
 import { Section } from 'styles/SharedStyle';
-import { db } from './firebase';
+import { db } from '../firebase';
 
 const Home = () => {
   useEffect(() => {
