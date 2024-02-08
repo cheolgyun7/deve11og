@@ -114,13 +114,18 @@ const MyPage = () => {
     imgRef.current.src = userInfo.image;
   }, [userInfo]);
 
+  //이미지 에러 시 기본 이미지로 셋팅
+  const errorImage = (e) => {
+    e.target.src = userDefaultImage;
+  };
+
   return (
     <Section>
       <TopUserInfoStyle>
         <LeftAreaStyle>
           <FigureStyle>
             {/* TODO: 렌더링 되고 나서 이미지를 가져와서 늦게가져옴... 확인 필요 */}
-            <img src={userInfo.image} ref={imgRef} alt="유저 이미지" />
+            <img src={userInfo.image} onError={errorImage} ref={imgRef} alt="유저 이미지" />
           </FigureStyle>
           <FileLabelStyle>
             이미지 업로드
