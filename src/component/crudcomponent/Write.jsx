@@ -39,32 +39,38 @@ const Write = () => {
     // };
   };
 
-  const test = async () => {
-    const col = collection(db, 'board');
-    const docs = await getDocs(col);
-    console.log('docs', docs);
-    // const items = [...docs].map((doc) => doc.data());
-    // console.log('items', items);
-  };
-
   // firebase DB연결
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     const querySnapshot = await getDocs(collection(db, 'board'));
+  //     const fetchedAlbums = [];
+  //     console.log(querySnapshot);
+  //     querySnapshot.forEach((doc) => {
+  //       console.log('object');
+  //       const albumData = doc.data();
+  //       albumData.user_id = doc.id;
+  //       fetchedAlbums.push(albumData);
+  //       console.log(`${doc.id} => ${doc.data()}`);
+  //     });
+  //   };
+  //   fetchData();
+  // }, []);
+
   useEffect(() => {
-    test();
     const fetchData = async () => {
-      const q = query(collection(db, 'board'));
-      const querySnapshot = await getDocs(q);
-
-      const initialTodos = [];
-
-      // document의 id와 데이터를 initialTodos에 저장합니다.
-      // doc.id의 경우 따로 지정하지 않는 한 자동으로 생성되는 id입니다.
-      // doc.data()를 실행하면 해당 document의 데이터를 가져올 수 있습니다.
-      querySnapshot.forEach((doc) => {
-        initialTodos.push({ id: doc.id, ...doc.data() });
-      });
-
-      // firestore에서 가져온 데이터를 state에 전달
-      console.log(initialTodos);
+      try {
+        const querySnapshot = await getDocs(collection(db, 'board'));
+        const fetchedAlbums = [];
+        querySnapshot.forEach((doc) => {
+          console.log('object');
+          const albumData = doc.data();
+          albumData.user_id = doc.id;
+          fetchedAlbums.push(albumData);
+        });
+        console.log(fetchedAlbums); // 여기서 fetchedAlbums를 출력해봅니다.
+      } catch (error) {
+        console.error('Error fetching documents: ', error);
+      }
     };
     fetchData();
   }, []);
