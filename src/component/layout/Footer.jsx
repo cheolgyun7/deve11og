@@ -1,8 +1,12 @@
 import React from 'react';
-import { FooterBox } from 'styles/SharedStyle';
+import { FooterBox, LayoutStyle } from 'styles/SharedStyle';
 
 const Footer = () => {
-  return <FooterBox>Footer</FooterBox>;
+  return (
+    <FooterBox>
+      <LayoutStyle>2024</LayoutStyle>
+    </FooterBox>
+  );
 };
 
 export default Footer;

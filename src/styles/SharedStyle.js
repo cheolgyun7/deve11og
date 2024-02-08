@@ -1,20 +1,42 @@
 import styled from 'styled-components';
 
-export const Body = styled.div`
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
+export const Wrapper = styled.div`
+  background: #000;
+  color: #fff;
 `;
 
 export const HeaderBox = styled.header`
-  display: flex;
+  position: sticky;
+  top: 0;
+  left: 0;
+  right: 0;
+  padding: 1rem 0;
+  background: #000;
+
+  & > div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
 `;
-export const FooterBox = styled.footer``;
+export const FooterBox = styled.footer`
+  position: sticky;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 1rem 0;
+  background: #000;
+`;
 
 export const Section = styled.section`
   margin: 0 auto;
-  padding: 2rem;
   width: 100%;
   max-width: 1280px;
-  flex: 1;
+  min-height: 90vh;
+`;
+
+export const LayoutStyle = styled.div`
+  margin: 0 auto;
+  width: 100%;
+  max-width: 1280px;
 `;
