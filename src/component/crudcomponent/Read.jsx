@@ -1,8 +1,16 @@
 import React from 'react';
-import { Section } from 'styles/SharedStyle';
+import { useSelector } from 'react-redux';
 
 const Read = () => {
-  return <Section>Read</Section>;
+  const albums = useSelector((state) => state.album.albums);
+  console.log(albums);
+  return (
+    <div>
+      {albums.map((album) => (
+        <div key={album.user_id}>{album.title}</div>
+      ))}
+    </div>
+  );
 };
 
 export default Read;
