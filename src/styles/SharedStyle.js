@@ -13,5 +13,4 @@ export const FooterBox = styled.footer``;
 
 export const Section = styled.section`
   flex: 1;
-  background-color: thistle;
 `;
