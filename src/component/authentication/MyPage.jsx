@@ -1,13 +1,35 @@
 import styled from 'styled-components';
-import { storage } from '../../firebase';
+import { db, storage } from '../../firebase';
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import React, { useEffect, useRef, useState } from 'react';
 import { Section } from 'styles/SharedStyle';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
+import userDefaultImage from '../../image/userImage.png';
 
 const MyPage = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [userImage, setUserImage] = useState('');
+  const [userInfo, setUserInfo] = useState('');
   const imgRef = useRef(null);
+  const TEST_ID = 'GD58BJjuxnlpOTsuXCcP'; //테스트 하실 계정의 식별 가능한 id 값을 넣어주세요! (firestore에서 자동 부여된 값)
+
+  //유저 정보 가져오기
+  useEffect(() => {
+    const fetchData = async () => {
+      const docRef = doc(db, 'user', TEST_ID);
+      const docSnap = await getDoc(docRef);
+
+      if (docSnap.exists()) {
+        // console.log('data: ', docSnap.data());
+        // console.log('docSnap', docSnap.id);
+        setUserInfo(docSnap.data());
+      } else {
+        console.log('no data!!');
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const fileSelect = async (event) => {
     setSelectedFile(event.target.files[0]);
@@ -24,13 +46,20 @@ const MyPage = () => {
   const handleUpload = async () => {
     //파일 업로드
     if (window.confirm('선택한 이미지로 업로드를 진행할까요?')) {
-      const imageRef = ref(storage, `4/${selectedFile.name}`); //TODO : userId로 경로 변경 예정
+      const imageRef = ref(storage, `${TEST_ID}/${selectedFile.name}`); //TODO : 식별 가능한 Id로 경로 변경 예정
       await uploadBytes(imageRef, selectedFile);
-      alert('업로드가 완료되었습니다.');
 
       //파일 업로드 후 state로 저장
       const downloadURL = await getDownloadURL(imageRef);
       setUserImage(downloadURL);
+
+      //파일 업로드 db 업데이트
+      const docRef = doc(db, 'user', TEST_ID);
+      await setDoc(docRef, {
+        ...userInfo,
+        image: downloadURL
+      });
+      alert('업로드가 완료되었습니다.');
     } else {
       alert('업로드를 취소했습니다.');
     }
@@ -47,7 +76,8 @@ const MyPage = () => {
       <TopUserInfoStyle>
         <LeftAreaStyle>
           <FigureStyle>
-            <img src="" alt="유저 이미지" ref={imgRef} />
+            {/* TODO: 렌더링 되고 나서 이미지를 가져와서 늦게가져옴... 확인 필요 */}
+            <img src={userInfo.image} alt="유저 이미지" ref={imgRef} />
           </FigureStyle>
           <FileLabelStyle>
             이미지 업로드
@@ -57,12 +87,13 @@ const MyPage = () => {
           <BtnColorYellowStyle>이미지 제거</BtnColorYellowStyle>
         </LeftAreaStyle>
         <RightAreaStyle>
-          <NicknameStyle>짱구</NicknameStyle>
-          <DescStyle>이 영역은 설명이 들어갑니다~</DescStyle>
+          <NicknameStyle>{userInfo.nickname}</NicknameStyle>
           <button>수정</button>
+          <br />
+          유저 이메일 : {userInfo.email}
         </RightAreaStyle>
       </TopUserInfoStyle>
-      <div></div>
+      <div>ddd</div>
     </Section>
   );
 };
@@ -133,9 +164,4 @@ const RightAreaStyle = styled.div`
 const NicknameStyle = styled.h2`
   font-weight: bold;
   font-size: 2rem;
-`;
-
-const DescStyle = styled.p`
-  margin-top: 0.8rem;
-  color: #999;
 `;
