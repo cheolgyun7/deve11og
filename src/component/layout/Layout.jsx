@@ -1,15 +1,15 @@
 import React from 'react';
 import Header from './Header';
 import Footer from './Footer';
-import { Body } from 'styles/SharedStyle';
+import { Wrapper } from 'styles/SharedStyle';
 
 const Layout = ({ children }) => {
   return (
-    <Body>
+    <Wrapper>
       <Header />
       {children}
       <Footer />
-    </Body>
+    </Wrapper>
   );
 };
 
