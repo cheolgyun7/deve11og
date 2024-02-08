@@ -7,7 +7,12 @@ const Read = () => {
   return (
     <div>
       {albums.map((album) => (
-        <div key={album.user_id}>{album.title}</div>
+        <ul key={album.user_id}>
+          <li>{album.title}</li>
+          <li>{album.contents}</li>
+          <li>{album.reg_date}</li>
+          <li>{album.liked}</li>
+        </ul>
       ))}
     </div>
   );
