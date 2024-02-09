@@ -1,5 +1,5 @@
-import { getDocs, collection, query } from 'firebase/firestore';
-import React, { useEffect, useState } from 'react';
+import { getDocs, collection } from 'firebase/firestore';
+import React, { useEffect } from 'react';
 import { Section } from 'styles/SharedStyle';
 import { db } from '../firebase';
 import Read from './crudcomponent/Read';
@@ -13,12 +13,10 @@ const Home = () => {
     const fetchData = async () => {
       const querySnapshot = await getDocs(collection(db, 'albums'));
       const fetchedAlbums = [];
-      console.log(querySnapshot);
       querySnapshot.forEach((doc) => {
         const albumData = doc.data();
         albumData.user_id = doc.id;
         fetchedAlbums.push(albumData);
-        console.log(`${doc.id} => ${doc.data()}`);
       });
       dispatch(setAlbums(fetchedAlbums));
     };
