@@ -2,18 +2,18 @@ import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { Section } from 'styles/SharedStyle';
 import { db } from '../../firebase';
-import { collection, getDocs, query } from 'firebase/firestore';
+import { collection, getDocs } from 'firebase/firestore';
 
 const Write = () => {
   // 게시물 제목과 내용 input state
   const [boardTitle, setBoardTitle] = useState('');
   const [boardContent, setBoardContent] = useState('');
-  const [boardAlbumImg, setBoardAlbumImg] = useState('');
+  const [thumbnailImg, setThumbnailImg] = useState('');
 
   // 게시물 제목과 내용 change 이벤트
   const titleChanged = (e) => setBoardTitle(e.target.value);
   const contentChanged = (e) => setBoardContent(e.target.value);
-  const albumImgChanged = (e) => setBoardAlbumImg(e.target.value);
+  const thumbnailImgChanged = (e) => setThumbnailImg(e.target.value);
 
   const now = new Date();
   const regDate = now.toLocaleDateString('ko-KR', {
@@ -28,49 +28,23 @@ const Write = () => {
   // 게시물 등록 form
   const insertBoardForm = async (e) => {
     e.preventDefault();
-    // const newBoard = {
-    //   albumImg: null,
-    //   cnt: 0,
-    //   contents: boardContent,
-    //   liked: 0,
-    //   marked: false,
-    //   regDate,
-    //   title: boardTitle
-    // };
+    const newBoard = {
+      albumImg: null,
+      cnt: 0,
+      contents: boardContent,
+      liked: 0,
+      marked: false,
+      regDate,
+      title: boardTitle
+    };
   };
-
-  // firebase DB연결
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     const querySnapshot = await getDocs(collection(db, 'board'));
-  //     const fetchedAlbums = [];
-  //     console.log(querySnapshot);
-  //     querySnapshot.forEach((doc) => {
-  //       console.log('object');
-  //       const albumData = doc.data();
-  //       albumData.user_id = doc.id;
-  //       fetchedAlbums.push(albumData);
-  //       console.log(`${doc.id} => ${doc.data()}`);
-  //     });
-  //   };
-  //   fetchData();
-  // }, []);
 
   useEffect(() => {
     const fetchData = async () => {
-      try {
-        const querySnapshot = await getDocs(collection(db, 'board'));
-        const fetchedAlbums = [];
-        querySnapshot.forEach((doc) => {
-          console.log('object');
-          const albumData = doc.data();
-          albumData.user_id = doc.id;
-          fetchedAlbums.push(albumData);
-        });
-        console.log(fetchedAlbums); // 여기서 fetchedAlbums를 출력해봅니다.
-      } catch (error) {
-        console.error('Error fetching documents: ', error);
-      }
+      const querySnapshot = await getDocs(collection(db, 'board'));
+      querySnapshot.forEach((doc) => {
+        console.log(`${doc.id} => ${doc.data()}`);
+      });
     };
     fetchData();
   }, []);
@@ -79,10 +53,21 @@ const Write = () => {
     <Section>
       <InsertBoard>
         <InsertBoardForm onSubmit={insertBoardForm}>
+          <SelectBox>
+            <option value="">카테고리를 선택해 주세요</option>
+            <option value="discussion">커뮤니티</option>
+            <option value="techTalk">질문 및 답변</option>
+            <option value="about">About</option>
+          </SelectBox>
           <TitleInput value={boardTitle} onChange={titleChanged} type="text" placeholder="제목을 입력해 주세요" />
-          <ImgInput value={boardAlbumImg} onChange={albumImgChanged} type="file" />
           <textarea value={boardContent} onChange={contentChanged} placeholder="내용을 입력해 주세요"></textarea>
-          <button type="submit">등록</button>
+          <InsertBtnDiv>
+            <button type="submit">작성 완료</button>
+            <label for="thumbnail">
+              <ThumbnailDiv>이미지 추가</ThumbnailDiv>
+            </label>
+            <ThumbnailInput value={thumbnailImg} onChange={thumbnailImgChanged} type="file" id="thumbnail" />
+          </InsertBtnDiv>
         </InsertBoardForm>
       </InsertBoard>
     </Section>
@@ -98,16 +83,15 @@ const InsertBoard = styled.div`
 `;
 
 const InsertBoardForm = styled.form`
-  width: 80%;
-  height: 45rem;
+  width: 75%;
+  height: 75vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: space-evenly;
-  background-color: #171717;
-  border-radius: 2rem;
+  border: 0.2rem solid #f5f5f5;
+  border-radius: 1rem;
   position: relative;
-
   textarea {
     width: 95%;
     height: 30rem;
@@ -115,38 +99,56 @@ const InsertBoardForm = styled.form`
     background-color: transparent;
     border: none;
     border-radius: 2rem;
-    color: white;
     font-size: 1rem;
   }
-  button {
-    width: 15%;
-    padding: 0.8rem;
-    background-color: #8930fe;
-    color: white;
-    font-size: 1rem;
-    border: none;
-    border-radius: 0.5rem;
+`;
 
+const SelectBox = styled.select`
+  width: 20%;
+  padding: 0.2rem;
+  position: absolute;
+  top: 1rem;
+  right: 4rem;
+  border-color: #f5f5f5;
+  cursor: pointer;
+`;
+
+const TitleInput = styled.input`
+  width: 90%;
+  padding: 0.7rem;
+  border: none;
+  border-bottom: 0.1rem solid #f5f5f5;
+  background-color: transparent;
+  font-size: 1rem;
+`;
+
+const InsertBtnDiv = styled.div`
+  width: 20%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 1rem;
+  position: absolute;
+  bottom: -5%;
+  right: -5%;
+  button {
+    background-color: transparent;
+    border: none;
+    font-size: 1rem;
     &:hover {
-      background-color: #fefbba;
-      color: black;
+      transform: scale(1.1);
     }
   }
 `;
 
-const TitleInput = styled.input`
-  width: 50%;
-  padding: 0.7rem;
+const ThumbnailDiv = styled.div`
+  color: black;
   border: none;
-  border-bottom: 0.1rem solid white;
-  background-color: transparent;
-  color: white;
-  font-size: 1rem;
+  cursor: pointer;
+  &:hover {
+    transform: scale(1.1);
+  }
 `;
-
-const ImgInput = styled.input`
-  position: absolute;
-  top: 39rem;
-  right: -2rem;
-  border: none;
+const ThumbnailInput = styled.input`
+  display: none;
 `;

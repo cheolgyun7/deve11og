@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import React from 'react';
 import { HeaderBox, LayoutStyle } from 'styles/SharedStyle';
-import logoImg from '../../image/logo.gif';
+import logoImg from '../../image/logo.png';
 import { Link } from 'react-router-dom';
 
 const Header = () => {
@@ -23,7 +23,7 @@ const Header = () => {
 export default Header;
 
 const Logo = styled.img`
-  width: 8rem;
+  width: 15rem;
 `;
 
 const RightMenu = styled.div`

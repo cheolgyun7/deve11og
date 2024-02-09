@@ -1,9 +1,6 @@
 import styled from 'styled-components';
 
-export const Wrapper = styled.div`
-  background: #000;
-  color: #fff;
-`;
+export const Wrapper = styled.div``;
 
 export const HeaderBox = styled.header`
   position: sticky;
@@ -11,7 +8,6 @@ export const HeaderBox = styled.header`
   left: 0;
   right: 0;
   padding: 1rem 0;
-  background: #000;
 
   & > div {
     display: flex;
@@ -25,18 +21,19 @@ export const FooterBox = styled.footer`
   left: 0;
   right: 0;
   padding: 1rem 0;
-  background: #000;
+  background: #f5f5f5;
 `;
 
 export const Section = styled.section`
   margin: 0 auto;
   width: 100%;
-  max-width: 1280px;
+  max-width: 1500px;
   min-height: 90vh;
 `;
 
 export const LayoutStyle = styled.div`
   margin: 0 auto;
   width: 100%;
-  max-width: 1280px;
+  max-width: 1500px;
+  color: black;
 `;
