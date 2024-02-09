@@ -11,49 +11,75 @@ const Login = () => {
   const [pwd, setPwd] = useState('');
   const navigate = useNavigate();
 
+  // 로그인
   const formOnSubmit = async (event) => {
     event.preventDefault();
     try {
+      // signInWithEmailAndPassword 현재 입력된 이메일이 파이어베이스에 있는 계정과 같은지 비교
       const userCredential = await signInWithEmailAndPassword(auth, email, pwd);
       console.log(userCredential);
       navigate('/');
+      alert('안녕하세요!');
     } catch (error) {
       alert('로그인 실패!');
       console.error(error);
     }
   };
 
+  // 이메일
   const loginEmailInput = (e) => {
     setEmail(e.target.value);
   };
 
+  // 비밀번호
   const loginPwdInput = (e) => {
     setPwd(e.target.value);
   };
 
+  // 구글 인증 버튼
   const loginGoogleBtn = async () => {
     const provier = new GoogleAuthProvider();
     try {
+      // signInWithPopup 연동되는 것을 팝업창으로 확인
       const result = await signInWithPopup(auth, provier);
       const user = result.user;
       navigate('/');
+      alert('안녕하세요!');
       console.log(user);
     } catch (error) {
       console.log(error);
     }
   };
 
+  // git 인증 버튼
   const loginGithubBtn = async () => {
     const provier = new GithubAuthProvider();
     try {
+      // signInWithPopup 연동되는 것을 팝업창으로 확인
       const result = await signInWithPopup(auth, provier);
       const user = result.user;
       navigate('/');
+      alert('안녕하세요!');
       console.log(user);
     } catch (error) {
       console.log(error);
     }
   };
+
+  // onAuthStateChanged(auth, (user) => {
+  //   if (user) {
+  //     // User is signed in, see docs for a list of available properties
+  //     // https://firebase.google.com/docs/reference/js/auth.user
+  //     const uid = user.uid;
+  //     const email = user.email;
+  //     console.log('>>', uid);
+  //     console.log('=>email', email);
+  //     // ...
+  //   } else {
+  //     // User is signed out
+  //     // ...
+  //   }
+  // });
 
   return (
     <Section>

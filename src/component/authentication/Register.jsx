@@ -12,12 +12,15 @@ const Register = () => {
   const [pwdCheck, setPwdCheck] = useState('');
 
   const nav = useNavigate();
+
+  // 회원가입
   const signUp = async (event) => {
     event.preventDefault();
     if (pwd === pwdCheck) {
       try {
+        // createUserWithEmailAndPassword 계정새로만들기
         await createUserWithEmailAndPassword(auth, email, pwd);
-        alert('회원가입 완료!');
+        alert('회원가입 완료! 로그인해주세요!');
         nav('/login');
       } catch (error) {
         console.error(error);
@@ -28,15 +31,22 @@ const Register = () => {
     }
   };
 
+  // 닉네임
   const registerNicknameInput = (e) => {
     setNickname(e.target.value);
   };
+
+  // 이메일
   const registerEmailInput = (e) => {
     setEmail(e.target.value);
   };
+
+  // 비밀번호
   const registerPwdInput = (e) => {
     setPwd(e.target.value);
   };
+
+  // 비밀번호확인
   const registerPwdCheckInput = (e) => {
     setPwdCheck(e.target.value);
   };
