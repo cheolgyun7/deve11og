@@ -65,7 +65,6 @@ const Login = () => {
       const result = await signInWithPopup(auth, provier);
       const user = result.user;
       navigate('/');
-      alert('안녕하세요!');
       console.log(user);
     } catch (error) {
       console.log(error);
@@ -110,7 +109,7 @@ const Login = () => {
       <LoginDiv>
         <LoginMain>
           <LoginForm onSubmit={formOnSubmit}>
-            ID <LoginInput type="email" value={email} onChange={loginEmailInput} required />
+            ID <LoginInput id="inputLogin" type="email" value={email} onChange={loginEmailInput} required />
             PWD <LoginInput type="password" value={pwd} onChange={loginPwdInput} required />
             <LoginBtn type="submit">로그인</LoginBtn>
           </LoginForm>
@@ -135,9 +134,9 @@ const Login = () => {
 export default Login;
 
 export const LoginForm = styled.form`
-  margin-top: 3.2rem;
   display: flex;
   flex-direction: column;
+  text-align: left;
   gap: 0.6rem;
   width: 100%;
 `;
@@ -148,20 +147,24 @@ export const LoginInput = styled.input`
   border: none;
   width: 100%;
   font-size: 1rem;
+  margin: 0 auto;
 `;
 
 export const LoginMain = styled.div`
-  height: 100%;
+  height: 28rem;
   display: flex;
+  background-color: #f5f5f5;
   flex-direction: column;
   align-items: center;
-  width: 26rem;
-  padding: 3.2rem 0rem;
+  width: 30rem;
+  padding: 4rem;
   gap: 0.6rem;
+  font-weight: bold;
 `;
 
 export const LoginBtn = styled.button`
-  background-color: #8930fe;
+  background-color: black;
+  color: white;
   padding: 0.6rem 1.25rem;
   border-radius: 3.2rem;
   border: none;
@@ -170,6 +173,7 @@ export const LoginBtn = styled.button`
   display: flex;
   justify-content: center;
   align-items: center;
+  margin: 0 auto;
 `;
 
 const LoginGitImg = styled.img`
@@ -183,7 +187,7 @@ export const LoginDiv = styled.div`
 `;
 
 const LoginLinkDiv = styled.div`
-  margin: 0.8rem;
+  margin: 1.5rem;
 `;
 
 const LoginSpan = styled.span`
