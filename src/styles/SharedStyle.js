@@ -1,8 +1,7 @@
 import styled from 'styled-components';
 
 export const Wrapper = styled.div`
-  background: #000;
-  color: #fff;
+  color: black;
 `;
 
 export const HeaderBox = styled.header`
@@ -11,7 +10,6 @@ export const HeaderBox = styled.header`
   left: 0;
   right: 0;
   padding: 1rem 0;
-  background: #000;
 
   & > div {
     display: flex;
@@ -25,7 +23,6 @@ export const FooterBox = styled.footer`
   left: 0;
   right: 0;
   padding: 1rem 0;
-  background: #000;
 `;
 
 export const Section = styled.section`
