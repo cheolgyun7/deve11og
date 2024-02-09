@@ -56,11 +56,9 @@ const Register = () => {
       <LoginDiv>
         <LoginMain>
           <LoginForm onSubmit={signUp}>
-            닉네임{' '}
-            <LoginInput minLength="2" maxLength="10" value={nickname} onChange={registerNicknameInput} required />
-            이메일 <LoginInput type="email" value={email} onChange={registerEmailInput} required />
-            비밀번호 <LoginInput minLength="6" type="password" value={pwd} onChange={registerPwdInput} required />
-            비밀번호 확인{' '}
+            ID <LoginInput type="email" value={email} onChange={registerEmailInput} required />
+            PWD <LoginInput minLength="6" type="password" value={pwd} onChange={registerPwdInput} required />
+            PWD Check{' '}
             <LoginInput
               minLength="6"
               maxLength="13"
@@ -69,6 +67,8 @@ const Register = () => {
               onChange={registerPwdCheckInput}
               required
             />
+            닉네임{' '}
+            <LoginInput minLength="2" maxLength="10" value={nickname} onChange={registerNicknameInput} required />
             <LoginBtn type="submit">회원가입</LoginBtn>
           </LoginForm>
           <Link to={'/login'}>뒤로가기</Link>

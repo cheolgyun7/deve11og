@@ -2,7 +2,13 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Section } from 'styles/SharedStyle';
 import { auth } from '../../firebase';
-import { GithubAuthProvider, GoogleAuthProvider, signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
+import {
+  GithubAuthProvider,
+  GoogleAuthProvider,
+  sendPasswordResetEmail,
+  signInWithEmailAndPassword,
+  signInWithPopup
+} from 'firebase/auth';
 import styled from 'styled-components';
 import gitIcon from '../../image/github-mark-white.svg';
 
@@ -81,12 +87,30 @@ const Login = () => {
   //   }
   // });
 
+  // 비밀번호 찾기
+  const loginFindPwd = () => {
+    const emailCheck = window.prompt('이메일을 입력해주세요');
+
+    // 이메일 확인 후 그 이메일에 메일 보냄
+    sendPasswordResetEmail(auth, emailCheck)
+      .then(() => {
+        // Password reset email sent!
+        // ..
+        alert('이메일을 확인해주세요!');
+      })
+      .catch((error) => {
+        alert('이메일을 제대로 확인해주세요!');
+        console.log(error);
+        // ..
+      });
+  };
+
   return (
     <Section>
       <LoginDiv>
         <LoginMain>
           <LoginForm onSubmit={formOnSubmit}>
-            Email <LoginInput type="email" value={email} onChange={loginEmailInput} required />
+            ID <LoginInput type="email" value={email} onChange={loginEmailInput} required />
             PWD <LoginInput type="password" value={pwd} onChange={loginPwdInput} required />
             <LoginBtn type="submit">로그인</LoginBtn>
           </LoginForm>
@@ -98,8 +122,10 @@ const Login = () => {
             <LoginGitImg src={gitIcon} alt="github icon" />
             Github로 계속하기
           </LoginBtn>
-          <Link to="/register">회원가입</Link>
-          <Link>비밀번호 찾기</Link>
+          <LoginLinkDiv>
+            <Link to="/register">회원가입</Link>
+            <LoginSpan onClick={loginFindPwd}>비밀번호 찾기</LoginSpan>
+          </LoginLinkDiv>
         </LoginMain>
       </LoginDiv>
     </Section>
@@ -154,4 +180,13 @@ const LoginGitImg = styled.img`
 export const LoginDiv = styled.div`
   display: flex;
   justify-content: center;
+`;
+
+const LoginLinkDiv = styled.div`
+  margin: 0.8rem;
+`;
+
+const LoginSpan = styled.span`
+  padding-left: 5rem;
+  cursor: pointer;
 `;
