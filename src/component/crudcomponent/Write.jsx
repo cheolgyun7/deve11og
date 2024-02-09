@@ -90,7 +90,6 @@ const InsertBoardForm = styled.form`
   align-items: center;
   justify-content: space-evenly;
   border: 0.2rem solid #f5f5f5;
-  border-radius: 1rem;
   position: relative;
   textarea {
     width: 95%;
