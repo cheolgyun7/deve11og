@@ -31,12 +31,12 @@ export const FooterBox = styled.footer`
 export const Section = styled.section`
   margin: 0 auto;
   width: 100%;
-  max-width: 1280px;
+  max-width: 1500px;
   min-height: 90vh;
 `;
 
 export const LayoutStyle = styled.div`
   margin: 0 auto;
   width: 100%;
-  max-width: 1280px;
+  max-width: 1500px;
 `;
