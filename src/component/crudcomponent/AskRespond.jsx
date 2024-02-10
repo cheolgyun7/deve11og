@@ -1,23 +1,33 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { AskRespondContents } from 'styles/SharedStyle';
+import { AskRespondContents, StyledIcon } from 'styles/SharedStyle';
+import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
+import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const AskRespond = () => {
   const answer = useSelector((state) => state.album.albums);
   const filteredAskRespond = answer.filter((list) => list.Classification === 'AskRespond');
+  const navigate = useNavigate();
+  const askDetailClick = (userId) => {
+    navigate(`/askDetail/${userId}`);
+  };
   return (
     <AskRespondContents>
       <h2>질문 및 답변</h2>
       <AskRespondBox>
         {filteredAskRespond.map((list) => (
           <ul key={list.user_id}>
-            <li>{list.title}</li>
+            <li onClick={() => askDetailClick(list.user_id)}>{list.title}</li>
             <span>{list.reg_date}</span>
             <span>{list.nickname}</span>
           </ul>
         ))}
       </AskRespondBox>
+      <Link to="/asklist">
+        <StyledIcon icon={faArrowRight} />
+      </Link>
     </AskRespondContents>
   );
 };
@@ -32,6 +42,7 @@ export const AskRespondBox = styled.div`
       font-size: 1.8rem;
       font-weight: bold;
       margin-top: 2rem;
+      cursor: pointer;
     }
     span {
       display: inline-block;
