@@ -149,21 +149,22 @@ const MyPage = () => {
 export default MyPage;
 
 const PageTitleStyle = styled.h2`
-  position: relative;
+  /* position: relative; */
   margin: 1rem 0;
   font-size: 1.3rem;
   font-weight: bold;
 
   &::before {
     content: '';
-    position: absolute;
+    /* position: absolute;
     left: -0.6rem;
-    top: -0.6rem;
+    top: -0.6rem; */
     display: inline-block;
     width: 1.2rem;
     height: 1.2rem;
     background-color: #9fffbaa6;
     border-radius: 50%;
+    transform: translate(0.6rem, -0.6rem);
   }
 `;
 
