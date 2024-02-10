@@ -22,7 +22,6 @@ const MyPage = () => {
         // console.log('data: ', docSnap.data());
         // console.log('docSnap', docSnap.id);
         setUserInfo(docSnap.data());
-        imgRef.current.src = userInfo.user_img;
       } else {
         console.log('no data!!');
       }
