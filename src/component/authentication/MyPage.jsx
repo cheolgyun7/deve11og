@@ -36,14 +36,6 @@ const MyPage = () => {
 
   const fileSelect = async (event) => {
     setSelectedFile(event.target.files[0]);
-
-    // if (window.confirm('선택한 이미지로 업로드를 진행할까요?')) {
-    //   const imageRef = ref(storage, `4/${selectedFile.name}`); //TODO : userId로 경로 변경 예정
-    //   await uploadBytes(imageRef, selectedFile);
-    //   alert('업로드가 완료되었습니다.');
-    // } else {
-    //   alert('업로드를 취소했습니다.');
-    // }
   };
 
   const handleUpload = async () => {
@@ -54,7 +46,6 @@ const MyPage = () => {
 
       //파일 업로드 후 state로 저장
       const downloadURL = await getDownloadURL(imageRef);
-      // setUserImage(downloadURL);
       setUserInfo((prev) => {
         return {
           ...prev,
@@ -89,7 +80,6 @@ const MyPage = () => {
           ...userInfo,
           user_img: userDefaultImage
         });
-        // setUserImage(userDefaultImage);
         setUserInfo((prev) => {
           return {
             ...prev,
@@ -149,13 +139,7 @@ const MyPage = () => {
     setNickname(e.target.value);
   };
 
-  // useEffect(() => {
-  //   //userImage state가 변경될 때 마다 실행
-  //   //userImage 업로드한 이미지로 보여줌
-  //   imgRef.current.src = userImage;
-  // }, [userImage]);
-
-  //userImage state가 변경될 때 마다 실행
+  //userImage가 변경될 때 마다 실행
   //userImage 업로드한 이미지로 보여줌
   useEffect(() => {
     imgRef.current.src = userInfo.user_img;
