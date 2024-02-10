@@ -14,7 +14,6 @@ const MyPage = () => {
 
   //유저 정보 가져오기
   useEffect(() => {
-    console.log('실행');
     const fetchData = async () => {
       const docRef = doc(db, 'user', TEST_ID);
       const docSnap = await getDoc(docRef);
@@ -23,7 +22,7 @@ const MyPage = () => {
         // console.log('data: ', docSnap.data());
         // console.log('docSnap', docSnap.id);
         setUserInfo(docSnap.data());
-        imgRef.current.src = userInfo.image;
+        imgRef.current.src = userInfo.user_img;
       } else {
         console.log('no data!!');
       }
@@ -56,7 +55,7 @@ const MyPage = () => {
       setUserInfo((prev) => {
         return {
           ...prev,
-          image: downloadURL
+          user_img: downloadURL
         };
       });
 
@@ -64,7 +63,7 @@ const MyPage = () => {
       const docRef = doc(db, 'user', TEST_ID);
       await setDoc(docRef, {
         ...userInfo,
-        image: downloadURL
+        user_img: downloadURL
       });
       setSelectedFile(null);
       alert('업로드가 완료되었습니다.');
@@ -77,7 +76,7 @@ const MyPage = () => {
   const handleRemove = () => {
     if (!window.confirm('이미지 삭제를 진행할까요?')) return alert('삭제를 취소하였습니다.');
     const storage = getStorage();
-    const path = ref(storage, userInfo.image).fullPath;
+    const path = ref(storage, userInfo.user_img).fullPath;
     const desertRef = ref(storage, path);
     deleteObject(desertRef)
       .then(async () => {
@@ -85,13 +84,13 @@ const MyPage = () => {
         const docRef = doc(db, 'user', TEST_ID);
         await setDoc(docRef, {
           ...userInfo,
-          image: userDefaultImage
+          user_img: userDefaultImage
         });
         // setUserImage(userDefaultImage);
         setUserInfo((prev) => {
           return {
             ...prev,
-            image: userDefaultImage
+            user_img: userDefaultImage
           };
         });
         alert('삭제를 완료하였습니다.');
@@ -111,7 +110,7 @@ const MyPage = () => {
   //userImage state가 변경될 때 마다 실행
   //userImage 업로드한 이미지로 보여줌
   useEffect(() => {
-    imgRef.current.src = userInfo.image;
+    imgRef.current.src = userInfo.user_img;
   }, [userInfo]);
 
   //이미지 에러 시 기본 이미지로 셋팅
@@ -121,11 +120,12 @@ const MyPage = () => {
 
   return (
     <Section>
+      <PageTitleStyle>마이페이지</PageTitleStyle>
       <TopUserInfoStyle>
         <LeftAreaStyle>
           <FigureStyle>
             {/* TODO: 렌더링 되고 나서 이미지를 가져와서 늦게가져옴... 확인 필요 */}
-            <img src={userInfo.image} onError={errorImage} ref={imgRef} alt="유저 이미지" />
+            <img src={userInfo.user_img} onError={errorImage} ref={imgRef} alt="유저 이미지" />
           </FigureStyle>
           <FileLabelStyle>
             이미지 업로드
@@ -148,6 +148,25 @@ const MyPage = () => {
 
 export default MyPage;
 
+const PageTitleStyle = styled.h2`
+  position: relative;
+  margin: 1rem 0;
+  font-size: 1.3rem;
+  font-weight: bold;
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: -0.6rem;
+    top: -0.6rem;
+    display: inline-block;
+    width: 1.2rem;
+    height: 1.2rem;
+    background-color: #9fffbaa6;
+    border-radius: 50%;
+  }
+`;
+
 const TopUserInfoStyle = styled.div`
   display: flex;
 `;
@@ -160,6 +179,10 @@ const FigureStyle = styled.figure`
   border-radius: 50%;
   text-align: center;
   overflow: hidden;
+
+  & img {
+    width: 100%;
+  }
 `;
 
 const FileLabelStyle = styled.label`
@@ -206,7 +229,7 @@ const LeftAreaStyle = styled.div`
 
 const RightAreaStyle = styled.div`
   padding: 1rem;
-  border-left: 1px solid #252525;
+  border-left: 1px solid #dddddd;
 `;
 
 const NicknameStyle = styled.h2`
