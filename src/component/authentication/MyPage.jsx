@@ -164,34 +164,84 @@ const MyPage = () => {
             <input type="file" onChange={fileSelect} />
           </FileLabelStyle>
           {!selectedFile ? <></> : <button onClick={handleUpload}>등록</button>}
-          <BtnColorYellowStyle onClick={handleRemove}>이미지 제거</BtnColorYellowStyle>
+          <BtnBlackText onClick={handleRemove}>이미지 제거</BtnBlackText>
         </LeftAreaStyle>
         <RightAreaStyle>
+          <TitleStyle>닉네임 변경</TitleStyle>
           <label htmlFor="nickname">닉네임 : </label>
-          <InputStyle type="text" id="nickname" value={nickname} ref={nicknameRef} onChange={handleChange} readOnly />
+          <InputStyle
+            type="text"
+            id="nickname"
+            value={nickname}
+            ref={nicknameRef}
+            onChange={handleChange}
+            readOnly
+            minLength="2"
+            maxLength="10"
+          />
           {isEditing ? (
             <>
-              <button onClick={handleSave}>저장</button>
-              <button onClick={handleEditCancel}>취소</button>
+              <BtnBlackBg onClick={handleSave}>저장</BtnBlackBg>
+              <BtnBlackText onClick={handleEditCancel}>취소</BtnBlackText>
             </>
           ) : (
-            <button onClick={handleEdit}>수정</button>
+            <BtnBlackBg onClick={handleEdit}>수정</BtnBlackBg>
           )}
-          <br />
-          유저 이메일 : {userInfo.email}
+          <PasswordArea>
+            <TitleStyle>비밀번호 변경</TitleStyle>
+            <label htmlFor="currentPassword">현재 비밀번호</label>
+            <PasswordInputStyle type="password" id="currentPassword" placeholder="현재 비밀번호를 입력해주세요." />
+            <label htmlFor="newPassword">비밀번호</label>
+            <PasswordInputStyle
+              type="password"
+              id="newPassword"
+              minLength="6"
+              maxLength="13"
+              placeholder="비밀번호를 입력해주세요."
+            />
+            <label htmlFor="confirmPassword">비밀번호 확인</label>
+            <PasswordInputStyle
+              type="password"
+              id="confirmPassword"
+              minLength="6"
+              maxLength="13"
+              placeholder="비밀번호를 입력해주세요."
+            />
+            <BtnAreaStyle>
+              <BtnBlackBg type="button">변경</BtnBlackBg>
+            </BtnAreaStyle>
+          </PasswordArea>
+          <p>유저 이메일 : {userInfo.email}</p>
         </RightAreaStyle>
       </TopUserInfoStyle>
-      <div>ddd</div>
     </Section>
   );
 };
 
 export default MyPage;
 
+const BtnNormalStyle = styled.button`
+  padding: 0.2rem 0.4rem;
+  font-size: 0.9rem;
+  transition: 0.3s;
+`;
+const BtnBlackBg = styled(BtnNormalStyle)`
+  background: #000000;
+  border: 1px solid #000000;
+  color: #fff;
+  border-radius: 5px;
+`;
+const BtnBlackText = styled(BtnNormalStyle)`
+  background: #ffffff;
+  border: 1px solid #ffffff;
+  color: #000000;
+  border-radius: 5px;
+`;
+
 const PageTitleStyle = styled.h2`
   /* position: relative; */
   margin: 1rem 0;
-  font-size: 1.3rem;
+  font-size: 1.5rem;
   font-weight: bold;
 
   &::before {
@@ -207,6 +257,32 @@ const PageTitleStyle = styled.h2`
 
 const TopUserInfoStyle = styled.div`
   display: flex;
+  flex-wrap: wrap;
+`;
+
+const LeftAreaStyle = styled.div`
+  padding: 1rem;
+
+  ${BtnBlackText} {
+    margin-top: 0.5rem;
+    display: block;
+    width: 100%;
+  }
+`;
+
+const RightAreaStyle = styled.div`
+  padding: 1rem;
+  border-left: 1px solid #dddddd;
+
+  & button + button {
+    margin-left: 0.5rem;
+  }
+`;
+
+const TitleStyle = styled.h3`
+  margin: 1rem auto 0.5rem;
+  font-size: 1.1rem;
+  font-weight: bold;
 `;
 
 const FigureStyle = styled.figure`
@@ -243,37 +319,6 @@ const FileLabelStyle = styled.label`
   }
 `;
 
-const BtnColorYellowStyle = styled.button`
-  margin-top: 0.5rem;
-  padding: 0.5rem;
-  display: block;
-  width: 100%;
-  color: #fefbba;
-  background: transparent;
-  border: 1px solid transparent;
-  border-radius: 5px;
-  transition: 0.3s;
-  font-size: 0.9rem;
-
-  &:hover {
-    border-color: #fefbba;
-    color: #fefbba;
-  }
-`;
-
-const LeftAreaStyle = styled.div`
-  padding: 1rem;
-`;
-
-const RightAreaStyle = styled.div`
-  padding: 1rem;
-  border-left: 1px solid #dddddd;
-
-  & button + button {
-    margin-left: 0.5rem;
-  }
-`;
-
 const InputStyle = styled.input`
   padding: 0.4rem;
   border: none;
@@ -282,4 +327,25 @@ const InputStyle = styled.input`
   &:read-only {
     outline: none;
   }
+`;
+
+const PasswordArea = styled.div`
+  margin-top: 2rem;
+
+  & label {
+    margin: 0.5rem auto;
+    display: block;
+  }
+`;
+
+const PasswordInputStyle = styled.input`
+  height: 30px;
+  padding: 0 0.4rem;
+  border: 1px solid #ddd;
+  font-size: 1rem;
+  border-radius: 5px;
+`;
+
+const BtnAreaStyle = styled.div`
+  margin: 0.5rem 0;
 `;
