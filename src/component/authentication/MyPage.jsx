@@ -11,6 +11,9 @@ const MyPage = () => {
   const [userInfo, setUserInfo] = useState(''); //firestore 에서 가져온 user 정보
   const imgRef = useRef(null);
   const TEST_ID = 'GD58BJjuxnlpOTsuXCcP'; //테스트 하실 계정의 식별 가능한 id 값을 넣어주세요! (firestore에서 자동 부여된 값)
+  const [isEditing, setIsEditing] = useState(false); //수정 상태
+  const nicknameRef = useRef(null);
+  const [nickname, setNickname] = useState('');
 
   //유저 정보 가져오기
   useEffect(() => {
@@ -22,6 +25,7 @@ const MyPage = () => {
         // console.log('data: ', docSnap.data());
         // console.log('docSnap', docSnap.id);
         setUserInfo(docSnap.data());
+        setNickname(docSnap.data().nickname);
       } else {
         console.log('no data!!');
       }
@@ -100,6 +104,51 @@ const MyPage = () => {
       });
   };
 
+  //유저 정보(닉네임) 수정 - 활성화 기능
+  const handleEdit = () => {
+    nicknameRef.current.readOnly = false;
+    nicknameRef.current.focus();
+    setIsEditing(true);
+  };
+
+  //유저 정보(닉네임) 수정 취소 - 비활성화 기능
+  const handleEditCancel = () => {
+    setNickname(userInfo.nickname);
+    nicknameRef.current.readOnly = true;
+    setIsEditing(false);
+  };
+
+  //유저 정보(닉네임) 수정 기능
+  const handleSave = async () => {
+    if (!nickname.trim()) {
+      return alert('닉네임을 입력해주세요.');
+    }
+    if (userInfo.nickname === nickname) {
+      return alert('이전 닉네임과 같습니다.');
+    }
+
+    //정보 수정
+    const docRef = doc(db, 'user', TEST_ID);
+    await setDoc(docRef, {
+      ...userInfo,
+      nickname
+    });
+    setUserInfo((prev) => {
+      return {
+        ...prev,
+        nickname
+      };
+    });
+
+    alert('수정이 완료되었습니다.');
+    setIsEditing(false);
+  };
+
+  //닉네임 change
+  const handleChange = (e) => {
+    setNickname(e.target.value);
+  };
+
   // useEffect(() => {
   //   //userImage state가 변경될 때 마다 실행
   //   //userImage 업로드한 이미지로 보여줌
@@ -134,8 +183,16 @@ const MyPage = () => {
           <BtnColorYellowStyle onClick={handleRemove}>이미지 제거</BtnColorYellowStyle>
         </LeftAreaStyle>
         <RightAreaStyle>
-          <NicknameStyle>{userInfo.nickname}</NicknameStyle>
-          <button>수정</button>
+          <label htmlFor="nickname">닉네임 : </label>
+          <InputStyle type="text" id="nickname" value={nickname} ref={nicknameRef} onChange={handleChange} readOnly />
+          {isEditing ? (
+            <>
+              <button onClick={handleSave}>저장</button>
+              <button onClick={handleEditCancel}>취소</button>
+            </>
+          ) : (
+            <button onClick={handleEdit}>수정</button>
+          )}
           <br />
           유저 이메일 : {userInfo.email}
         </RightAreaStyle>
@@ -155,9 +212,6 @@ const PageTitleStyle = styled.h2`
 
   &::before {
     content: '';
-    /* position: absolute;
-    left: -0.6rem;
-    top: -0.6rem; */
     display: inline-block;
     width: 1.2rem;
     height: 1.2rem;
@@ -230,9 +284,18 @@ const LeftAreaStyle = styled.div`
 const RightAreaStyle = styled.div`
   padding: 1rem;
   border-left: 1px solid #dddddd;
+
+  & button + button {
+    margin-left: 0.5rem;
+  }
 `;
 
-const NicknameStyle = styled.h2`
-  font-weight: bold;
-  font-size: 2rem;
+const InputStyle = styled.input`
+  padding: 0.4rem;
+  border: none;
+  font-size: 1rem;
+
+  &:read-only {
+    outline: none;
+  }
 `;
