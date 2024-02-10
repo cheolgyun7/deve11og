@@ -3,9 +3,11 @@ import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart } from '@fortawesome/free-solid-svg-icons';
+import { MainContents } from 'styles/SharedStyle';
 
 const Read = () => {
   const albums = useSelector((state) => state.album.albums);
+  const filteredCommunity = albums.filter((album) => album.Classification === 'Community');
 
   console.log(albums);
   const likeIconClick = (e) => {
@@ -13,26 +15,30 @@ const Read = () => {
   };
   return (
     <MainContents>
-      <h2>PLAYLIST</h2>
-      <span>최신순 /</span>
-      <span> 좋아요순</span>
-      <AlbumBox>
-        {albums.map((album) => (
-          <AlbumArticle key={album.user_id}>
-            <AlbumThumnail>{/* <img src={album.album_img} alt='앨범 썸네일' /> */}</AlbumThumnail>
-            <h4>{album.title}</h4>
+      <h2>커뮤니티</h2>
+      <CardBox>
+        {filteredCommunity.map((album) => (
+          <CardArticle key={album.user_id}>
+            <CardThumnail>{/* <img src={album.album_img} alt='앨범 썸네일' /> */}</CardThumnail>
             <div>
-              <span>{album.reg_date}</span>
-              <span>
-                <LikeIcon onClick={likeIconClick}>
-                  <FontAwesomeIcon icon={faHeart} />
-                </LikeIcon>
-              </span>
-              <span>{album.liked}</span>
+              <h4>{album.title}</h4>
+              <p>
+                <span>{album.reg_date}</span>
+                <span>개의 댓글</span>
+                <span>
+                  <LikeIcon onClick={likeIconClick}>
+                    <FontAwesomeIcon icon={faHeart} />
+                  </LikeIcon>
+                  {album.liked}
+                </span>
+              </p>
+              <p>
+                <span>by {album.nickname}</span>
+              </p>
             </div>
-          </AlbumArticle>
+          </CardArticle>
         ))}
-      </AlbumBox>
+      </CardBox>
     </MainContents>
   );
 };
@@ -46,37 +52,36 @@ export const LikeIcon = styled.span`
   }
 `;
 
-export const MainContents = styled.div`
-  padding: 0 1rem;
-  & > h2 {
-    font-size: 2rem;
-    font-weight: bold;
-    padding: 1rem 0;
-    display: inline-block;
-  }
-`;
-
-export const AlbumArticle = styled.article`
+export const CardArticle = styled.article`
   flex-wrap: wrap;
-  width: 20%;
+  width: 17%;
   background-color: #f1f1f1;
-  margin-right: 1rem;
-  border-radius: 1rem;
+  margin-right: 0.5rem;
   box-shadow: 0 0 0;
-  li {
-    width: 100%;
-    margin: 0.2rem;
+  & > div {
+    margin: 1rem 0.5rem;
+  }
+  h4 {
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-bottom: 2rem;
+  }
+  p {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1rem;
     span {
-      font-size: 0.8rem;
+      font-size: 0.9rem;
     }
   }
 `;
 
-export const AlbumBox = styled.div`
+export const CardBox = styled.div`
   display: flex;
+  margin: 0 3rem;
 `;
 
-export const AlbumThumnail = styled.div`
+export const CardThumnail = styled.p`
   width: 100%;
   height: 12rem;
   background-color: black;
