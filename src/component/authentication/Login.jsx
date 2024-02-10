@@ -25,7 +25,6 @@ const Login = () => {
       const userCredential = await signInWithEmailAndPassword(auth, email, pwd);
       console.log(userCredential);
       navigate('/');
-      alert('안녕하세요!');
     } catch (error) {
       alert('로그인 실패!');
       console.error(error);
@@ -71,21 +70,6 @@ const Login = () => {
     }
   };
 
-  // onAuthStateChanged(auth, (user) => {
-  //   if (user) {
-  //     // User is signed in, see docs for a list of available properties
-  //     // https://firebase.google.com/docs/reference/js/auth.user
-  //     const uid = user.uid;
-  //     const email = user.email;
-  //     console.log('>>', uid);
-  //     console.log('=>email', email);
-  //     // ...
-  //   } else {
-  //     // User is signed out
-  //     // ...
-  //   }
-  // });
-
   // 비밀번호 찾기
   const loginFindPwd = () => {
     const emailCheck = window.prompt('이메일을 입력해주세요');
@@ -93,14 +77,11 @@ const Login = () => {
     // 이메일 확인 후 그 이메일에 메일 보냄
     sendPasswordResetEmail(auth, emailCheck)
       .then(() => {
-        // Password reset email sent!
-        // ..
         alert('이메일을 확인해주세요!');
       })
       .catch((error) => {
         alert('이메일을 제대로 확인해주세요!');
         console.log(error);
-        // ..
       });
   };
 

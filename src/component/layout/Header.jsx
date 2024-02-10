@@ -33,6 +33,22 @@ const Header = () => {
     loginCheck();
   }, []);
 
+  // const test = () => {
+  //   const user = auth.currentUser;
+  //   if (user !== null) {
+  //     const nickname = user.displayName;
+  //     const email = user.email;
+  //     const user_img = user.photoURL;
+  //     const user_id = user.uid;
+
+  //     console.log('닉네임', nickname);
+  //     console.log('이메일', email);
+  //     console.log('프로필이미지', user_img);
+  //     console.log('uid', user_id);
+  //   }
+  // };
+  // test();
+
   // 로그아웃
   const logoutOnClick = () => {
     const logoutConfirm = window.confirm('로그아웃 하시겠습니까?');
@@ -65,6 +81,10 @@ const Header = () => {
     }, 200);
   };
 
+  const newPostBtnClick = () => {
+    nav('/write');
+  };
+
   return (
     <HeaderBox>
       <LayoutStyle>
@@ -76,9 +96,10 @@ const Header = () => {
           {!loginPage && !registerPage ? (
             logoutBool ? (
               <>
-                <NewPostBtn>새 글 작성</NewPostBtn>
+                <NewPostBtn onClick={newPostBtnClick}>새 글 작성</NewPostBtn>
                 <ImgStyle src={useImage} alt="임시" />
                 <UserMenuDiv onBlur={userMenuOnBlur}>
+                  {/* 🔽 임시 */}
                   <UserBtn onClick={userIsActiveBtn}>🔽</UserBtn>
                   <UserUl isActive={isActive}>
                     <UserLi>

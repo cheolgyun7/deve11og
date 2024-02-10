@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Section } from 'styles/SharedStyle';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { createUserWithEmailAndPassword, signOut, updateProfile } from 'firebase/auth';
 import { auth } from '../../firebase';
 import { Link, useNavigate } from 'react-router-dom';
 import { LoginBtn, LoginDiv, LoginForm, LoginInput, LoginMain } from './Login';
@@ -19,7 +19,15 @@ const Register = () => {
     if (pwd === pwdCheck) {
       try {
         // createUserWithEmailAndPassword 계정새로만들기
-        await createUserWithEmailAndPassword(auth, email, pwd);
+        const userCreate = await createUserWithEmailAndPassword(auth, email, pwd);
+        const user = userCreate.user;
+        // 닉네임 지정
+        await updateProfile(user, {
+          displayName: nickname
+        });
+        // 회원가입하면 자동로그인 방지 위해 여기서 로그아웃
+        signOut(auth);
+
         alert('회원가입 완료! 로그인해주세요!');
         nav('/login');
       } catch (error) {
