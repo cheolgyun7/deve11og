@@ -3,18 +3,41 @@ import styled from 'styled-components';
 import { Section } from 'styles/SharedStyle';
 import { db, storage } from '../../firebase';
 import { addDoc, collection, getDocs, query } from 'firebase/firestore';
-import talkingimport from '../../image/talking-img.png';
-import { ref, uploadBytes } from '@firebase/storage';
+import { getDownloadURL, ref, uploadBytes } from '@firebase/storage';
+import { uuidv4 } from '@firebase/util';
 
 const Write = () => {
+  // 파이어베이스에 저장된 데이터 가져오기
+  useEffect(() => {
+    const fetchData = async () => {
+      const boardData = query(collection(db, 'board'));
+      const querySanpshot = await getDocs(boardData);
+
+      const initialBoard = [];
+      querySanpshot.forEach((doc) => {
+        const data = {
+          id: doc.id,
+          ...doc.data()
+        };
+        // console.log('data', data);
+        initialBoard.push(data);
+      });
+      setBoard(initialBoard);
+    };
+    fetchData();
+  }, []);
+
   // 게시물 state
   const [boardTitle, setBoardTitle] = useState('');
   const [boardContent, setBoardContent] = useState();
   const [category, setCategory] = useState('');
   const [thumbnailImg, setThumbnailImg] = useState('');
 
-  // 이미지 미리보기 변수
-  const thumbnailRef = useRef(null);
+  // 이미지 ID
+  const imgId = uuidv4();
+
+  // 썸네일 기본 이미지 url, 깃헙에 저장된 이미지를 가져옴
+  const defaultImgUrl = 'https://github.com/cheolgyun7/deve11og/raw/dev/src/image/userImage.png';
 
   // 포커스를 위한 변수들
   const boardTitleRef = useRef(null);
@@ -25,7 +48,6 @@ const Write = () => {
   const titleChanged = (e) => setBoardTitle(e.target.value);
   const contentChanged = (e) => setBoardContent(e.target.value);
   const categoryChanged = (e) => setCategory(e.target.value);
-
   const thumbnailImgChanged = (e) => setThumbnailImg(e.target.files[0]);
 
   // 게시물 등록일 함수
@@ -51,11 +73,10 @@ const Write = () => {
     }
   ]);
 
-  // board 수정 전 값을 담는 state
-  // const [isUpdateBoard, setIsUpdateBoard] = useState('');
-
-  // board 수정된 값을 담는 state
-  // const [updateCompletedBoard, setUpdateCompletedBoard] = useState(isUpdateBoard);
+  // 미리보기 이미지 삭제
+  const imgRemove = () => {
+    setThumbnailImg('');
+  };
 
   // 게시물 등록 form
   const insertBoardForm = async (e) => {
@@ -67,6 +88,7 @@ const Write = () => {
       liked: 0,
       marked: false,
       regDate,
+      thumbnail: imgId,
       title: boardTitle,
       category
     };
@@ -82,41 +104,30 @@ const Write = () => {
       return categoryRef.current.focus();
     }
 
-    // 썸네일 회원이 등록한 이미지가 없을경우 기본 이미지 사용
-    // 이미지는 스토리지에 따로 저장
-    // const imgRef = ref(storage, );
-    // await uploadBytes(imgRef, thumbnailImg);
-    // console.log('uploadBytes', thumbnailImg);
-
+    alert(`"${boardTitle}" 게시물이 등록되었습니다.`);
     setBoard([...board, newBoard]);
     setBoardTitle('');
     setBoardContent('');
     setCategory('');
+    imgRemove();
 
     // 파이어베이스 게시물 등록
     const collectionRef = collection(db, 'board');
     await addDoc(collectionRef, newBoard);
+
+    // 스토리지 이미지 등록
+    const imgRef = ref(storage, imgId);
+
+    // 회원이 등록한 이미지가 없을경우 기본 이미지 등록 / ** 문제 스토리지에 저장은되지만 이미지 파일로 저장이안됨
+    const imageToUpload = thumbnailImg ? thumbnailImg : defaultImgUrl;
+    await uploadBytes(imgRef, imageToUpload);
+
+    // // 스토리지에 저장된 이미지 url 가져오기
+    // const downloadUrl = await getDownloadURL(imgRef);
+    // console.log('downloadUrl', downloadUrl);
   };
 
-  // 파이어베이스에 저장된 데이터 가져오기
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     const boardData = query(collection(db, 'board'));
-  //     const querySanpshot = await getDocs(boardData);
-
-  //     const initialBoard = [];
-  //     querySanpshot.forEach((doc) => {
-  //       const data = {
-  //         id: doc.id,
-  //         ...doc.data()
-  //       };
-  //       console.log('data', data);
-  //       initialBoard.push(data);
-  //     });
-  //     setBoard(initialBoard);
-  //   };
-  //   fetchData();
-  // }, []);
+  // 게시물 삭제
 
   return (
     <Section>
@@ -139,10 +150,7 @@ const Write = () => {
           {thumbnailImg ? (
             <PreviewDiv>
               <img src={URL.createObjectURL(thumbnailImg)} alt="이미지" />
-              <ImgBtn>
-                <button>삭제</button>
-                <button>등록</button>
-              </ImgBtn>
+              <button onClick={imgRemove}>이미지 삭제</button>
             </PreviewDiv>
           ) : null}
 
@@ -157,29 +165,10 @@ const Write = () => {
             <label htmlFor="thumbnail">
               <ThumbnailDiv>이미지 추가</ThumbnailDiv>
             </label>
-            <ThumbnailInput
-              // value={thumbnailImg}
-              onChange={thumbnailImgChanged}
-              type="file"
-              accept="image/*"
-              id="thumbnail"
-              ref={thumbnailRef}
-            />
+            <ThumbnailInput onChange={thumbnailImgChanged} type="file" accept="image/*" id="thumbnail" />
           </InsertBtnDiv>
         </InsertBoardForm>
       </InsertBoard>
-
-      {/* 테스트 코드
-      {board.map((item, idx) => {
-        return (
-          <div key={idx}>
-            <div>{item.title}</div>
-            <div>{item.contents}</div>
-            <div>{item.regDate}</div>
-            <div>{item.nic}</div>
-          </div>
-        );
-      })} */}
     </Section>
   );
 };
@@ -194,7 +183,7 @@ const InsertBoard = styled.div`
 
 const InsertBoardForm = styled.form`
   width: 75%;
-  height: 75%;
+  height: 75vh;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -221,14 +210,13 @@ const PreviewDiv = styled.div`
   img {
     width: 10rem;
   }
-`;
-
-const ImgBtn = styled.div`
-  display: flex;
   button {
-    margin: 0.5rem 1.2rem;
+    margin: 0.5rem;
     background-color: transparent;
     border: none;
+    &:hover {
+      transform: scale(1.3);
+    }
   }
 `;
 
