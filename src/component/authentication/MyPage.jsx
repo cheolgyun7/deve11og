@@ -5,6 +5,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Section } from 'styles/SharedStyle';
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import userDefaultImage from '../../image/userImage.png';
+import { getAuth, signOut, updatePassword } from 'firebase/auth';
 
 const MyPage = () => {
   const [selectedFile, setSelectedFile] = useState(null); //업로드를 위해 선택한 이미지
@@ -14,6 +15,38 @@ const MyPage = () => {
   const [isEditing, setIsEditing] = useState(false); //수정 상태
   const nicknameRef = useRef(null);
   const [nickname, setNickname] = useState('');
+
+  //유저 Auth 조회
+  const auth = getAuth();
+  const user = auth.currentUser;
+  console.log(user);
+
+  //비밀번호 변경 - 메일로 보내기
+  const changePassword = () => {
+    const user = auth.currentUser;
+    const newPassword = 'a123456';
+
+    updatePassword(user, newPassword)
+      .then(() => {
+        alert('비밀번호가 변경되었습니다.');
+      })
+      .catch((error) => {
+        console.log(error);
+        alert('비밀번호 변경 중 에러가 발생하였습니다. 잠시 후 다시 시도해주세요');
+      });
+  };
+
+  //로그아웃
+  const logout = () => {
+    signOut(auth)
+      .then(() => {
+        alert('로그아웃되었습니다. 메인으로 이동합니다.');
+      })
+      .catch((error) => {
+        console.log(error);
+        alert('에러가 발생했습니다. 다시 시도해주세요');
+      });
+  };
 
   //유저 정보 가져오기
   useEffect(() => {
@@ -209,8 +242,15 @@ const MyPage = () => {
             />
             <BtnAreaStyle>
               <BtnBlackBg type="button">변경</BtnBlackBg>
+              <BtnBlackBg type="button" onClick={changePassword}>
+                비밀번호 재설정
+              </BtnBlackBg>
+              <BtnBlackText onClick={logout}>로그아웃</BtnBlackText>
             </BtnAreaStyle>
           </PasswordArea>
+          <div>
+            <TitleStyle>내 게시물 보기</TitleStyle>
+          </div>
           <p>유저 이메일 : {userInfo.email}</p>
         </RightAreaStyle>
       </TopUserInfoStyle>
