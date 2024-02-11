@@ -1,10 +1,10 @@
 import styled from 'styled-components';
-import { db, storage } from '../../firebase';
+import { storage } from '../../firebase';
 import { deleteObject, getDownloadURL, getStorage, ref, uploadBytes } from 'firebase/storage';
 import React, { useEffect, useRef, useState } from 'react';
 import { Section } from 'styles/SharedStyle';
 import userDefaultImage from '../../image/userImage.png';
-import { getAuth, signOut, updatePassword, updateProfile } from 'firebase/auth';
+import { getAuth, updateProfile } from 'firebase/auth';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateImage, updateNickname } from '../../redux/modules/user';
 
@@ -22,22 +22,6 @@ const MyPage = () => {
   //기본 이미지
   const DEFAULT_IMAGE = 'https://github.com/cheolgyun7/deve11og/blob/dev/src/image/userImage.png?raw=true';
 
-  //비밀번호 변경 - 메일로 보내기
-  const changePassword = () => {
-    const auth = getAuth();
-    const user = auth.currentUser;
-    const newPassword = 'a123456';
-
-    updatePassword(user, newPassword)
-      .then(() => {
-        alert('비밀번호가 변경되었습니다.');
-      })
-      .catch((error) => {
-        console.log(error);
-        alert('비밀번호 변경 중 에러가 발생하였습니다. 잠시 후 다시 시도해주세요');
-      });
-  };
-
   const fileSelect = async (event) => {
     setSelectedFile(event.target.files[0]);
   };
@@ -45,7 +29,7 @@ const MyPage = () => {
   const handleUpload = async () => {
     //파일 업로드
     if (window.confirm('선택한 이미지로 업로드를 진행할까요?')) {
-      const imageRef = ref(storage, `${user_id}/${selectedFile.name}`); //TODO : 식별 가능한 Id로 경로 변경 예정
+      const imageRef = ref(storage, `${user_id}/${selectedFile.name}`);
       await uploadBytes(imageRef, selectedFile);
 
       //파일 업로드 후 state로 저장
@@ -214,30 +198,7 @@ const MyPage = () => {
           )}
           <PasswordArea>
             <TitleStyle>비밀번호 변경</TitleStyle>
-            <label htmlFor="currentPassword">현재 비밀번호</label>
-            <PasswordInputStyle type="password" id="currentPassword" placeholder="현재 비밀번호를 입력해주세요." />
-            <label htmlFor="newPassword">비밀번호</label>
-            <PasswordInputStyle
-              type="password"
-              id="newPassword"
-              minLength="6"
-              maxLength="13"
-              placeholder="비밀번호를 입력해주세요."
-            />
-            <label htmlFor="confirmPassword">비밀번호 확인</label>
-            <PasswordInputStyle
-              type="password"
-              id="confirmPassword"
-              minLength="6"
-              maxLength="13"
-              placeholder="비밀번호를 입력해주세요."
-            />
-            <BtnAreaStyle>
-              <BtnBlackBg type="button">변경</BtnBlackBg>
-              <BtnBlackBg type="button" onClick={changePassword}>
-                비밀번호 재설정
-              </BtnBlackBg>
-            </BtnAreaStyle>
+            <BtnBlackBg type="button">비밀번호 재설정</BtnBlackBg>
           </PasswordArea>
           <div>
             <TitleStyle>내 게시물 보기</TitleStyle>
@@ -287,6 +248,7 @@ const PageTitleStyle = styled.h2`
 `;
 
 const TopUserInfoStyle = styled.div`
+  padding: 1rem;
   display: flex;
   flex-wrap: wrap;
 `;
