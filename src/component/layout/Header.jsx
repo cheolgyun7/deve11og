@@ -1,13 +1,14 @@
 import styled from 'styled-components';
 import React, { useEffect, useState } from 'react';
 import { HeaderBox, LayoutStyle } from 'styles/SharedStyle';
+
+import logoImg from '../../image/logo.png';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { auth } from '../../firebase';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { useDispatch } from 'react-redux';
 import { setUserDB } from '../../redux/modules/user';
 import { useSelector } from 'react-redux';
-import logoImg from '../../image/logo.png';
 
 const Header = () => {
   const [logoutBool, setLogoutBool] = useState(false);
