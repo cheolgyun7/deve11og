@@ -6,7 +6,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { auth } from '../../firebase';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { useDispatch } from 'react-redux';
-import { setUserDB } from '../../redux/modules/user';
+import { setUserLoginDB, setUserNowDB } from '../../redux/modules/user';
 import { useSelector } from 'react-redux';
 
 const Header = () => {
@@ -16,7 +16,6 @@ const Header = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const location = useLocation();
-
   const nowUser = useSelector((state) => state.user.nowUser);
   // 프로필사진
   const img = nowUser.user_img;
@@ -33,13 +32,14 @@ const Header = () => {
     const nickname = userData.displayName;
     const user_img = userData.photoURL;
     dispatch(
-      setUserDB({
+      setUserNowDB({
         user_id: user_id,
         email: email,
         nickname: nickname,
         user_img: user_img
       })
     );
+    dispatch(setUserLoginDB({ user_id: user_id, email: email, nickname: nickname }));
     // 쿠키
     let todayDate = new Date();
     // 쿠키 1시간 유효기간 설정
@@ -118,7 +118,9 @@ const Header = () => {
             logoutBool ? (
               <>
                 <NewPostBtn onClick={newPostBtnClick}>새 글 작성</NewPostBtn>
-                <ImgStyle src={img} alt="프로필사진" />
+                <ImgLink to="/mypage">
+                  <ImgStyle src={img} alt="프로필사진" />
+                </ImgLink>
                 <UserMenuDiv onBlur={userMenuOnBlur}>
                   {/* 🔽 임시 */}
                   <UserBtn onClick={userIsActiveBtn}>🔽</UserBtn>
@@ -170,9 +172,7 @@ const Logout = styled.span`
 
 const NewPostBtn = styled.button`
   border-radius: 1rem;
-  padding: 0.5rem;
   background-color: white;
-  width: 5rem;
   height: 2rem;
   margin-right: 1rem;
   margin-top: 0.7rem;
@@ -180,13 +180,11 @@ const NewPostBtn = styled.button`
     transition-duration: 0.4s;
     background-color: black;
     color: white;
-    border: none;
   }
 `;
 
 const ImgStyle = styled.img`
-  width: 20%;
-  height: 20%;
+  height: 100%;
   object-fit: cover;
 `;
 
@@ -224,4 +222,9 @@ const StyledLink = styled(Link)`
   &:hover {
     background-color: #f5f5f5;
   }
+`;
+
+const ImgLink = styled(Link)`
+  width: 3rem;
+  height: 3rem;
 `;
