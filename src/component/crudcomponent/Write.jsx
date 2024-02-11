@@ -2,29 +2,17 @@ import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { Section } from 'styles/SharedStyle';
 import { db, storage } from '../../firebase';
-import { addDoc, collection, deleteDoc, doc, getDocs, query, updateDoc } from 'firebase/firestore';
+import { addDoc, collection, deleteDoc, doc } from 'firebase/firestore';
 import { deleteObject, ref, uploadBytes } from '@firebase/storage';
 import { uuidv4 } from '@firebase/util';
+import { useDispatch, useSelector } from 'react-redux';
+import { DELETE_BOARD, INSERT_BOARD } from '../../redux/modules/board';
 
 const Write = () => {
-  // 파이어베이스에 저장된 데이터 가져오기
-  useEffect(() => {
-    const fetchData = async () => {
-      const boardData = query(collection(db, 'board'));
-      const querySnapshot = await getDocs(boardData);
+  const dispatch = useDispatch();
+  const board = useSelector((item) => item.board);
 
-      const initialBoard = [];
-      querySnapshot.forEach((doc) => {
-        const data = {
-          id: doc.id,
-          ...doc.data()
-        };
-        initialBoard.push(data);
-      });
-      setBoard(initialBoard);
-    };
-    fetchData();
-  }, []);
+  console.log('board', board);
 
   // 게시물 state들
   const [title, setTitle] = useState('');
@@ -44,10 +32,7 @@ const Write = () => {
   const categoryRef = useRef(null);
 
   // 게시물 state change 이벤트
-  const titleChanged = (e) => {
-    setTitle(e.target.value);
-  };
-
+  const titleChanged = (e) => setTitle(e.target.value);
   const contentChanged = (e) => setContents(e.target.value);
   const categoryChanged = (e) => setCategory(e.target.value);
   const thumbnailChanged = (e) => setThumbnail(e.target.files[0]);
@@ -62,14 +47,6 @@ const Write = () => {
     hour12: false, // 24시간 형식 표기
     minute: '2-digit'
   });
-
-  // board state
-  const [board, setBoard] = useState([]);
-
-  // 이미지 미리보기 삭제 함수
-  const imgRemove = () => {
-    setThumbnail('');
-  };
 
   // 게시물 등록
   const addBoardForm = async (e) => {
@@ -99,7 +76,8 @@ const Write = () => {
       // 스토리지에 이미지 등록
       const imgRef = ref(storage, 'thumbnail/' + thumbnailId);
 
-      // 회원이 등록한 이미지가 없을경우 기본 이미지 등록 / ** 문제 스토리지에 저장은되지만 이미지 파일로 저장이안됨
+      // 회원이 등록한 이미지가 없을경우 기본 이미지 등록
+      // ** 문제 스토리지에 저장은되지만 이미지 파일로 저장이안됨
       const imageToUpload = thumbnail ? thumbnail : defaultImgUrl;
       await uploadBytes(imgRef, imageToUpload);
 
@@ -107,7 +85,10 @@ const Write = () => {
       const collectionRef = collection(db, 'board');
       await addDoc(collectionRef, newBoard);
 
-      setBoard([...board, newBoard]);
+      dispatch({
+        type: INSERT_BOARD,
+        payload: newBoard
+      });
       setTitle('');
       setContents('');
       setCategory('');
@@ -116,6 +97,35 @@ const Write = () => {
       alert(`"${title}" 게시물이 등록되었습니다.`);
     } catch (error) {
       console.error('게시물 등록 실패', error);
+    }
+  };
+
+  // 이미지 미리보기 삭제 함수
+  const imgRemove = () => {
+    setThumbnail('');
+  };
+
+  // 문제 ** 파이에어베이스에서 게시물, 이미지 둘 다 정상적으로 삭제가 되나 처리 속도가 느려 게시물이 삭제됐음에도 화면상에 남아있는 경우가 있음. 리팩토링 이후에도 발생하는지 확인 필요
+  // 삭제
+  const removeBoard = async (id, thumbnail) => {
+    if (window.confirm('게시물을 삭제하시겠습니까?')) {
+      try {
+        // 이미지 삭제
+        const imgRef = ref(storage, 'thumbnail/' + thumbnail);
+        deleteObject(imgRef);
+
+        // 게시물 삭제
+        const boardRef = doc(db, 'board', id);
+        await deleteDoc(boardRef);
+        dispatch({
+          type: DELETE_BOARD,
+          payload: id
+        });
+
+        alert('게시물이 삭제되었습니다.');
+      } catch (error) {
+        console.error('삭제 실패', error);
+      }
     }
   };
 
@@ -131,46 +141,23 @@ const Write = () => {
 
   // ** 파이어베이스 미연결, 스토리지 미연결, 로컬내 수정 불가
   const onEditDone = async (e) => {
-    if (!updateBoard) alert('수정사항이 없습니다');
-
-    const updatedBoard = {
-      ...updateBoard,
-      title,
-      contents,
-      category,
-      thumbnail
-    };
-
-    try {
-      const boardRef = doc(db, 'board', board.id);
-      await updateDoc(boardRef, updatedBoard);
-      setBoard(updatedBoard);
-      setUpdateBoard(null);
-      setIsEditing(false);
-    } catch (error) {
-      console.error('수정 실패', error);
-    }
-  };
-
-  // 파이에어베이스에서 게시물, 이미지 둘 다 정상적으로 삭제가 되나 처리 속도가 느려 게시물이 삭제됐음에도 화면상에 남아있는 경우가 있음. 리팩토링 이후에도 발생하는지 확인 필요
-  // 삭제
-  const removeBoard = async (id, thumbnail) => {
-    if (window.confirm('게시물을 삭제하시겠습니까?')) {
-      try {
-        // 이미지 삭제
-        const imgRef = ref(storage, 'thumbnail/' + thumbnail);
-        deleteObject(imgRef);
-
-        // 게시물 삭제
-        const boardRef = doc(db, 'board', id);
-        await deleteDoc(boardRef);
-        setBoard(board.filter((item) => item.id !== id));
-
-        alert('게시물이 삭제되었습니다.');
-      } catch (error) {
-        console.error('삭제 실패', error);
-      }
-    }
+    // if (!updateBoard) alert('수정사항이 없습니다');
+    // const updatedBoard = {
+    //   ...updateBoard,
+    //   title,
+    //   contents,
+    //   category,
+    //   thumbnail
+    // };
+    // try {
+    //   const boardRef = doc(db, 'board', board.id);
+    //   await updateDoc(boardRef, updatedBoard);
+    //   setBoard(updatedBoard);
+    //   setUpdateBoard(null);
+    //   setIsEditing(false);
+    // } catch (error) {
+    //   console.error('수정 실패', error);
+    // }
   };
 
   return (
@@ -215,34 +202,6 @@ const Write = () => {
           </AddBtnDiv>
         </AddBoardForm>
       </AddBoard>
-
-      {/* 수정, 삭제를 위한 테스트 코드 */}
-      {board.map((item) => {
-        return (
-          <div key={item.id}>
-            {/* <img src={item} alt="" /> */}
-            <div>아이디 ***************************{item.id}</div>
-            <div>{item.category}</div>
-            <div>{item.title}</div>
-            <div>{item.contents}</div>
-            <div>{item.regDate}</div>
-            {isEditing ? (
-              <div>
-                {/* <img src={thumbnail} alt="" /> */}
-                <input type="text" autoFocus defaultValue={title} />
-                <textarea cols="30" rows="10" defaultValue={contents}></textarea>
-                <button onClick={onEditDone}>수정완료</button>
-                <button>취소</button>
-              </div>
-            ) : (
-              <div>
-                <button onClick={editingBoard}>수정</button>
-                <button onClick={() => removeBoard(item.id, item.thumbnail)}>삭제</button>
-              </div>
-            )}
-          </div>
-        );
-      })}
     </Section>
   );
 };
