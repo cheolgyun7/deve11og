@@ -7,9 +7,8 @@ import { CardArticle, CardThumbnail, LikeIcon, MainContents } from 'styles/Share
 
 const Read = () => {
   const albums = useSelector((state) => state.album.albums);
-  const filteredCommunity = albums.filter((album) => album.Classification === 'Community');
-
   console.log(albums);
+  const filteredCommunity = albums.filter((album) => album.Classification === 'Community');
   const likeIconClick = (e) => {
     e.target.style.color = 'red';
   };

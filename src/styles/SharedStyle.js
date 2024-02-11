@@ -119,7 +119,7 @@ export const AskRespondContents = styled.div`
   border-radius: 1rem;
   padding: 0 1rem 1rem;
   position: relative;
-  min-width: 40rem;
+  min-width: 48%;
   min-height: 20rem;
   & > h2 {
     ${contentsShared}
@@ -150,7 +150,7 @@ export const AboutContents = styled.div`
   padding: 0 1rem 1rem;
   position: relative;
   margin-left: 3rem;
-  min-width: 40rem;
+  min-width: 48%;
   min-height: 20rem;
   & > h2 {
     ${contentsShared}

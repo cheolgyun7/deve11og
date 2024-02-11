@@ -7,7 +7,7 @@ import Register from 'component/authentication/Register';
 import Write from 'component/crudcomponent/Write';
 import Read from 'component/crudcomponent/Read';
 import AskList from 'component/crudcomponent/AskList';
-import AskDetail from 'component/crudcomponent/AskDetail';
+import DetailPage from 'component/crudcomponent/DetailPage';
 
 const Router = () => {
   return (
@@ -21,7 +21,7 @@ const Router = () => {
           <Route path="/write" element={<Write />}></Route>
           <Route path="/read" element={<Read />}></Route>
           <Route path="/asklist" element={<AskList />}></Route>
-          <Route path="/askDetail/:userId" element={<AskDetail />}></Route>
+          <Route path="/detailPage/:userId" element={<DetailPage />}></Route>
         </Routes>
       </Layout>
     </BrowserRouter>

@@ -11,7 +11,7 @@ const AskRespond = () => {
   const filteredAskRespond = answer.filter((list) => list.Classification === 'AskRespond');
   const navigate = useNavigate();
   const askDetailClick = (userId) => {
-    navigate(`/askDetail/${userId}`);
+    navigate(`/detailPage/${userId}`);
   };
   return (
     <AskRespondContents>
