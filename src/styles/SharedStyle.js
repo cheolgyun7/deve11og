@@ -10,7 +10,9 @@ export const HeaderBox = styled.header`
   top: 0;
   left: 0;
   right: 0;
+  z-index: 10;
   padding: 1rem 0;
+  background: #ffffff;
 
   & > div {
     display: flex;
@@ -23,6 +25,7 @@ export const FooterBox = styled.footer`
   bottom: 0;
   left: 0;
   right: 0;
+  z-index: 10;
   padding: 1rem 0;
   background: #f5f5f5;
 `;
