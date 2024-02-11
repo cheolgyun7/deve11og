@@ -35,7 +35,7 @@ const user = (state = initialState, action) => {
     case USER_LOGIN_DB:
       return {
         ...state,
-        userloginDB: [...state.userDB, action.payload]
+        userloginDB: [...state.userloginDB, action.payload]
       };
     default:
       return state;
