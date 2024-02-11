@@ -63,6 +63,7 @@ const Write = () => {
     minute: '2-digit'
   });
 
+  // board state
   const [board, setBoard] = useState([]);
 
   // 이미지 미리보기 삭제 함수
