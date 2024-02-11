@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import React, { useEffect, useState } from 'react';
 import { HeaderBox, LayoutStyle } from 'styles/SharedStyle';
+
 import logoImg from '../../image/logo.gif';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { auth } from '../../firebase';
@@ -145,7 +146,7 @@ const Header = () => {
 export default Header;
 
 const Logo = styled.img`
-  width: 8rem;
+  width: 15rem;
 `;
 
 const RightMenu = styled.div`
