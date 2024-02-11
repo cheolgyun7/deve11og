@@ -26,7 +26,7 @@ export const FooterBox = styled.footer`
   right: 0;
   z-index: 10;
   padding: 1rem 0;
-  background: #ffffff;
+  background: #f5f5f5;
 `;
 
 export const Section = styled.section`
