@@ -1,10 +1,10 @@
 import styled from 'styled-components';
-import { storage } from '../../firebase';
+import { auth, storage } from '../../firebase';
 import { deleteObject, getDownloadURL, getStorage, ref, uploadBytes } from 'firebase/storage';
 import React, { useEffect, useRef, useState } from 'react';
 import { Section } from 'styles/SharedStyle';
 import userDefaultImage from '../../image/userImage.png';
-import { getAuth, updateProfile } from 'firebase/auth';
+import { updateProfile } from 'firebase/auth';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateImage, updateNickname } from '../../redux/modules/user';
 
@@ -18,7 +18,6 @@ const MyPage = () => {
 
   const imgRef = useRef(null);
   const nicknameRef = useRef(null);
-
   //기본 이미지
   const DEFAULT_IMAGE = 'https://github.com/cheolgyun7/deve11og/blob/dev/src/image/userImage.png?raw=true';
 
@@ -43,7 +42,6 @@ const MyPage = () => {
       // dispatch(updateImage(downloadURL));
       dispatch(updateImage(newData));
 
-      const auth = getAuth();
       updateProfile(auth.currentUser, {
         photoURL: downloadURL
       })
@@ -76,7 +74,7 @@ const MyPage = () => {
         };
         // dispatch(updateImage(DEFAULT_IMAGE));
         dispatch(updateImage(newData));
-        const auth = getAuth();
+
         updateProfile(auth.currentUser, {
           photoURL: DEFAULT_IMAGE
         })
@@ -125,7 +123,6 @@ const MyPage = () => {
     // dispatch(updateNickname(nickname));
     dispatch(updateNickname(newData));
 
-    const auth = getAuth();
     updateProfile(auth.currentUser, {
       displayName: nickname
     })
