@@ -3,81 +3,48 @@ import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart } from '@fortawesome/free-solid-svg-icons';
+import { CardArticle, CardThumbnail, LikeIcon, MainContents } from 'styles/SharedStyle';
 
 const Read = () => {
   const albums = useSelector((state) => state.album.albums);
-
   console.log(albums);
+  const filteredCommunity = albums.filter((album) => album.Classification === 'Community');
   const likeIconClick = (e) => {
     e.target.style.color = 'red';
   };
   return (
     <MainContents>
-      <h2>PLAYLIST</h2>
-      <span>최신순 /</span>
-      <span> 좋아요순</span>
-      <AlbumBox>
-        {albums.map((album) => (
-          <AlbumArticle key={album.user_id}>
-            <AlbumThumnail>{/* <img src={album.album_img} alt='앨범 썸네일' /> */}</AlbumThumnail>
-            <h4>{album.title}</h4>
+      <h2>커뮤니티</h2>
+      <CardBox>
+        {filteredCommunity.map((album) => (
+          <CardArticle key={album.user_id}>
+            <CardThumbnail>{/* <img src={album.album_img} alt='앨범 썸네일' /> */}</CardThumbnail>
             <div>
-              <span>{album.reg_date}</span>
-              <span>
-                <LikeIcon onClick={likeIconClick}>
-                  <FontAwesomeIcon icon={faHeart} />
-                </LikeIcon>
-              </span>
-              <span>{album.liked}</span>
+              <h4>{album.title}</h4>
+              <p>
+                <span>{album.reg_date}</span>
+                <span>개의 댓글</span>
+                <span>
+                  <LikeIcon onClick={likeIconClick}>
+                    <FontAwesomeIcon icon={faHeart} />
+                  </LikeIcon>
+                  {album.liked}
+                </span>
+              </p>
+              <p>
+                <span>by {album.nickname}</span>
+              </p>
             </div>
-          </AlbumArticle>
+          </CardArticle>
         ))}
-      </AlbumBox>
+      </CardBox>
     </MainContents>
   );
 };
 
 export default Read;
 
-export const LikeIcon = styled.span`
-  &:hover {
-    cursor: pointer;
-    color: red; /* 호버 시 변경할 색상 */
-  }
-`;
-
-export const MainContents = styled.div`
-  padding: 0 1rem;
-  & > h2 {
-    font-size: 2rem;
-    font-weight: bold;
-    padding: 1rem 0;
-    display: inline-block;
-  }
-`;
-
-export const AlbumArticle = styled.article`
-  flex-wrap: wrap;
-  width: 20%;
-  background-color: #f1f1f1;
-  margin-right: 1rem;
-  border-radius: 1rem;
-  box-shadow: 0 0 0;
-  li {
-    width: 100%;
-    margin: 0.2rem;
-    span {
-      font-size: 0.8rem;
-    }
-  }
-`;
-
-export const AlbumBox = styled.div`
+export const CardBox = styled.div`
   display: flex;
-`;
-
-export const AlbumThumnail = styled.div`
-  width: 100%;
-  height: 12rem;
-  background-color: black;
+  margin: 0 3rem;
 `;

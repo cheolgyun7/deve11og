@@ -5,6 +5,8 @@ import { db } from '../firebase';
 import Read from './crudcomponent/Read';
 import { useDispatch } from 'react-redux';
 import { setAlbums } from '../redux/modules/album';
+import AskRespond from './crudcomponent/AskRespond';
+import About from './crudcomponent/About';
 
 const Home = () => {
   const dispatch = useDispatch();
@@ -25,6 +27,8 @@ const Home = () => {
   return (
     <Section>
       <Read />
+      <AskRespond />
+      <About />
     </Section>
   );
 };
