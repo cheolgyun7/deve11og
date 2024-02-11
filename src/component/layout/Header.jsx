@@ -5,49 +5,52 @@ import logoImg from '../../image/logo.gif';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { auth } from '../../firebase';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
-import useImage from '../../image/userImage.png';
+import { useDispatch } from 'react-redux';
+import { setUserDB } from '../../redux/modules/user';
+import { useSelector } from 'react-redux';
 
 const Header = () => {
   const [logoutBool, setLogoutBool] = useState(false);
   const [isActive, setIsActive] = useState(false);
 
-  const nav = useNavigate();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
   const location = useLocation();
+
+  const nowUser = useSelector((state) => state.user.nowUser);
+  // 프로필사진
+  const img = nowUser.user_img;
 
   // location의 정보에 로그인창, 회원가입창 이면 true
   const loginPage = location.pathname === '/login';
   const registerPage = location.pathname === '/register';
 
-  // 로그인 확인
-  useEffect(() => {
-    const loginCheck = () => {
-      // 현재 유저가 로그인 되어있는지 확인
-      onAuthStateChanged(auth, (user) => {
-        if (user) {
-          setLogoutBool(true);
-        } else {
-          setLogoutBool(false);
-        }
-      });
-    };
-    loginCheck();
-  }, []);
+  // 로그인시 redux에 dispatch
+  const signUser = () => {
+    const userData = auth.currentUser;
+    const user_id = userData.uid;
+    const email = userData.email;
+    const nickname = userData.displayName;
+    const user_img = userData.photoURL;
+    dispatch(
+      setUserDB({
+        user_id: user_id,
+        email: email,
+        nickname: nickname,
+        user_img: user_img
+      })
+    );
+    // 쿠키
+    let todayDate = new Date();
+    // 쿠키 1시간 유효기간 설정
+    todayDate.setTime(todayDate.getTime() + 1 * 60 * 60 * 1000);
+    document.cookie = `uid=${user_id}; expires=${todayDate.toUTCString()};path=/;`;
+  };
 
-  // const test = () => {
-  //   const user = auth.currentUser;
-  //   if (user !== null) {
-  //     const nickname = user.displayName;
-  //     const email = user.email;
-  //     const user_img = user.photoURL;
-  //     const user_id = user.uid;
-
-  //     console.log('닉네임', nickname);
-  //     console.log('이메일', email);
-  //     console.log('프로필이미지', user_img);
-  //     console.log('uid', user_id);
-  //   }
-  // };
-  // test();
+  // 쿠키삭제
+  const deleteCookie = (name) => {
+    document.cookie = name + '=; expires=Thu, 01 Jan 2024 00:00:00 UTC; path=/;';
+  };
 
   // 로그아웃
   const logoutOnClick = () => {
@@ -56,9 +59,10 @@ const Header = () => {
       //로그아웃
       signOut(auth)
         .then(() => {
+          deleteCookie('uid');
           // Sign-out successful.
           alert('로그아웃이 되었어요!');
-          nav('/');
+          navigate('/');
         })
         .catch((error) => {
           // An error happened.
@@ -81,9 +85,26 @@ const Header = () => {
     }, 200);
   };
 
+  // 새글작성 이동
   const newPostBtnClick = () => {
-    nav('/write');
+    navigate('/write');
   };
+
+  // 로그인 확인
+  useEffect(() => {
+    const loginCheck = () => {
+      // 현재 유저가 로그인 되어있는지 확인
+      onAuthStateChanged(auth, (user) => {
+        if (user) {
+          setLogoutBool(true);
+          signUser();
+        } else {
+          setLogoutBool(false);
+        }
+      });
+    };
+    loginCheck();
+  }, []);
 
   return (
     <HeaderBox>
@@ -97,7 +118,7 @@ const Header = () => {
             logoutBool ? (
               <>
                 <NewPostBtn onClick={newPostBtnClick}>새 글 작성</NewPostBtn>
-                <ImgStyle src={useImage} alt="임시" />
+                <ImgStyle src={img} alt="프로필사진" />
                 <UserMenuDiv onBlur={userMenuOnBlur}>
                   {/* 🔽 임시 */}
                   <UserBtn onClick={userIsActiveBtn}>🔽</UserBtn>

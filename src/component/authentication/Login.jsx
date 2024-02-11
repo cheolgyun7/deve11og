@@ -26,8 +26,16 @@ const Login = () => {
       console.log(userCredential);
       navigate('/');
     } catch (error) {
-      alert('로그인 실패!');
-      console.error(error);
+      const errorCode = error.code;
+      if (errorCode === 'auth/user-not-found') {
+        // 이메일 에러
+        alert('이메일을 확인해주세요');
+        console.log('이메일', errorCode);
+      } else if (errorCode === 'auth/invalid-credential') {
+        // 비밀번호 에러
+        alert('비밀번호를 확인해주세요');
+        console.log('비밀번호', errorCode);
+      }
     }
   };
 
