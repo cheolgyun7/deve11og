@@ -3,26 +3,28 @@ import { db, storage } from '../../firebase';
 import { deleteObject, getDownloadURL, getStorage, ref, uploadBytes } from 'firebase/storage';
 import React, { useEffect, useRef, useState } from 'react';
 import { Section } from 'styles/SharedStyle';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
 import userDefaultImage from '../../image/userImage.png';
-import { getAuth, signOut, updatePassword } from 'firebase/auth';
+import { getAuth, signOut, updatePassword, updateProfile } from 'firebase/auth';
+import { useDispatch, useSelector } from 'react-redux';
+import { updateImage, updateNickname } from '../../redux/modules/user';
 
 const MyPage = () => {
-  const [selectedFile, setSelectedFile] = useState(null); //업로드를 위해 선택한 이미지
-  const [userInfo, setUserInfo] = useState(''); //firestore 에서 가져온 user 정보
-  const imgRef = useRef(null);
-  const TEST_ID = 'GD58BJjuxnlpOTsuXCcP'; //테스트 하실 계정의 식별 가능한 id 값을 넣어주세요! (firestore에서 자동 부여된 값)
-  const [isEditing, setIsEditing] = useState(false); //수정 상태
-  const nicknameRef = useRef(null);
-  const [nickname, setNickname] = useState('');
+  const dispatch = useDispatch();
+  const { user_id, email, nickname: nicknameData, user_img } = useSelector((state) => state.user.nowUser);
 
-  //유저 Auth 조회
-  const auth = getAuth();
-  const user = auth.currentUser;
-  console.log(user);
+  const [selectedFile, setSelectedFile] = useState(null); //업로드를 위해 선택한 이미지
+  const [isEditing, setIsEditing] = useState(false); //수정 상태
+  const [nickname, setNickname] = useState(nicknameData);
+
+  const imgRef = useRef(null);
+  const nicknameRef = useRef(null);
+
+  //기본 이미지
+  const DEFAULT_IMAGE = 'https://github.com/cheolgyun7/deve11og/blob/dev/src/image/userImage.png?raw=true';
 
   //비밀번호 변경 - 메일로 보내기
   const changePassword = () => {
+    const auth = getAuth();
     const user = auth.currentUser;
     const newPassword = 'a123456';
 
@@ -36,37 +38,6 @@ const MyPage = () => {
       });
   };
 
-  //로그아웃
-  const logout = () => {
-    signOut(auth)
-      .then(() => {
-        alert('로그아웃되었습니다. 메인으로 이동합니다.');
-      })
-      .catch((error) => {
-        console.log(error);
-        alert('에러가 발생했습니다. 다시 시도해주세요');
-      });
-  };
-
-  //유저 정보 가져오기
-  useEffect(() => {
-    const fetchData = async () => {
-      const docRef = doc(db, 'user', TEST_ID);
-      const docSnap = await getDoc(docRef);
-
-      if (docSnap.exists()) {
-        // console.log('data: ', docSnap.data());
-        // console.log('docSnap', docSnap.id);
-        setUserInfo(docSnap.data());
-        setNickname(docSnap.data().nickname);
-      } else {
-        console.log('no data!!');
-      }
-    };
-
-    fetchData();
-  }, []);
-
   const fileSelect = async (event) => {
     setSelectedFile(event.target.files[0]);
   };
@@ -74,26 +45,32 @@ const MyPage = () => {
   const handleUpload = async () => {
     //파일 업로드
     if (window.confirm('선택한 이미지로 업로드를 진행할까요?')) {
-      const imageRef = ref(storage, `${TEST_ID}/${selectedFile.name}`); //TODO : 식별 가능한 Id로 경로 변경 예정
+      const imageRef = ref(storage, `${user_id}/${selectedFile.name}`); //TODO : 식별 가능한 Id로 경로 변경 예정
       await uploadBytes(imageRef, selectedFile);
 
       //파일 업로드 후 state로 저장
       const downloadURL = await getDownloadURL(imageRef);
-      setUserInfo((prev) => {
-        return {
-          ...prev,
-          user_img: downloadURL
-        };
-      });
+      const newData = {
+        nickname,
+        user_id,
+        user_img: downloadURL,
+        email
+      };
+      // dispatch(updateImage(downloadURL));
+      dispatch(updateImage(newData));
 
-      //파일 업로드 db 업데이트
-      const docRef = doc(db, 'user', TEST_ID);
-      await setDoc(docRef, {
-        ...userInfo,
-        user_img: downloadURL
-      });
-      setSelectedFile(null);
-      alert('업로드가 완료되었습니다.');
+      const auth = getAuth();
+      updateProfile(auth.currentUser, {
+        photoURL: downloadURL
+      })
+        .then(() => {
+          setSelectedFile(null);
+          alert('업로드가 완료되었습니다.');
+        })
+        .catch((error) => {
+          console.log(error);
+          alert('에러가 발생했습니다. 다시 시도해주세요.');
+        });
     } else {
       alert('업로드를 취소했습니다.');
     }
@@ -103,23 +80,29 @@ const MyPage = () => {
   const handleRemove = () => {
     if (!window.confirm('이미지 삭제를 진행할까요?')) return alert('삭제를 취소하였습니다.');
     const storage = getStorage();
-    const path = ref(storage, userInfo.user_img).fullPath;
+    const path = ref(storage, user_img).fullPath;
     const desertRef = ref(storage, path);
     deleteObject(desertRef)
-      .then(async () => {
-        //파일 업로드 db 업데이트
-        const docRef = doc(db, 'user', TEST_ID);
-        await setDoc(docRef, {
-          ...userInfo,
-          user_img: userDefaultImage
-        });
-        setUserInfo((prev) => {
-          return {
-            ...prev,
-            user_img: userDefaultImage
-          };
-        });
-        alert('삭제를 완료하였습니다.');
+      .then(() => {
+        const newData = {
+          nickname,
+          user_id,
+          user_img: DEFAULT_IMAGE,
+          email
+        };
+        // dispatch(updateImage(DEFAULT_IMAGE));
+        dispatch(updateImage(newData));
+        const auth = getAuth();
+        updateProfile(auth.currentUser, {
+          photoURL: DEFAULT_IMAGE
+        })
+          .then(() => {
+            alert('삭제가 완료되었습니다.');
+          })
+          .catch((error) => {
+            console.log(error);
+            alert('에러가 발생했습니다. 다시 시도해주세요.');
+          });
       })
       .catch((error) => {
         console.log(error);
@@ -136,7 +119,7 @@ const MyPage = () => {
 
   //유저 정보(닉네임) 수정 취소 - 비활성화 기능
   const handleEditCancel = () => {
-    setNickname(userInfo.nickname);
+    setNickname(nicknameData);
     nicknameRef.current.readOnly = true;
     setIsEditing(false);
   };
@@ -146,25 +129,30 @@ const MyPage = () => {
     if (!nickname.trim()) {
       return alert('닉네임을 입력해주세요.');
     }
-    if (userInfo.nickname === nickname) {
+    if (nicknameData === nickname) {
       return alert('이전 닉네임과 같습니다.');
     }
+    const newData = {
+      nickname: nickname,
+      user_id,
+      user_img,
+      email
+    };
+    // dispatch(updateNickname(nickname));
+    dispatch(updateNickname(newData));
 
-    //정보 수정
-    const docRef = doc(db, 'user', TEST_ID);
-    await setDoc(docRef, {
-      ...userInfo,
-      nickname
-    });
-    setUserInfo((prev) => {
-      return {
-        ...prev,
-        nickname
-      };
-    });
-
-    alert('수정이 완료되었습니다.');
-    setIsEditing(false);
+    const auth = getAuth();
+    updateProfile(auth.currentUser, {
+      displayName: nickname
+    })
+      .then(() => {
+        alert('수정이 완료되었습니다.');
+        setIsEditing(false);
+      })
+      .catch((error) => {
+        console.log(error);
+        alert('에러가 발생했습니다. 다시 시도해주세요.');
+      });
   };
 
   //닉네임 change
@@ -175,8 +163,12 @@ const MyPage = () => {
   //userImage가 변경될 때 마다 실행
   //userImage 업로드한 이미지로 보여줌
   useEffect(() => {
-    imgRef.current.src = userInfo.user_img;
-  }, [userInfo]);
+    imgRef.current.src = user_img;
+  }, [user_img]);
+
+  useEffect(() => {
+    nicknameRef.current.value = nickname;
+  }, [nickname]);
 
   //이미지 에러 시 기본 이미지로 셋팅
   const errorImage = (e) => {
@@ -190,14 +182,14 @@ const MyPage = () => {
         <LeftAreaStyle>
           <FigureStyle>
             {/* TODO: 렌더링 되고 나서 이미지를 가져와서 늦게가져옴... 확인 필요 */}
-            <img src={userInfo.user_img} onError={errorImage} ref={imgRef} alt="유저 이미지" />
+            <img src={user_img} onError={errorImage} ref={imgRef} alt="유저 이미지" />
           </FigureStyle>
           <FileLabelStyle>
             이미지 업로드
             <input type="file" onChange={fileSelect} />
           </FileLabelStyle>
           {!selectedFile ? <></> : <button onClick={handleUpload}>등록</button>}
-          <BtnBlackText onClick={handleRemove}>이미지 제거</BtnBlackText>
+          {user_img !== DEFAULT_IMAGE ? <BtnBlackText onClick={handleRemove}>이미지 제거</BtnBlackText> : <></>}
         </LeftAreaStyle>
         <RightAreaStyle>
           <TitleStyle>닉네임 변경</TitleStyle>
@@ -245,13 +237,12 @@ const MyPage = () => {
               <BtnBlackBg type="button" onClick={changePassword}>
                 비밀번호 재설정
               </BtnBlackBg>
-              <BtnBlackText onClick={logout}>로그아웃</BtnBlackText>
             </BtnAreaStyle>
           </PasswordArea>
           <div>
             <TitleStyle>내 게시물 보기</TitleStyle>
           </div>
-          <p>유저 이메일 : {userInfo.email}</p>
+          <p>유저 이메일 : {email}</p>
         </RightAreaStyle>
       </TopUserInfoStyle>
     </Section>
