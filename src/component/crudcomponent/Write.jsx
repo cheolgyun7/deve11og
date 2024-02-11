@@ -168,7 +168,6 @@ const Write = () => {
             <option value="">카테고리를 선택해 주세요</option>
             <option value="discussion">커뮤니티</option>
             <option value="techTalk">질문 및 답변</option>
-            <option value="about">About</option>
           </SelectBox>
           <TitleInput
             value={title}
