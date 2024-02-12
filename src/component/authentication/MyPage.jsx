@@ -33,14 +33,7 @@ const MyPage = () => {
 
       //파일 업로드 후 state로 저장
       const downloadURL = await getDownloadURL(imageRef);
-      const newData = {
-        nickname,
-        user_id,
-        user_img: downloadURL,
-        email
-      };
-      // dispatch(updateImage(downloadURL));
-      dispatch(updateImage(newData));
+      dispatch(updateImage(downloadURL));
 
       updateProfile(auth.currentUser, {
         photoURL: downloadURL
@@ -114,14 +107,7 @@ const MyPage = () => {
     if (nicknameData === nickname) {
       return alert('이전 닉네임과 같습니다.');
     }
-    const newData = {
-      nickname: nickname,
-      user_id,
-      user_img,
-      email
-    };
-    // dispatch(updateNickname(nickname));
-    dispatch(updateNickname(newData));
+    dispatch(updateNickname(nickname));
 
     updateProfile(auth.currentUser, {
       displayName: nickname

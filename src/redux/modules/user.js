@@ -41,11 +41,17 @@ const user = (state = initialState, action) => {
       };
     case UPDATE_NICKNAME:
       return {
-        nowUser: action.payload
+        nowUser: {
+          ...state.nowUser,
+          nickname: action.payload
+        }
       };
     case UPDATE_IMAGE:
       return {
-        nowUser: action.payload
+        nowUser: {
+          ...state.nowUser,
+          user_img: action.payload
+        }
       };
     default:
       return state;
