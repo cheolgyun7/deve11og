@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { auth, storage } from '../../firebase';
+import { auth, db, storage } from '../../firebase';
 import { deleteObject, getDownloadURL, getStorage, ref, uploadBytes } from 'firebase/storage';
 import React, { useEffect, useRef, useState } from 'react';
 import { Section } from 'styles/SharedStyle';
@@ -7,6 +7,8 @@ import userDefaultImage from '../../image/userImage.png';
 import { updateProfile } from 'firebase/auth';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateImage, updateNickname } from '../../redux/modules/user';
+import { collection, getDocs, query, where } from 'firebase/firestore';
+import { Link } from 'react-router-dom';
 
 const MyPage = () => {
   const dispatch = useDispatch();
@@ -14,6 +16,7 @@ const MyPage = () => {
 
   const [isEditing, setIsEditing] = useState(false); //수정 상태
   const [nickname, setNickname] = useState('');
+  const [boards, setBoards] = useState([]);
 
   const imgRef = useRef(null);
   const nicknameRef = useRef(null);
@@ -118,6 +121,24 @@ const MyPage = () => {
     setNickname(nicknameData);
   }, [nicknameData]);
 
+  useEffect(() => {
+    const fetchData = async () => {
+      //user_id 와 일치하는 데이터만 조회
+      const q = query(collection(db, 'board'), where('user_id', '==', user_id));
+      const querySnapshot = await getDocs(q);
+
+      const initial = [];
+      querySnapshot.forEach((doc) => {
+        initial.push({ id: doc.id, ...doc.data() });
+      });
+
+      // firestore에서 가져온 데이터를 state에 전달
+      setBoards(initial);
+    };
+
+    fetchData();
+  }, [user_id]); //TODO: 새로고침 시 렌더링 안돼서 의존성 배열 추가함. 이유 확인 필요
+
   //이미지 에러 시 기본 이미지로 셋팅
   const errorImage = (e) => {
     e.target.src = userDefaultImage;
@@ -140,6 +161,7 @@ const MyPage = () => {
           {user_img !== DEFAULT_IMAGE ? <BtnBlackText onClick={handleRemove}>이미지 제거</BtnBlackText> : <></>}
         </LeftAreaStyle>
         <RightAreaStyle>
+          <p>{email}</p>
           <TitleStyle>닉네임 변경</TitleStyle>
           <label htmlFor="nickname">닉네임 : </label>
           <InputStyle
@@ -160,14 +182,36 @@ const MyPage = () => {
           ) : (
             <BtnBlackBg onClick={handleEdit}>수정</BtnBlackBg>
           )}
+
           <PasswordArea>
             <TitleStyle>비밀번호 변경</TitleStyle>
             <BtnBlackBg type="button">비밀번호 재설정</BtnBlackBg>
           </PasswordArea>
           <div>
             <TitleStyle>내 게시물 보기</TitleStyle>
+            <MyBoardListStyle>
+              {boards.map((el) => {
+                return (
+                  <ItemStyle key={el.id}>
+                    <Link to={`/detailPage/${el.id}`}>
+                      {/* TODO: 이미지 확인 필요 */}
+                      {/* <div>
+                        <img src={el.thumbnail} alt="" />
+                      </div> */}
+                      {el.category === 'discussion' ? (
+                        <CategoryStyle $color="purple">커뮤니티</CategoryStyle>
+                      ) : (
+                        <CategoryStyle $color="red">질문과 답변</CategoryStyle>
+                      )}
+                      <BoardTitleStyle>{el.title}</BoardTitleStyle>
+                      <DateStyle>{el.regDate}</DateStyle>
+                      <LikeCntStyle>♥ {el.liked}</LikeCntStyle>
+                    </Link>
+                  </ItemStyle>
+                );
+              })}
+            </MyBoardListStyle>
           </div>
-          <p>유저 이메일 : {email}</p>
         </RightAreaStyle>
       </TopUserInfoStyle>
     </Section>
@@ -293,4 +337,58 @@ const PasswordArea = styled.div`
     margin: 0.5rem auto;
     display: block;
   }
+`;
+
+const MyBoardListStyle = styled.ul`
+  margin: 1rem auto;
+  border-top: 1px solid #dddddd;
+  border-bottom: 1px solid #dddddd;
+`;
+
+const ItemStyle = styled.li`
+  padding: 1rem;
+
+  & + li {
+    border-top: 1px solid #dddddd;
+  }
+
+  &:hover strong {
+    font-weight: bold;
+  }
+`;
+
+const CategoryStyle = styled.span`
+  display: inline-block;
+  padding: 0.3rem;
+  font-size: 0.8rem;
+  border-radius: 5px;
+  background-color: ${(props) => (props.$color === 'purple' ? '#e6c6ff' : '#ff7d7d')};
+
+  /* &::before {
+    content: '';
+    display: inline-block;
+    width: 100%;
+    height: 5px;
+    background-color: ${(props) => (props.$color === 'purple' ? '#e6c6ff' : '#ff7d7d')};
+  } */
+`;
+
+const BoardTitleStyle = styled.strong`
+  margin: 0.5rem 0;
+  display: block;
+  transition: all 0.3s;
+`;
+
+const DateStyle = styled.span`
+  display: inline-block;
+  vertical-align: middle;
+  color: #999999;
+  font-size: 0.8rem;
+`;
+
+const LikeCntStyle = styled.span`
+  padding-left: 0.8rem;
+  display: inline-block;
+  vertical-align: middle;
+  font-size: 0.8rem;
 `;
