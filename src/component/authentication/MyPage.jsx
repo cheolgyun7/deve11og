@@ -59,14 +59,7 @@ const MyPage = () => {
     const desertRef = ref(storage, path);
     deleteObject(desertRef)
       .then(() => {
-        const newData = {
-          nickname,
-          user_id,
-          user_img: DEFAULT_IMAGE,
-          email
-        };
-        // dispatch(updateImage(DEFAULT_IMAGE));
-        dispatch(updateImage(newData));
+        dispatch(updateImage(DEFAULT_IMAGE));
 
         updateProfile(auth.currentUser, {
           photoURL: DEFAULT_IMAGE
