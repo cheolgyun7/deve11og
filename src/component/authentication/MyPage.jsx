@@ -14,7 +14,7 @@ const MyPage = () => {
 
   const [selectedFile, setSelectedFile] = useState(null); //업로드를 위해 선택한 이미지
   const [isEditing, setIsEditing] = useState(false); //수정 상태
-  const [nickname, setNickname] = useState(nicknameData);
+  const [nickname, setNickname] = useState('');
 
   const imgRef = useRef(null);
   const nicknameRef = useRef(null);
@@ -148,8 +148,8 @@ const MyPage = () => {
   }, [user_img]);
 
   useEffect(() => {
-    nicknameRef.current.value = nickname;
-  }, [nickname]);
+    setNickname(nicknameData);
+  }, [nicknameData]);
 
   //이미지 에러 시 기본 이미지로 셋팅
   const errorImage = (e) => {
