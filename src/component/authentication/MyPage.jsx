@@ -117,6 +117,9 @@ const MyPage = () => {
     setNickname(e.target.value);
   };
 
+  //비밀번호 재설정
+  const changePassword = () => {};
+
   useEffect(() => {
     setNickname(nicknameData);
   }, [nicknameData]);
@@ -185,7 +188,9 @@ const MyPage = () => {
 
           <PasswordArea>
             <TitleStyle>비밀번호 변경</TitleStyle>
-            <BtnBlackBg type="button">비밀번호 재설정</BtnBlackBg>
+            <BtnBlackBg type="button" onClick={changePassword}>
+              비밀번호 재설정
+            </BtnBlackBg>
           </PasswordArea>
           <div>
             <TitleStyle>내 게시물 보기</TitleStyle>
@@ -258,7 +263,7 @@ const PageTitleStyle = styled.h2`
 const TopUserInfoStyle = styled.div`
   padding: 1rem;
   display: flex;
-  flex-wrap: wrap;
+  /* flex-wrap: wrap; */
 `;
 
 const LeftAreaStyle = styled.div`
@@ -273,6 +278,7 @@ const LeftAreaStyle = styled.div`
 
 const RightAreaStyle = styled.div`
   padding: 1rem;
+  width: 100%;
   border-left: 1px solid #dddddd;
 
   & button + button {
@@ -331,7 +337,7 @@ const InputStyle = styled.input`
 `;
 
 const PasswordArea = styled.div`
-  margin-top: 2rem;
+  margin: 2rem auto;
 
   & label {
     margin: 0.5rem auto;
@@ -341,6 +347,7 @@ const PasswordArea = styled.div`
 
 const MyBoardListStyle = styled.ul`
   margin: 1rem auto;
+  width: 100%;
   border-top: 1px solid #dddddd;
   border-bottom: 1px solid #dddddd;
 `;
