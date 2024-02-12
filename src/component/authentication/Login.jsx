@@ -18,6 +18,7 @@ const Login = () => {
   const [pwd, setPwd] = useState('');
   const navigate = useNavigate();
   const userloginDB = useSelector((state) => state.user.userloginDB);
+  console.log('--------------', userloginDB);
 
   // 로그인
   const formOnSubmit = async (event) => {
@@ -61,7 +62,6 @@ const Login = () => {
       const result = await signInWithPopup(auth, provier);
       const user = result.user;
       navigate('/');
-      alert('안녕하세요!');
       console.log(user);
     } catch (error) {
       console.log(error);

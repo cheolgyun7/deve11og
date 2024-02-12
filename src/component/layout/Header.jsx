@@ -23,6 +23,7 @@ const Header = () => {
   // location의 정보에 로그인창, 회원가입창 이면 true
   const loginPage = location.pathname === '/login';
   const registerPage = location.pathname === '/register';
+  const writePage = location.pathname === '/write';
 
   // 로그인시 redux에 dispatch
   const signUser = () => {
@@ -117,12 +118,11 @@ const Header = () => {
           {!loginPage && !registerPage ? (
             logoutBool ? (
               <>
-                <NewPostBtn onClick={newPostBtnClick}>새 글 작성</NewPostBtn>
-                <ImgLink to="/mypage">
+                {writePage ? '' : <NewPostBtn onClick={newPostBtnClick}>새 글 작성</NewPostBtn>}
+                <ImgLink onClick={userIsActiveBtn} onBlur={userMenuOnBlur}>
                   <ImgStyle src={img} alt="프로필사진" />
                 </ImgLink>
                 <UserMenuDiv onBlur={userMenuOnBlur}>
-                  {/* 🔽 임시 */}
                   <UserBtn onClick={userIsActiveBtn}>🔽</UserBtn>
                   <UserUl isActive={isActive}>
                     <UserLi>
