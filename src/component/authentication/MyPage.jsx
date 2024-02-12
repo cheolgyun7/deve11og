@@ -12,7 +12,6 @@ const MyPage = () => {
   const dispatch = useDispatch();
   const { user_id, email, nickname: nicknameData, user_img } = useSelector((state) => state.user.nowUser);
 
-  const [selectedFile, setSelectedFile] = useState(null); //업로드를 위해 선택한 이미지
   const [isEditing, setIsEditing] = useState(false); //수정 상태
   const [nickname, setNickname] = useState('');
 
@@ -22,16 +21,12 @@ const MyPage = () => {
   const DEFAULT_IMAGE = 'https://github.com/cheolgyun7/deve11og/blob/dev/src/image/userImage.png?raw=true';
 
   const fileSelect = async (event) => {
-    setSelectedFile(event.target.files[0]);
-  };
+    const file = event.target.files[0];
 
-  const handleUpload = async () => {
-    //파일 업로드
     if (window.confirm('선택한 이미지로 업로드를 진행할까요?')) {
-      const imageRef = ref(storage, `${user_id}/${selectedFile.name}`);
-      await uploadBytes(imageRef, selectedFile);
+      const imageRef = ref(storage, `${user_id}/${file.name}`);
+      await uploadBytes(imageRef, file);
 
-      //파일 업로드 후 state로 저장
       const downloadURL = await getDownloadURL(imageRef);
       dispatch(updateImage(downloadURL));
 
@@ -39,7 +34,6 @@ const MyPage = () => {
         photoURL: downloadURL
       })
         .then(() => {
-          setSelectedFile(null);
           alert('업로드가 완료되었습니다.');
         })
         .catch((error) => {
@@ -120,12 +114,6 @@ const MyPage = () => {
     setNickname(e.target.value);
   };
 
-  //userImage가 변경될 때 마다 실행
-  //userImage 업로드한 이미지로 보여줌
-  useEffect(() => {
-    imgRef.current.src = user_img;
-  }, [user_img]);
-
   useEffect(() => {
     setNickname(nicknameData);
   }, [nicknameData]);
@@ -146,9 +134,9 @@ const MyPage = () => {
           </FigureStyle>
           <FileLabelStyle>
             이미지 업로드
-            <input type="file" onChange={fileSelect} />
+            <input type="file" onChange={fileSelect} accept="image/*" />
           </FileLabelStyle>
-          {!selectedFile ? <></> : <button onClick={handleUpload}>등록</button>}
+          {/* {!selectedFile ? <></> : <button onClick={handleUpload}>등록</button>} */}
           {user_img !== DEFAULT_IMAGE ? <BtnBlackText onClick={handleRemove}>이미지 제거</BtnBlackText> : <></>}
         </LeftAreaStyle>
         <RightAreaStyle>
@@ -305,16 +293,4 @@ const PasswordArea = styled.div`
     margin: 0.5rem auto;
     display: block;
   }
-`;
-
-const PasswordInputStyle = styled.input`
-  height: 30px;
-  padding: 0 0.4rem;
-  border: 1px solid #ddd;
-  font-size: 1rem;
-  border-radius: 5px;
-`;
-
-const BtnAreaStyle = styled.div`
-  margin: 0.5rem 0;
 `;
