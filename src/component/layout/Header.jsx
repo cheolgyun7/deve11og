@@ -119,9 +119,9 @@ const Header = () => {
             logoutBool ? (
               <>
                 {writePage ? '' : <NewPostBtn onClick={newPostBtnClick}>새 글 작성</NewPostBtn>}
-                <ImgLink onClick={userIsActiveBtn} onBlur={userMenuOnBlur}>
+                <ImgDiv onClick={userIsActiveBtn} onBlur={userMenuOnBlur}>
                   <ImgStyle src={img} alt="프로필사진" />
-                </ImgLink>
+                </ImgDiv>
                 <UserMenuDiv onBlur={userMenuOnBlur}>
                   <UserBtn onClick={userIsActiveBtn}>🔽</UserBtn>
                   <UserUl isActive={isActive}>
@@ -224,7 +224,8 @@ const StyledLink = styled(Link)`
   }
 `;
 
-const ImgLink = styled(Link)`
+const ImgDiv = styled.div`
   width: 3rem;
   height: 3rem;
+  cursor: pointer;
 `;
