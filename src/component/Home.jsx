@@ -7,7 +7,6 @@ import { useDispatch } from 'react-redux';
 import { setBoard } from '../redux/modules/list';
 import AskRespond from './crudcomponent/AskRespond';
 import About from './crudcomponent/About';
-import Write from './crudcomponent/Write';
 
 const Home = () => {
   const dispatch = useDispatch();
@@ -30,7 +29,6 @@ const Home = () => {
       <Read />
       <AskRespond />
       <About />
-      <Write />
     </Section>
   );
 };
