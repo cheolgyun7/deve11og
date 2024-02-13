@@ -66,11 +66,11 @@ const Register = () => {
               }
             }
           });
-          alert('회원가입 완료! 로그인해주세요!');
+          // alert('회원가입 완료! 로그인해주세요!');
           // 회원가입하면 자동로그인 방지 위해 여기서 로그아웃
-          signOut(auth);
+          // signOut(auth);
 
-          navigate('/login');
+          navigate('/');
         } catch (error) {
           const errorCode = error.code;
           if (errorCode === 'auth/email-already-in-use') {
