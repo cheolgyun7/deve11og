@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { addComment } from '../../redux/modules/comment';
 import CommentList from './CommentList';
+import { BtnBlackBg } from 'styles/SharedStyle';
 
 export default function CommentSection() {
   const { user_id, user_img, nickname } = useSelector((state) => state.user.nowUser);
@@ -91,8 +92,7 @@ export default function CommentSection() {
           ></CommentTextarea>
         </CommentFormBox>
         <BtnBox>
-          <button type="button">취소</button>
-          <button>등록</button>
+          <BtnBlackBg>등록</BtnBlackBg>
         </BtnBox>
       </CommentFormWrap>
       <CommentList />
@@ -134,5 +134,5 @@ const CommentTextarea = styled.textarea`
 const BtnBox = styled.div`
   display: flex;
   justify-content: right;
-  margin-top: 1rem;
+  margin-top: 0.8rem;
 `;
