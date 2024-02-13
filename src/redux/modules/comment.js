@@ -27,7 +27,7 @@ const comment = (state = initialState, action) => {
       console.log('action.payload', action.payload);
       return { data: [...action.payload] };
     case ADD_COMMENT:
-      return { data: [...state.data, action.payload] };
+      return { data: [action.payload, ...state.data] };
     default:
       return state;
   }
