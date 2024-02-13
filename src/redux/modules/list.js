@@ -24,13 +24,12 @@ export const setDeleteBoard = (board) => ({
 });
 
 // 좋아요 토글 액션 생성자 함수
-export const toggleLike = (postId, isLiked, userId, imageUrl) => ({
+export const toggleLike = (postId, isLiked, user_id) => ({
   type: TOGGLE_LIKE,
   payload: {
     postId,
     isLiked,
-    userId,
-    imageUrl
+    user_id
   }
 });
 
@@ -67,6 +66,21 @@ const list = (state = initialState, action) => {
       return {
         ...state,
         board: deleteBoard
+      };
+    case TOGGLE_LIKE:
+      const { postId, isLiked, user_id } = action.payload;
+      const likedBoard = state.board.map((item) => {
+        if (item.id === postId) {
+          return {
+            ...item,
+            liked: !isLiked // 좋아요 상태 토글
+          };
+        }
+        return item;
+      });
+      return {
+        ...state,
+        board: likedBoard
       };
     // case TOGGLE_LIKE:
     //   const { postId, isLiked, userId } = action.payload;
