@@ -6,11 +6,13 @@ import { addDoc, collection, deleteDoc, doc, getDocs, query, updateDoc } from 'f
 import { deleteObject, getDownloadURL, ref, uploadBytes } from '@firebase/storage';
 import { uuidv4 } from '@firebase/util';
 import { useDispatch, useSelector } from 'react-redux';
-import { completedEditBoard, deleteBoard, insertBoard, setBoard, upBoard } from '../../redux/modules/board';
+import { completedEditBoard, deleteBoard, insertBoard, setBoard } from '../../redux/modules/board';
 import imageFrames from '../../image/imageFrames.png';
 import { useParams } from 'react-router-dom';
 
 const Write = () => {
+  const nowUser = useSelector((state) => state.user.nowUser);
+
   // // 파이어베이스에 저장된 데이터 가져오기
   useEffect(() => {
     const fetchData = async () => {
@@ -80,14 +82,14 @@ const Write = () => {
 
     e.preventDefault();
     try {
-      const newBoard = {
+      let newBoard = {
         category,
         title,
         contents,
         regDate,
-        thumbnail: thumbnailId, // 이미지의 UUID를 게시물에 저장
-        nickName: '테스트',
-        user_id: '테스트',
+        thumbnail: '', // 이미지의 UUID를 게시물에 저장
+        nickname: nowUser.nickname,
+        user_id: nowUser.user_id,
         cnt: 0,
         liked: 0
       };
@@ -106,13 +108,16 @@ const Write = () => {
       }
       // 스토리지에 이미지 등록
       const imgRef = ref(storage, 'thumbnail/' + thumbnailId);
-
       await uploadBytes(imgRef, thumbnail);
+
+      const thumbnailURL = await getDownloadURL(imgRef);
+      newBoard.thumbnail = thumbnailURL;
 
       // 파이어베이스 게시물 등록
       const collectionRef = collection(db, 'board');
+      const docRef = await addDoc(collectionRef, newBoard);
+      newBoard.postId = docRef.id;
       await addDoc(collectionRef, newBoard);
-
       dispatch(insertBoard(newBoard));
 
       setTitle('');

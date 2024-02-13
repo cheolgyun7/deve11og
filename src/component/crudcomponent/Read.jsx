@@ -10,34 +10,13 @@ import { storage } from '../../firebase';
 import { getDownloadURL, ref } from 'firebase/storage';
 
 const Read = () => {
-  const { user_id, nickname } = useSelector((state) => state.user.nowUser);
+  const { user_id } = useSelector((state) => state.user.nowUser);
   console.log(user_id);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const listBoard = useSelector((state) => state.list.board); // 비교 함수 추가
   console.log(listBoard);
   const filteredList = listBoard.filter((list) => list.category === 'discussion');
-  console.log(filteredList);
-
-  // useEffect(() => {
-  //   const fetchImage = async () => {
-  //     const promise = list
-  //       .filter((item) => item.category === 'discussion')
-  //       .map(async (item) => {
-  //         const imageRef = ref(storage, `thumbnail/${item.thumbnail}`);
-  //         const imageUrl = await getDownloadURL(imageRef);
-  //         return {
-  //           ...item,
-  //           imageUrl
-  //         };
-  //       });
-  //     const result = await Promise.all(promise);
-  //     setImageCard(result);
-  //   };
-  //   fetchImage();
-  // }, [list]); // useEffect의 의존성 변경
-
-  const [imageCard, setImageCard] = useState([]);
 
   // 좋아요 토글 핸들러 함수
   const likeIconClick = (postId, isLiked, userId) => {
