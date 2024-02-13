@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { auth, db, storage } from '../../firebase';
+import { auth, storage } from '../../firebase';
 import { deleteObject, getDownloadURL, getStorage, ref, uploadBytes } from 'firebase/storage';
 import React, { useEffect, useRef, useState } from 'react';
 import { Section } from 'styles/SharedStyle';
@@ -7,8 +7,6 @@ import userDefaultImage from '../../image/userImage.png';
 import { sendPasswordResetEmail, updateProfile } from 'firebase/auth';
 import { useDispatch, useSelector } from 'react-redux';
 import { removeUserImage, updateImage, updateNickname } from '../../redux/modules/user';
-import { collection, getDocs, query, where } from 'firebase/firestore';
-import { Link } from 'react-router-dom';
 import MyBoardList from 'component/crudcomponent/MyBoardList';
 
 const MyPage = () => {
