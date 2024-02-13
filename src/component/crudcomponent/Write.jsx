@@ -8,7 +8,6 @@ import { uuidv4 } from '@firebase/util';
 import { useDispatch, useSelector } from 'react-redux';
 import { completedEditBoard, deleteBoard, insertBoard, setBoard } from '../../redux/modules/board';
 import imageFrames from '../../image/imageFrames.png';
-import { useParams } from 'react-router-dom';
 
 const Write = () => {
   const nowUser = useSelector((state) => state.user.nowUser);
@@ -115,8 +114,6 @@ const Write = () => {
 
       // 파이어베이스 게시물 등록
       const collectionRef = collection(db, 'board');
-      const docRef = await addDoc(collectionRef, newBoard);
-      newBoard.postId = docRef.id;
       await addDoc(collectionRef, newBoard);
       dispatch(insertBoard(newBoard));
 

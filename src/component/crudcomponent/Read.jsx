@@ -17,13 +17,13 @@ const Read = () => {
   const listBoard = useSelector((state) => state.list.board); // 비교 함수 추가
   console.log(listBoard);
   const filteredList = listBoard.filter((list) => list.category === 'discussion');
-
+  console.log(filteredList);
   // 좋아요 토글 핸들러 함수
   const likeIconClick = (postId, isLiked, userId) => {
     dispatch(toggleLike(postId, isLiked, userId)); // 좋아요 토글 액션을 디스패치합니다.
   };
-  const ModifyButton = (userId) => {
-    navigate(`/detailPage/${userId}`);
+  const ModifyButton = (postId) => {
+    navigate(`/detailPage/${postId}`);
   };
   return (
     <MainContents>
@@ -35,7 +35,7 @@ const Read = () => {
               <img src={item.thumbnail} alt="이미지" />
             </CardThumbnail>
             <div>
-              <h4 onClick={() => ModifyButton(item.user_id)}>{item.title}</h4>
+              <h4 onClick={() => ModifyButton(item.postId)}>{item.title}</h4>
               <p>
                 <span>{item.reg_date}</span>
                 <span>개의 댓글</span>
