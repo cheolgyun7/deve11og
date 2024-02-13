@@ -7,6 +7,7 @@ import { db, storage } from '../../firebase';
 import { SET_DELETEBOARD, updateBoard } from '../../redux/modules/list';
 import styled from 'styled-components';
 import { getDownloadURL, ref } from 'firebase/storage';
+import CommentSection from './CommentSection';
 
 const DetailPage = () => {
   const dispatch = useDispatch();
@@ -124,6 +125,7 @@ const DetailPage = () => {
           </p>
         </DetailPageBoxCard>
       </DetailPageBox>
+      <CommentSection />
     </Section>
   );
 };
