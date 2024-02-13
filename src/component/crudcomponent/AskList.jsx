@@ -7,8 +7,11 @@ import { AskRespondListBox, AskRespondThumbnail, LikeIcon, Section } from 'style
 import { AskRespondDetail } from 'styles/SharedStyle';
 
 const AskList = () => {
-  const answer = useSelector((state) => state.album.albums);
-  const filteredAskRespondAll = answer.filter((list) => list.Classification === 'AskRespond');
+  const answer = useSelector((state) => state.list.board);
+  console.log(answer);
+  console.log('123');
+  const filteredAskRespondAll = answer.filter((list) => list.category === 'techTalk');
+  console.log(filteredAskRespondAll);
   return (
     <Section>
       <AskRespondDetail>

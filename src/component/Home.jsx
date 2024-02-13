@@ -4,7 +4,7 @@ import { Section } from 'styles/SharedStyle';
 import { db } from '../firebase';
 import Read from './crudcomponent/Read';
 import { useDispatch } from 'react-redux';
-import { setAlbums } from '../redux/modules/album';
+import { setBoard } from '../redux/modules/list';
 import AskRespond from './crudcomponent/AskRespond';
 import About from './crudcomponent/About';
 
@@ -13,14 +13,14 @@ const Home = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const querySnapshot = await getDocs(collection(db, 'albums'));
-      const fetchedAlbums = [];
+      const querySnapshot = await getDocs(collection(db, 'board'));
+      const fetchedBoard = [];
       querySnapshot.forEach((doc) => {
-        const albumData = doc.data();
-        albumData.user_id = doc.id;
-        fetchedAlbums.push(albumData);
+        const boardData = doc.data();
+        boardData.user_id = doc.id;
+        fetchedBoard.push(boardData);
       });
-      dispatch(setAlbums(fetchedAlbums));
+      dispatch(setBoard(fetchedBoard));
     };
     fetchData();
   }, []);
