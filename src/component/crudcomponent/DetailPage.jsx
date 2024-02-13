@@ -70,22 +70,27 @@ const DetailPage = () => {
     <Section>
       <DetailPageBox>
         <DetailPageBoxCard>
-          <ContentsDiv>
+          <ContentsBox>
             {board.map((item) => {
               return (
                 <div key={item.id}>
-                  <SelectDiv>{item.category}</SelectDiv>
+                  <TitleBox>
+                    <SelectDiv>{item.category}</SelectDiv>
+                    <TitleDiv>{item.title}</TitleDiv>
+                  </TitleBox>
 
-                  <img src={item.imageUrl} alt="이미지" />
-                  <div>{item.title}</div>
-                  <div>{item.contents}</div>
+                  <ImgBox>
+                    <ImgDiv src={item.imageUrl} alt="이미지" />
+                    <ContentDiv>{item.contents}</ContentDiv>
+                  </ImgBox>
+
                   <div>{item.regDate}</div>
                   <button onClick={() => editingBoard(item)}>수정</button>
                   <button onClick={() => removeBoard(item.id, item.thumbnail)}>삭제</button>
                 </div>
               );
             })}
-          </ContentsDiv>
+          </ContentsBox>
         </DetailPageBoxCard>
       </DetailPageBox>
     </Section>
@@ -151,7 +156,7 @@ export const UpdateSelectBox = styled.select`
   top: 1rem;
   right: 1rem; */
 `;
-const ContentsDiv = styled.div`
+const ContentsBox = styled.div`
   width: 75%;
   height: 75vh;
   display: flex;
@@ -160,12 +165,9 @@ const ContentsDiv = styled.div`
   justify-content: space-evenly;
   border: 0.2rem solid #f5f5f5;
 `;
-const SelectDiv = styled.select`
-  width: 20%;
-  padding: 0.2rem;
-  position: absolute;
-  top: 1rem;
-  right: 4rem;
-  border-color: #f5f5f5;
-  cursor: pointer;
-`;
+const SelectDiv = styled.div``;
+const TitleBox = styled.div``;
+const TitleDiv = styled.div``;
+const ImgBox = styled.div``;
+const ImgDiv = styled.div``;
+const ContentDiv = styled.div``;
