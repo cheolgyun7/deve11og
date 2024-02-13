@@ -3,19 +3,17 @@ import { db } from '../../firebase';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { addComment, setComment } from '../../redux/modules/comment';
+import { addComment } from '../../redux/modules/comment';
+import CommentList from './CommentList';
 
 export default function CommentSection() {
   const { user_id, user_img, nickname } = useSelector((state) => state.user.nowUser);
   const dispatch = useDispatch();
-  const { data } = useSelector((state) => state.comment);
 
   // console.log(user_id, user_img, nickname);
 
   const [contents, setContents] = useState('');
-  // const [commentData, setCommentData] = useState('');
   const [boardTestData, setBoardTestData] = useState(''); //테스트로 id 만 가져오는 state - 삭제 예정
-  // console.log(boardTestData[0]);
 
   const handleChange = (e) => {
     setContents(e.target.value);
@@ -29,9 +27,19 @@ export default function CommentSection() {
     }
 
     try {
+      const nowDate = new Date();
+      const regDate = nowDate.toLocaleDateString('ko-KR', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: 'numeric',
+        hour12: false, // 24시간 형식 표기
+        minute: '2-digit'
+      });
+
       const newComment = {
         contents,
-        regDate: new Date(),
+        regDate,
         nickname,
         user_id,
         board_id: boardTestData[0].id //임시로 파이어베이스 첫 번째 데이터의 id로 부여함. 나중에 useParam으로 id 가져와서 하는 등 변경 필요
@@ -46,20 +54,6 @@ export default function CommentSection() {
       console.error(error);
     }
   };
-
-  // textarea 높이 변경
-  // const handleKeyUp = (e) => {
-  //   let text = contents;
-  //   let rowCnt = text.split(/\r\n|\r|\n/).length;
-  //   // $reviewBtnBox.style.display = 'flex';
-  //   if (event.key === 'Enter') {
-  //     $reviewTextarea.setAttribute('rows', rowCnt);
-  //   } else if (event.key === 'Backspace') {
-  //     if (rowCnt >= 1) {
-  //       $reviewTextarea.setAttribute('rows', rowCnt);
-  //     }
-  //   }
-  // };
 
   //게시물 데이터 가져오기 - 임시로 만듬, 삭제 예정
   useEffect(() => {
@@ -78,27 +72,6 @@ export default function CommentSection() {
     };
 
     fetchBoardData();
-  }, []);
-
-  //댓글 데이터 가져오기
-  useEffect(() => {
-    // const boardId = boardTestData[0].id;
-    const fetchCommentData = async () => {
-      // const q = query(collection(db, 'comments'), where('board_id', '==', boardId));
-      const q = query(collection(db, 'comments'));
-      const querySnapshot = await getDocs(q);
-
-      const initialData = [];
-
-      querySnapshot.forEach((doc) => {
-        initialData.push({ id: doc.id, ...doc.data() });
-      });
-
-      // firestore에서 가져온 데이터를 state에 전달
-      dispatch(setComment(initialData));
-    };
-
-    fetchCommentData();
   }, []);
 
   return (
@@ -122,11 +95,7 @@ export default function CommentSection() {
           <button>등록</button>
         </BtnBox>
       </CommentFormWrap>
-      <ul>
-        {data.map((el) => {
-          return <li key={el.id}>{el.contents}</li>;
-        })}
-      </ul>
+      <CommentList />
     </>
   );
 }
@@ -148,6 +117,10 @@ const ThumbNailBox = styled.figure`
   height: 5rem;
   overflow: hidden;
   border-radius: 50%;
+
+  & img {
+    max-width: 100%;
+  }
 `;
 const CommentTextarea = styled.textarea`
   margin-left: 1rem;
@@ -156,6 +129,7 @@ const CommentTextarea = styled.textarea`
   border: 0;
   border-bottom: 1px solid #ddd;
   resize: none;
+  font-family: inherit;
 `;
 const BtnBox = styled.div`
   display: flex;
