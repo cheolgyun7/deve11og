@@ -7,7 +7,8 @@ import {
   GoogleAuthProvider,
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
-  signInWithPopup
+  signInWithPopup,
+  updateProfile
 } from 'firebase/auth';
 import styled from 'styled-components';
 import gitIcon from '../../image/github-mark-white.svg';
@@ -22,15 +23,6 @@ const Login = () => {
   const userloginDB = useSelector((state) => state.user.userloginDB);
   const dispatch = useDispatch();
   const collectionRef = collection(db, 'usersDB');
-
-  // const emailTest = async () => {
-  //   const querySnapshot = await getDocs(collection(db, 'usersDB'));
-
-  //   querySnapshot.forEach((doc) => {
-  //     const email = doc.data().email;
-  //   });
-  // };
-  // console.log(emailTest);
 
   // 로그인
   const formOnSubmit = async (event) => {
@@ -103,8 +95,24 @@ const Login = () => {
     const provier = new GithubAuthProvider();
     try {
       // signInWithPopup 연동되는 것을 팝업창으로 확인
+
       const result = await signInWithPopup(auth, provier);
       const user = result.user;
+      // const nicknameIncludes = userloginDB.some((prev) => prev.nickname === user.displayName);
+
+      // if (nicknameIncludes) {
+      //   // 닉네임이 이미 존재하는 경우 새로운 닉네임 생성
+      //   const newNickname = user.displayName + '_' + Math.floor(Math.random() * 1000);
+
+      //   // 새로운 닉네임으로 프로필 업데이트
+      //   await updateProfile(user, {
+      //     displayName: newNickname
+      //   });
+
+      //   // 사용자 정보에 새로운 닉네임 반영
+      //   user.displayName = newNickname;
+      // }
+
       const newData = {
         nickname: user.displayName,
         email: user.email,
@@ -122,7 +130,7 @@ const Login = () => {
         initial.push({ ...doc.data() });
       });
       dispatch(setUserLoginDB([...initial]));
-      navigate('/');
+      // navigate('/');
       console.log(user);
     } catch (error) {
       console.log(error);
