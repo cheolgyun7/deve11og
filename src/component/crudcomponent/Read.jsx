@@ -10,6 +10,8 @@ import { storage } from '../../firebase';
 import { getDownloadURL, ref } from 'firebase/storage';
 
 const Read = () => {
+  const { user_id, nickname } = useSelector((state) => state.user.nowUser);
+  console.log(user_id);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const listBoard = useSelector((state) => state.list.board); // 비교 함수 추가
