@@ -1,13 +1,12 @@
 import styled from 'styled-components';
 import React, { useEffect, useState } from 'react';
 import { HeaderBox, LayoutStyle } from 'styles/SharedStyle';
-
 import logoImg from '../../image/logo.png';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { auth } from '../../firebase';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { useDispatch } from 'react-redux';
-import { setUserDB } from '../../redux/modules/user';
+import { setUserLoginDB, setUserNowDB } from '../../redux/modules/user';
 import { useSelector } from 'react-redux';
 
 const Header = () => {
@@ -17,7 +16,6 @@ const Header = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const location = useLocation();
-
   const nowUser = useSelector((state) => state.user.nowUser);
   // 프로필사진
   const img = nowUser.user_img;
@@ -25,6 +23,7 @@ const Header = () => {
   // location의 정보에 로그인창, 회원가입창 이면 true
   const loginPage = location.pathname === '/login';
   const registerPage = location.pathname === '/register';
+  const writePage = location.pathname === '/write';
 
   // 로그인시 redux에 dispatch
   const signUser = () => {
@@ -34,13 +33,14 @@ const Header = () => {
     const nickname = userData.displayName;
     const user_img = userData.photoURL;
     dispatch(
-      setUserDB({
+      setUserNowDB({
         user_id: user_id,
         email: email,
         nickname: nickname,
         user_img: user_img
       })
     );
+    dispatch(setUserLoginDB({ user_id: user_id, email: email, nickname: nickname }));
     // 쿠키
     let todayDate = new Date();
     // 쿠키 1시간 유효기간 설정
@@ -118,17 +118,11 @@ const Header = () => {
           {!loginPage && !registerPage ? (
             logoutBool ? (
               <>
-                <NewPostBtn onClick={newPostBtnClick}>새 글 작성</NewPostBtn>
-                <div
-                  style={{
-                    width: '3rem',
-                    height: '3rem'
-                  }}
-                >
+                {writePage ? '' : <NewPostBtn onClick={newPostBtnClick}>새 글 작성</NewPostBtn>}
+                <ImgDiv onClick={userIsActiveBtn} onBlur={userMenuOnBlur}>
                   <ImgStyle src={img} alt="프로필사진" />
-                </div>
+                </ImgDiv>
                 <UserMenuDiv onBlur={userMenuOnBlur}>
-                  {/* 🔽 임시 */}
                   <UserBtn onClick={userIsActiveBtn}>🔽</UserBtn>
                   <UserUl isActive={isActive}>
                     <UserLi>
@@ -153,7 +147,7 @@ const Header = () => {
 export default Header;
 
 const Logo = styled.img`
-  width: 15rem;
+  width: 8rem;
 `;
 
 const RightMenu = styled.div`
@@ -178,9 +172,7 @@ const Logout = styled.span`
 
 const NewPostBtn = styled.button`
   border-radius: 1rem;
-  padding: 0.5rem;
   background-color: white;
-  width: 5rem;
   height: 2rem;
   margin-right: 1rem;
   margin-top: 0.7rem;
@@ -188,12 +180,10 @@ const NewPostBtn = styled.button`
     transition-duration: 0.4s;
     background-color: black;
     color: white;
-    border: none;
   }
 `;
 
 const ImgStyle = styled.img`
-  width: 100%;
   height: 100%;
   object-fit: cover;
 `;
@@ -232,4 +222,10 @@ const StyledLink = styled(Link)`
   &:hover {
     background-color: #f5f5f5;
   }
+`;
+
+const ImgDiv = styled.div`
+  width: 3rem;
+  height: 3rem;
+  cursor: pointer;
 `;
