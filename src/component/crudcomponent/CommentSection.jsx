@@ -3,13 +3,13 @@ import { db } from '../../firebase';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
-import { setComment } from '../../redux/modules/comment';
+import { addComment, setComment } from '../../redux/modules/comment';
 
 export default function CommentSection() {
   const { user_id, user_img, nickname } = useSelector((state) => state.user.nowUser);
   const dispatch = useDispatch();
-  const { data, ddd } = useSelector((state) => state.comment);
-  console.log(data, ddd);
+  const { data } = useSelector((state) => state.comment);
+
   // console.log(user_id, user_img, nickname);
 
   const [contents, setContents] = useState('');
@@ -38,7 +38,9 @@ export default function CommentSection() {
       };
       const collectionRef = collection(db, 'comments');
       await addDoc(collectionRef, newComment);
+      dispatch(addComment(newComment));
       alert('등록이 완료되었습니다.');
+      e.target.reset();
     } catch (error) {
       alert('에러가 발생했습니다. 다시 시도해주세요.');
       console.error(error);
@@ -59,29 +61,9 @@ export default function CommentSection() {
   //   }
   // };
 
-  //댓글 데이터 가져오기
-  // useEffect(() => {
-  //   const boardId = boardTestData[0].id;
-  //   const fetchData = async () => {
-  //     const q = query(collection(db, 'comments'), where('board_id', '==', boardId));
-  //     const querySnapshot = await getDocs(q);
-
-  //     const initialData = [];
-
-  //     querySnapshot.forEach((doc) => {
-  //       initialData.push({ id: doc.id, ...doc.data() });
-  //     });
-
-  //     // firestore에서 가져온 데이터를 state에 전달
-  //     dispatch(setComment(initialData));
-  //   };
-
-  //   fetchData();
-  // }, []);
-
   //게시물 데이터 가져오기 - 임시로 만듬, 삭제 예정
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchBoardData = async () => {
       const q = query(collection(db, 'board'));
       const querySnapshot = await getDocs(q);
 
@@ -95,7 +77,28 @@ export default function CommentSection() {
       setBoardTestData(initialData);
     };
 
-    fetchData();
+    fetchBoardData();
+  }, []);
+
+  //댓글 데이터 가져오기
+  useEffect(() => {
+    // const boardId = boardTestData[0].id;
+    const fetchCommentData = async () => {
+      // const q = query(collection(db, 'comments'), where('board_id', '==', boardId));
+      const q = query(collection(db, 'comments'));
+      const querySnapshot = await getDocs(q);
+
+      const initialData = [];
+
+      querySnapshot.forEach((doc) => {
+        initialData.push({ id: doc.id, ...doc.data() });
+      });
+
+      // firestore에서 가져온 데이터를 state에 전달
+      dispatch(setComment(initialData));
+    };
+
+    fetchCommentData();
   }, []);
 
   return (
@@ -119,11 +122,11 @@ export default function CommentSection() {
           <button>등록</button>
         </BtnBox>
       </CommentFormWrap>
-      {/* <ul>
+      <ul>
         {data.map((el) => {
-          return <li key={el.id}>{el.comment}</li>;
+          return <li key={el.id}>{el.contents}</li>;
         })}
-      </ul> */}
+      </ul>
     </>
   );
 }
