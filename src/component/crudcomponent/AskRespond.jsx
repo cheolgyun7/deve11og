@@ -7,8 +7,8 @@ import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 
 const AskRespond = () => {
-  const answer = useSelector((state) => state.album.albums);
-  const filteredAskRespond = answer.filter((list) => list.Classification === 'AskRespond');
+  const answer = useSelector((state) => state.list.board);
+  const filteredAskRespond = answer.filter((list) => list.category === 'techTalk');
   const navigate = useNavigate();
   const askDetailClick = (userId) => {
     navigate(`/detailPage/${userId}`);
@@ -20,7 +20,7 @@ const AskRespond = () => {
         {filteredAskRespond.map((list) => (
           <ul key={list.user_id}>
             <li onClick={() => askDetailClick(list.user_id)}>{list.title}</li>
-            <span>{list.reg_date}</span>
+            <span>{list.regDate}</span>
             <span>{list.nickname}</span>
           </ul>
         ))}

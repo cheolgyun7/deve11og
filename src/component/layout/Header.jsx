@@ -119,7 +119,14 @@ const Header = () => {
             logoutBool ? (
               <>
                 <NewPostBtn onClick={newPostBtnClick}>새 글 작성</NewPostBtn>
-                <ImgStyle src={img} alt="프로필사진" />
+                <div
+                  style={{
+                    width: '3rem',
+                    height: '3rem'
+                  }}
+                >
+                  <ImgStyle src={img} alt="프로필사진" />
+                </div>
                 <UserMenuDiv onBlur={userMenuOnBlur}>
                   {/* 🔽 임시 */}
                   <UserBtn onClick={userIsActiveBtn}>🔽</UserBtn>
@@ -186,8 +193,8 @@ const NewPostBtn = styled.button`
 `;
 
 const ImgStyle = styled.img`
-  width: 20%;
-  height: 20%;
+  width: 100%;
+  height: 100%;
   object-fit: cover;
 `;
 

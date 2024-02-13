@@ -75,6 +75,9 @@ width: 100%;
 `;
 export const CardThumbnail = styled.p`
   ${cardthumbnail}
+  img {
+    margin: 0 auto;
+  }
 `;
 export const AskRespondThumbnail = styled.p`
   ${cardthumbnail}
@@ -176,7 +179,7 @@ export const AskRespondDetail = styled.div`
   }
 `;
 
-// 공통 아이콘사용
+// 공통 아이콘사용 화살표
 export const StyledIcon = styled(FontAwesomeIcon)`
   position: absolute;
   bottom: 1rem;
