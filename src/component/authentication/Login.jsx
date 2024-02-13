@@ -11,15 +11,24 @@ import {
 } from 'firebase/auth';
 import styled from 'styled-components';
 import gitIcon from '../../image/github-mark-white.svg';
+import { useSelector } from 'react-redux';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [pwd, setPwd] = useState('');
   const navigate = useNavigate();
+  const userloginDB = useSelector((state) => state.user.userloginDB);
+  console.log('--------------', userloginDB);
 
   // 로그인
   const formOnSubmit = async (event) => {
     event.preventDefault();
+    // 이메일 검사
+    const emailIncludes = userloginDB.some((prev) => prev.email === email);
+    if (!emailIncludes) {
+      alert('이메일이 존재 하지 않습니다');
+      return false;
+    }
     try {
       // signInWithEmailAndPassword 현재 입력된 이메일이 파이어베이스에 있는 계정과 같은지 비교
       const userCredential = await signInWithEmailAndPassword(auth, email, pwd);
@@ -27,11 +36,7 @@ const Login = () => {
       navigate('/');
     } catch (error) {
       const errorCode = error.code;
-      if (errorCode === 'auth/user-not-found') {
-        // 이메일 에러
-        alert('이메일을 확인해주세요');
-        console.log('이메일', errorCode);
-      } else if (errorCode === 'auth/invalid-credential') {
+      if (errorCode === 'auth/invalid-credential') {
         // 비밀번호 에러
         alert('비밀번호를 확인해주세요');
         console.log('비밀번호', errorCode);
@@ -57,7 +62,6 @@ const Login = () => {
       const result = await signInWithPopup(auth, provier);
       const user = result.user;
       navigate('/');
-      alert('안녕하세요!');
       console.log(user);
     } catch (error) {
       console.log(error);

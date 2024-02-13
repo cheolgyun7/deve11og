@@ -24,7 +24,6 @@ const Read = () => {
   //       .filter((item) => item.category === 'discussion')
   //       .map(async (item) => {
   //         const imageRef = ref(storage, `thumbnail/${item.thumbnail}`);
-
   //         const imageUrl = await getDownloadURL(imageRef);
   //         return {
   //           ...item,
