@@ -8,6 +8,7 @@ import { uuidv4 } from '@firebase/util';
 import { useDispatch, useSelector } from 'react-redux';
 import { deleteBoard, insertBoard, setBoard } from '../../redux/modules/board';
 import imageFrames from '../../image/imageFrames.png';
+import { useParams } from 'react-router-dom';
 
 const Write = () => {
   // // 파이어베이스에 저장된 데이터 가져오기
@@ -31,6 +32,13 @@ const Write = () => {
 
   const dispatch = useDispatch();
   const board = useSelector((item) => item.board);
+  const { userId } = useParams();
+  const question = useSelector((state) => {
+    // Redux 상태에서 userId와 일치하는 질문을 찾음
+    console.log(state.user);
+    return state.list.board.find((item) => item.user_id === userId);
+  });
+  console.log(question);
 
   // 게시물 state들
   const [title, setTitle] = useState('');
