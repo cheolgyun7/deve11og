@@ -77,6 +77,8 @@ export const CardThumbnail = styled.p`
   ${cardthumbnail}
   img {
     margin: 0 auto;
+    width: 100%;
+    object-fit: cover;
   }
 `;
 export const AskRespondThumbnail = styled.p`

@@ -17,13 +17,15 @@ const AskRespond = () => {
     <AskRespondContents>
       <h2>질문 및 답변</h2>
       <AskRespondBox>
-        {filteredAskRespond.map((list) => (
-          <ul key={list.user_id}>
-            <li onClick={() => askDetailClick(list.user_id)}>{list.title}</li>
-            <span>{list.regDate}</span>
-            <span>{list.nickname}</span>
-          </ul>
-        ))}
+        <ul>
+          {filteredAskRespond.map((list) => (
+            <li key={list.user_id} onClick={() => askDetailClick(list.user_id)}>
+              <span>{list.title}</span>
+              <span>{list.regDate}</span>
+              <span>{list.nickname}</span>
+            </li>
+          ))}
+        </ul>
       </AskRespondBox>
       <Link to="/asklist">
         <StyledIcon icon={faArrowRight} />
@@ -39,17 +41,22 @@ export const AskRespondBox = styled.div`
     padding-left: 3rem;
     li {
       list-style: disc;
-      font-size: 1.8rem;
+      font-size: 1.5rem;
       font-weight: bold;
-      margin-top: 2rem;
+      margin-top: 0.5rem;
       cursor: pointer;
     }
     span {
       display: inline-block;
       margin-top: 0.5rem;
-      margin-bottom: 2rem;
+      margin-bottom: 0.5rem;
       margin-right: 2rem;
-      color: #737373;
+      font-size: 1rem;
+      &:first-of-type {
+        font-size: 1.5rem;
+        color: #737373;
+        display: block;
+      }
     }
   }
 `;
