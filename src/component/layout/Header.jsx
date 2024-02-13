@@ -7,41 +7,17 @@ import { auth } from '../../firebase';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { useDispatch } from 'react-redux';
 import { setUserNowDB } from '../../redux/modules/user';
-import { useSelector } from 'react-redux';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, getDocs, query } from 'firebase/firestore';
 import { db } from '../../firebase';
 
 const Header = () => {
   const [logoutBool, setLogoutBool] = useState(false);
   const [isActive, setIsActive] = useState(false);
-  const [userImg, setUserImg] = useState(null);
-  const userloginDB = useSelector((state) => state.user.userloginDB);
+  const [userImg, setUserImg] = useState('');
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const location = useLocation();
-  const nowUser = useSelector((state) => state.user.nowUser);
-
-  // 프로필사진
-  // const img = nowUser.user_img;
-  // 쿠키 가져오기
-  const getCookie = (cookieName) => {
-    cookieName = `${cookieName}=`;
-    let cookieData = document.cookie;
-
-    let cookieValue = '';
-    let start = cookieData.indexOf(cookieName);
-
-    if (start !== -1) {
-      start += cookieName.length;
-      let end = cookieData.indexOf(';', start);
-      if (end === -1) end = cookieData.length;
-      cookieValue = cookieData.substring(start, end);
-    }
-
-    return unescape(cookieValue);
-  };
-  const uid = getCookie('uid');
 
   const showAllDocuments = async () => {
     try {
@@ -68,6 +44,10 @@ const Header = () => {
     const email = userData.email;
     const nickname = userData.displayName;
     const user_img = userData.photoURL;
+    const userDB = localStorage.getItem('usersDB');
+    const json = JSON.parse(userDB);
+    const imgTest = json.findIndex((item) => item.user_id === user_id);
+    setUserImg(json[imgTest].user_img);
     dispatch(
       setUserNowDB({
         user_id: user_id,
@@ -125,8 +105,15 @@ const Header = () => {
   useEffect(() => {
     const loginCheck = () => {
       // 현재 유저가 로그인 되어있는지 확인
-      onAuthStateChanged(auth, (user) => {
+      onAuthStateChanged(auth, async (user) => {
         if (user) {
+          const q = query(collection(db, 'usersDB'));
+          const querySnapshot = await getDocs(q);
+          const initial = [];
+          querySnapshot.forEach((doc) => {
+            initial.push({ ...doc.data() });
+          });
+          localStorage.setItem('usersDB', JSON.stringify(initial));
           // 쿠키
           let todayDate = new Date();
           // 쿠키 1시간 유효기간 설정
@@ -134,8 +121,7 @@ const Header = () => {
           document.cookie = `uid=${user.uid}; expires=${todayDate.toUTCString()};path=/;`;
           setLogoutBool(true);
           signUser();
-          const imgTest = userloginDB.findIndex((prev) => prev.email === user.email);
-          setUserImg(userloginDB[imgTest].user_img);
+
           // console.log(userloginDB[imgTest].user_img);
         } else {
           setLogoutBool(false);
@@ -157,8 +143,8 @@ const Header = () => {
             logoutBool ? (
               <>
                 {writePage ? '' : <NewPostBtn onClick={newPostBtnClick}>새 글 작성</NewPostBtn>}
-                <ImgDiv onClick={userIsActiveBtn} onBlur={userMenuOnBlur}>
-                  <ImgStyle src={userImg} alt="프로필사진" />
+                <ImgDiv tabIndex={0} onBlur={userMenuOnBlur}>
+                  <ImgStyle onClick={userIsActiveBtn} src={userImg} alt="프로필사진" />
                 </ImgDiv>
                 <UserMenuDiv onBlur={userMenuOnBlur}>
                   <UserBtn onClick={userIsActiveBtn}>🔽</UserBtn>
