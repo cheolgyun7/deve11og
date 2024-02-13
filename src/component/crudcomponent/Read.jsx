@@ -11,14 +11,17 @@ import { getDownloadURL, ref } from 'firebase/storage';
 const Read = () => {
   const { user_id } = useSelector((state) => state.user.nowUser);
   console.log(user_id);
+  console.log(useSelector((state) => state));
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const listBoard = useSelector((state) => state.list.board); // 비교 함수 추가
   console.log(listBoard);
   const filteredList = listBoard.filter((list) => list.category === 'discussion');
   // 좋아요 토글 핸들러 함수
-  const likeIconClick = (postId, isLiked, userId) => {
-    dispatch(toggleLike(postId, isLiked, userId)); // 좋아요 토글 액션을 디스패치합니다.
+  const handleToggleLike = (postId, isLiked) => {
+    dispatch(toggleLike(postId, isLiked, user_id));
+    console.log(dispatch(toggleLike(postId, isLiked, user_id)));
   };
   const ModifyButton = (postId) => {
     navigate(`/detailPage/${postId}`);
@@ -27,10 +30,10 @@ const Read = () => {
     <MainContents>
       <h2>커뮤니티</h2>
       <CardBox>
-        {filteredList.map((item) => (
-          <CardArticle key={item.user_id}>
-            <CardThumbnail>
-              <img src={item.thumbnail} alt="이미지" />
+        {filteredList.map((item, index) => (
+          <CardArticle key={item.user_id + index}>
+            <CardThumbnail onClick={() => ModifyButton(item.postId)}>
+              <img src={item.imageUrl} alt="이미지" />
             </CardThumbnail>
             <div>
               <h4 onClick={() => ModifyButton(item.postId)}>{item.title}</h4>
@@ -38,10 +41,10 @@ const Read = () => {
                 <span>{item.reg_date}</span>
                 <span>개의 댓글</span>
                 <span>
-                  <LikeIcon onClick={() => likeIconClick(item.id, item.liked, item.user_id)}>
+                  <LikeIcon onClick={() => handleToggleLike(item.postId, item.liked)}>
                     <FontAwesomeIcon icon={faHeart} style={{ color: item.liked ? 'red' : 'black' }} />
                   </LikeIcon>
-                  {item.liked.length}
+                  {item.liked.length} {/* 좋아요 수 */}
                 </span>
               </p>
               <p>
