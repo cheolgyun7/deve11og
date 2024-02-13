@@ -6,7 +6,7 @@ import { Section } from 'styles/SharedStyle';
 import userDefaultImage from '../../image/userImage.png';
 import { sendPasswordResetEmail, updateProfile } from 'firebase/auth';
 import { useDispatch, useSelector } from 'react-redux';
-import { updateImage, updateNickname } from '../../redux/modules/user';
+import { removeUserImage, updateImage, updateNickname } from '../../redux/modules/user';
 import { collection, getDocs, query, where } from 'firebase/firestore';
 import { Link } from 'react-router-dom';
 
@@ -24,7 +24,7 @@ const MyPage = () => {
 
   //[상수] storage - 게시물의 썸네일 경로
   const THUMBNAIL_DIRECTORY = 'thumbnail';
-
+  console.log(auth.currentUser);
   const fileSelect = async (event) => {
     const file = event.target.files[0];
 
@@ -58,10 +58,10 @@ const MyPage = () => {
     const desertRef = ref(storage, path);
     deleteObject(desertRef)
       .then(() => {
-        dispatch(updateImage(DEFAULT_IMAGE));
+        dispatch(removeUserImage());
 
         updateProfile(auth.currentUser, {
-          photoURL: DEFAULT_IMAGE
+          photoURL: ''
         })
           .then(() => {
             alert('삭제가 완료되었습니다.');
@@ -171,7 +171,7 @@ const MyPage = () => {
   const errorImage = (e) => {
     e.target.src = userDefaultImage;
   };
-
+  console.log(user_img);
   return (
     <Section>
       <PageTitleStyle>마이페이지</PageTitleStyle>
@@ -179,14 +179,18 @@ const MyPage = () => {
         <LeftAreaStyle>
           <FigureStyle>
             {/* TODO: 렌더링 되고 나서 이미지를 가져와서 늦게가져옴... 확인 필요 */}
-            <img src={user_img} onError={errorImage} alt="유저 이미지" />
+            <img src={!user_img ? DEFAULT_IMAGE : user_img} onError={errorImage} alt="유저 이미지" />
           </FigureStyle>
           <FileLabelStyle>
             이미지 업로드
             <input type="file" onChange={fileSelect} accept="image/*" />
           </FileLabelStyle>
           {/* {!selectedFile ? <></> : <button onClick={handleUpload}>등록</button>} */}
-          {user_img !== DEFAULT_IMAGE ? <BtnBlackText onClick={handleRemove}>이미지 제거</BtnBlackText> : <></>}
+          {user_img !== null && user_img !== DEFAULT_IMAGE ? (
+            <BtnBlackText onClick={handleRemove}>이미지 제거</BtnBlackText>
+          ) : (
+            <></>
+          )}
         </LeftAreaStyle>
         <RightAreaStyle>
           <p>{email}</p>
