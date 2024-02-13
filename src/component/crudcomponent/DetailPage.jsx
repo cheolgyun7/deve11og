@@ -12,10 +12,11 @@ const DetailPage = () => {
   const dispatch = useDispatch();
   const { userId } = useParams();
   const [imageURL, setImageURL] = useState('');
-
+  console.log(updateBoard());
   const question = useSelector((state) => {
     return state.list.board.find((item) => item.user_id === userId);
   });
+
   const navigate = useNavigate();
   const [updateData, setUpdateData] = useState({
     title: '',
@@ -26,17 +27,6 @@ const DetailPage = () => {
   });
 
   const [isEdit, setIsEdit] = useState(false); //수정가능한상태
-  useEffect(() => {
-    const fetchImage = async () => {
-      if (question) {
-        const imageRef = ref(storage, `thumbnail/${question.thumbnail}`);
-        const url = await getDownloadURL(imageRef);
-        setImageURL(url);
-      }
-    };
-
-    fetchImage();
-  }, [question]);
 
   useEffect(() => {
     if (question) {
@@ -67,8 +57,7 @@ const DetailPage = () => {
     }
   };
 
-  const handleUpdate = async (e) => {
-    e.preventDefault();
+  const handleUpdate = async (user_id) => {
     if (isEdit) {
       try {
         const updatedBoard = {
@@ -78,6 +67,7 @@ const DetailPage = () => {
           regDate: updateData.regDate,
           category: updateData.category
         };
+        console.log(updateBoard());
         await updateDoc(doc(db, 'board', question.user_id), updatedBoard);
         dispatch(updateBoard(updatedBoard));
         alert(`"${updateData.title}" 게시물이 수정되었습니다.`);
@@ -117,14 +107,14 @@ const DetailPage = () => {
             <>
               <input type="text" name="title" value={updateData.title} onChange={handleInputChange} />
               <input type="text" name="regDate" value={updateData.regDate} onChange={handleInputChange} readOnly />
-              <div>{imageURL && <img src={imageURL} alt="미리보기" />}</div>
+              <div>{<img src={updateData.thumbnail} alt="미리보기" />}</div>
               <textarea type="text" name="contents" value={updateData.contents} onChange={handleInputChange} />
             </>
           ) : (
             <>
               <h2>{updateData.title}</h2>
               <span>{updateData.regDate}</span>
-              <div>{imageURL && <img src={imageURL} alt="미리보기" />}</div>
+              <div>{<img src={updateData.thumbnail} alt="미리보기" />}</div>
               <span>{updateData.contents}</span>
             </>
           )}

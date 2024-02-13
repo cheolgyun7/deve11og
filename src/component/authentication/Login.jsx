@@ -130,7 +130,7 @@ const Login = () => {
         initial.push({ ...doc.data() });
       });
       dispatch(setUserLoginDB([...initial]));
-      // navigate('/');
+      navigate('/');
       console.log(user);
     } catch (error) {
       console.log(error);
