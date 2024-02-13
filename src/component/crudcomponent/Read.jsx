@@ -12,8 +12,10 @@ import { getDownloadURL, ref } from 'firebase/storage';
 const Read = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const list = useSelector((state) => state.list.board); // 비교 함수 추가
-  console.log(list);
+  const listBoard = useSelector((state) => state.list.board); // 비교 함수 추가
+  console.log(listBoard);
+  const filteredList = listBoard.filter((list) => list.category === 'discussion');
+  console.log(filteredList);
 
   // useEffect(() => {
   //   const fetchImage = async () => {
@@ -46,10 +48,10 @@ const Read = () => {
     <MainContents>
       <h2>커뮤니티</h2>
       <CardBox>
-        {list.map((item) => (
+        {filteredList.map((item) => (
           <CardArticle key={item.user_id}>
             <CardThumbnail>
-              <img src={item.imageUrl} alt="이미지" />
+              <img src={item.thumbnail} alt="이미지" />
             </CardThumbnail>
             <div>
               <h4 onClick={() => ModifyButton(item.user_id)}>{item.title}</h4>
