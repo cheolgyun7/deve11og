@@ -6,9 +6,8 @@ import { addDoc, collection, deleteDoc, doc, getDocs, query, updateDoc } from 'f
 import { deleteObject, getDownloadURL, ref, uploadBytes } from '@firebase/storage';
 import { uuidv4 } from '@firebase/util';
 import { useDispatch, useSelector } from 'react-redux';
-import { completedEditBoard, deleteBoard, insertBoard, setBoard, upBoard } from '../../redux/modules/board';
+import { completedEditBoard, deleteBoard, insertBoard, setBoard } from '../../redux/modules/board';
 import imageFrames from '../../image/imageFrames.png';
-import { useParams } from 'react-router-dom';
 
 const Write = () => {
   // // 파이어베이스에 저장된 데이터 가져오기
@@ -67,6 +66,8 @@ const Write = () => {
 
   // 게시물 등록
   const addBoardForm = async (e) => {
+    e.preventDefault();
+
     // 게시물 등록일 함수
     const now = new Date();
     const regDate = now.toLocaleDateString('ko-KR', {
@@ -78,7 +79,13 @@ const Write = () => {
       minute: '2-digit'
     });
 
-    e.preventDefault();
+    // 스토리지에 이미지 등록
+    const imgRef = ref(storage, 'thumbnail/' + thumbnailId);
+    await uploadBytes(imgRef, thumbnail);
+
+    // 이미지 다운로드 URL 가져오기
+    const imageUrl = await getDownloadURL(imgRef);
+
     try {
       const newBoard = {
         category,
@@ -86,6 +93,7 @@ const Write = () => {
         contents,
         regDate,
         thumbnail: thumbnailId, // 이미지의 UUID를 게시물에 저장
+        imageUrl,
         nickName: '테스트',
         user_id: '테스트',
         cnt: 0,
@@ -104,10 +112,6 @@ const Write = () => {
         alert('카테고리를 선택해 주세요');
         return categoryRef.current.focus();
       }
-      // 스토리지에 이미지 등록
-      const imgRef = ref(storage, 'thumbnail/' + thumbnailId);
-
-      await uploadBytes(imgRef, thumbnail);
 
       // 파이어베이스 게시물 등록
       const collectionRef = collection(db, 'board');
@@ -160,34 +164,30 @@ const Write = () => {
     if (window.confirm('게시물을 수정하시겠습니까?')) {
       setUpdateBoard(item); // 수정할 데이터를 상태에 저장
       setIsEditing(true); // 수정 모드로 변경
-      console.log('thumbnailId', item.thumbnail);
-      const imageRef = ref(storage, `thumbnail/` + item.thumbnail);
-      const url = await getDownloadURL(imageRef);
-      setUpdateBoard((prevState) => ({ ...prevState, thumbnail: url }));
     }
   };
+
+  const question = useSelector((state) => {
+    return state.list.board.find((item) => item.id === updateBoard.id);
+  });
 
   // 수정 완료 버튼 클릭 시
   const updateBoardForm = async (e) => {
     e.preventDefault();
-    console.log('updateBoard', updateBoard);
+    const imgRef = ref(storage, 'thumbnail/' + thumbnailId);
+    await uploadBytes(imgRef, thumbnail);
+    const imageUrl = await getDownloadURL(imgRef);
     try {
       const completedBoard = {
         ...updateBoard,
-        category,
-        title,
-        contents,
-        thumbnail: thumbnailId
-        // user_id: '테스트'
+        category: updateBoard.category,
+        title: updateBoard.title,
+        contents: updateBoard.contents,
+        thumbnail: updateBoard.thumbnail,
+        imageUrl
       };
-      console.log('completedBoard', completedBoard);
-      await updateDoc(doc(db, 'board', updateBoard.id), completedBoard);
-
+      await updateDoc(doc(db, 'board', question.id), completedBoard);
       dispatch(completedEditBoard(completedBoard));
-
-      // 파이어베이스에선 수정됨 이미지 수정 어찌하는지 찾아볼것
-      // 수정 후 오류 원인 해결 안됨
-
       alert('게시물이 수정되었습니다.');
     } catch (error) {
       console.error('수정 실패', error);
@@ -220,7 +220,8 @@ const Write = () => {
               </PreviewDiv>
             ) : (
               <ThumbnailDiv>
-                <img src={isEditing ? updateBoard.thumbnail : imageFrames} alt="이미지" />
+                <img src={isEditing ? updateBoard.imageUrl : imageFrames} alt="이미지" />
+
                 <label htmlFor="thumbnail">
                   <ThumbnailBtn>{isEditing ? '이미지 변경' : '이미지 추가'}</ThumbnailBtn>
                 </label>
@@ -240,12 +241,11 @@ const Write = () => {
           </AddBtnDiv>
         </AddBoardForm>
       </AddBoard>
-
       {/* 수정, 삭제를 위한 테스트 코드 */}
       {board.map((item) => {
         return (
           <div key={item.id}>
-            <img src={item.thumbnail} alt="" />
+            <img src={item.imageUrl} alt="" />
             <div>아이디 ***************************{item.id}</div>
             <div>{item.category}</div>
             <div>{item.title}</div>

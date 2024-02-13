@@ -124,7 +124,7 @@ const Header = () => {
                 </ImgDiv>
                 <UserMenuDiv onBlur={userMenuOnBlur}>
                   <UserBtn onClick={userIsActiveBtn}>🔽</UserBtn>
-                  <UserUl isActive={isActive}>
+                  <UserUl $isActive={isActive}>
                     <UserLi>
                       <StyledLink to="/mypage">마이페이지</StyledLink>
                     </UserLi>
@@ -200,7 +200,7 @@ const UserBtn = styled.button`
 `;
 
 const UserUl = styled.ul`
-  display: ${({ isActive }) => (isActive ? 'block' : 'none')};
+  display: ${({ $isActive }) => ($isActive ? 'block' : 'none')};
   position: absolute;
   top: 100%;
   right: 0;
