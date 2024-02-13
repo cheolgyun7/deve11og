@@ -7,12 +7,17 @@ import { deleteObject, ref, uploadBytes } from '@firebase/storage';
 import { uuidv4 } from '@firebase/util';
 import { useDispatch, useSelector } from 'react-redux';
 import { DELETE_BOARD, INSERT_BOARD } from '../../redux/modules/board';
+import { useParams } from 'react-router-dom';
 
 const Write = () => {
   const dispatch = useDispatch();
-  const board = useSelector((item) => item.board);
-
-  console.log('board', board);
+  const { userId } = useParams();
+  const question = useSelector((state) => {
+    // Redux 상태에서 userId와 일치하는 질문을 찾음
+    console.log(state.user);
+    return state.list.board.find((item) => item.user_id === userId);
+  });
+  console.log(question);
 
   // 게시물 state들
   const [title, setTitle] = useState('');
