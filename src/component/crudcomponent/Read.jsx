@@ -12,29 +12,26 @@ import { getDownloadURL, ref } from 'firebase/storage';
 const Read = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const list = useSelector(
-    (state) => state.list.board,
-    (prev, next) => prev === next
-  ); // 비교 함수 추가
+  const list = useSelector((state) => state.list.board); // 비교 함수 추가
   console.log(list);
 
-  useEffect(() => {
-    const fetchImage = async () => {
-      const promise = list
-        .filter((item) => item.category === 'discussion')
-        .map(async (item) => {
-          const imageRef = ref(storage, `thumbnail/${item.thumbnail}`);
-          const imageUrl = await getDownloadURL(imageRef);
-          return {
-            ...item,
-            imageUrl
-          };
-        });
-      const result = await Promise.all(promise);
-      setImageCard(result);
-    };
-    fetchImage();
-  }, [list]); // useEffect의 의존성 변경
+  // useEffect(() => {
+  //   const fetchImage = async () => {
+  //     const promise = list
+  //       .filter((item) => item.category === 'discussion')
+  //       .map(async (item) => {
+  //         const imageRef = ref(storage, `thumbnail/${item.thumbnail}`);
+  //         const imageUrl = await getDownloadURL(imageRef);
+  //         return {
+  //           ...item,
+  //           imageUrl
+  //         };
+  //       });
+  //     const result = await Promise.all(promise);
+  //     setImageCard(result);
+  //   };
+  //   fetchImage();
+  // }, [list]); // useEffect의 의존성 변경
 
   const [imageCard, setImageCard] = useState([]);
 
@@ -49,7 +46,7 @@ const Read = () => {
     <MainContents>
       <h2>커뮤니티</h2>
       <CardBox>
-        {imageCard.map((item) => (
+        {list.map((item) => (
           <CardArticle key={item.user_id}>
             <CardThumbnail>
               <img src={item.imageUrl} alt="이미지" />
