@@ -7,9 +7,9 @@ export const UPDATE_BOARD = 'UPDATE_BOARD';
 export const SET_DELETEBOARD = 'SET_DELETEBOARD';
 
 // 액션 생성자 함수 정의
-export const updateBoard = (updatedBoard) => ({
+export const updateBoard = (updateBoard) => ({
   type: UPDATE_BOARD,
-  payload: updatedBoard
+  payload: updateBoard
 });
 
 // 액션 생성자 함수

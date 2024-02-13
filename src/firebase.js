@@ -15,7 +15,6 @@ const firebaseConfig = {
   messagingSenderId: '320210316524',
   appId: '1:320210316524:web:2dccecd838fb5f40da89c9'
 };
-
 // const firebaseConfig = {
 //   apiKey: 'AIzaSyD0H9YwNzpGGG3kMRGV6MS-odOE92Hy_ms',
 //   authDomain: 'insert-board.firebaseapp.com',
