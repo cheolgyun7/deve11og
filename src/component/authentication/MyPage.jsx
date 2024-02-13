@@ -137,8 +137,8 @@ const MyPage = () => {
   };
 
   useEffect(() => {
-    const googleImg = user_img.indexOf('googleusercontent');
-    const githubImg = user_img.indexOf('githubusercontent');
+    const googleImg = user_img ? user_img.indexOf('googleusercontent') : -1;
+    const githubImg = user_img ? user_img.indexOf('githubusercontent') : -1;
     if (googleImg < 0 && githubImg < 0 && user_img !== null && user_img !== DEFAULT_IMAGE) {
       setIsImageRemovable(true);
     }
