@@ -1,10 +1,10 @@
 import { combineReducers, createStore } from 'redux';
-import album from '../modules/album';
+import list from '../modules/list';
 import board from '../modules/board';
 import user from '../modules/user';
 
 const rootReducer = combineReducers({
-  album,
+  list,
   board,
   user
 });
