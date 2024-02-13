@@ -4,7 +4,7 @@ import { deleteObject, getDownloadURL, getStorage, ref, uploadBytes } from 'fire
 import React, { useEffect, useRef, useState } from 'react';
 import { Section } from 'styles/SharedStyle';
 import userDefaultImage from '../../image/userImage.png';
-import { updateProfile } from 'firebase/auth';
+import { sendPasswordResetEmail, updateProfile } from 'firebase/auth';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateImage, updateNickname } from '../../redux/modules/user';
 import { collection, getDocs, query, where } from 'firebase/firestore';
@@ -120,7 +120,16 @@ const MyPage = () => {
   };
 
   //비밀번호 재설정
-  const changePassword = () => {};
+  const changePassword = () => {
+    sendPasswordResetEmail(auth, email)
+      .then(() => {
+        alert('재설정 메일을 발송하였습니다.');
+      })
+      .catch((error) => {
+        console.error(error);
+        alert('에러가 발생했습니다. 다시 시도해주세요.');
+      });
+  };
 
   useEffect(() => {
     setNickname(nicknameData);
@@ -147,12 +156,12 @@ const MyPage = () => {
         //     alert('에러가 발생했습니다.');
         //   });
 
-        // initial.push({ id: doc.id, ...doc.data() });
+        initial.push({ id: doc.id, ...doc.data() });
       });
 
       // firestore에서 가져온 데이터를 state에 전달
       console.log(initial);
-      setBoards([...initial]);
+      setBoards(initial);
     };
 
     fetchData();
