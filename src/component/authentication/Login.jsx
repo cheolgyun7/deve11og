@@ -27,25 +27,31 @@ const Login = () => {
     event.preventDefault();
     // 이메일 검사
     const userDB = localStorage.getItem('usersDB');
-    const json = JSON.parse(userDB);
-    const emailTest = json.some((prev) => prev.email === email);
+    if (userDB !== null) {
+      const json = JSON.parse(userDB);
+      const emailTest = json.some((prev) => prev.email === email);
 
-    if (!emailTest) {
-      alert('이메일이 존재 하지 않습니다');
-      return false;
-    }
-    try {
-      // signInWithEmailAndPassword 현재 입력된 이메일이 파이어베이스에 있는 계정과 같은지 비교
-      const userCredential = await signInWithEmailAndPassword(auth, email, pwd);
-      console.log(userCredential);
-      navigate('/');
-    } catch (error) {
-      const errorCode = error.code;
-      if (errorCode === 'auth/invalid-credential') {
-        // 비밀번호 에러
-        alert('비밀번호를 확인해주세요');
-        console.log('비밀번호', errorCode);
+      if (!emailTest) {
+        alert('이메일이 존재 하지 않습니다');
+        return false;
       }
+
+      try {
+        // signInWithEmailAndPassword 현재 입력된 이메일이 파이어베이스에 있는 계정과 같은지 비교
+        const userCredential = await signInWithEmailAndPassword(auth, email, pwd);
+        console.log(userCredential);
+        navigate('/');
+      } catch (error) {
+        const errorCode = error.code;
+        if (errorCode === 'auth/invalid-credential') {
+          // 비밀번호 에러
+          alert('비밀번호를 확인해주세요');
+          console.log('비밀번호', errorCode);
+        }
+      }
+    } else {
+      alert('운영진에게 문의주세요!');
+      return false;
     }
   };
 
@@ -119,7 +125,6 @@ const Login = () => {
       const userDB = localStorage.getItem('usersDB');
       const json = JSON.parse(userDB);
       const nicknameIncludes = json.some((prev) => prev.nickname === user.displayName);
-
       if (nicknameIncludes) {
         // 닉네임이 이미 존재하는 경우 새로운 닉네임 생성
         const newNickname = newGitGoogleName;

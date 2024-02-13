@@ -29,6 +29,14 @@ const MyPage = () => {
       await uploadBytes(imageRef, file);
 
       const downloadURL = await getDownloadURL(imageRef);
+
+      // 로컬스토리지 추가
+      const userDB = localStorage.getItem('usersDB');
+      const json = JSON.parse(userDB);
+      const index = json.findIndex((prev) => prev.user_id === user_id);
+      json[index].user_img = downloadURL;
+      localStorage.setItem('usersDB', JSON.stringify(json));
+
       dispatch(updateImage(downloadURL));
 
       updateProfile(auth.currentUser, {
@@ -54,10 +62,17 @@ const MyPage = () => {
     const desertRef = ref(storage, path);
     deleteObject(desertRef)
       .then(() => {
-        dispatch(removeUserImage());
+        // 로컬스토리지 추가
+        const userDB = localStorage.getItem('usersDB');
+        const json = JSON.parse(userDB);
+        const index = json.findIndex((prev) => prev.user_id === user_id);
+        json[index].user_img = DEFAULT_IMAGE;
+        localStorage.setItem('usersDB', JSON.stringify(json));
+
+        dispatch(updateImage(DEFAULT_IMAGE));
 
         updateProfile(auth.currentUser, {
-          photoURL: ''
+          photoURL: DEFAULT_IMAGE
         })
           .then(() => {
             alert('삭제가 완료되었습니다.');
@@ -95,6 +110,13 @@ const MyPage = () => {
     if (nicknameData === nickname) {
       return alert('이전 닉네임과 같습니다.');
     }
+    // 로컬스토리지 추가
+    const userDB = localStorage.getItem('usersDB');
+    const json = JSON.parse(userDB);
+    const index = json.findIndex((prev) => prev.user_id === user_id);
+    json[index].nickname = nickname;
+    localStorage.setItem('usersDB', JSON.stringify(json));
+
     dispatch(updateNickname(nickname));
 
     updateProfile(auth.currentUser, {
