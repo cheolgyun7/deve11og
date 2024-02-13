@@ -2,6 +2,7 @@ const USER_NOW_DB = 'USER_NOW_DB';
 const USER_LOGIN_DB = 'USER_LOGIN_DB';
 const UPDATE_NICKNAME = 'UPDATE_NICKNAME';
 const UPDATE_IMAGE = 'UPDATE_IMAGE';
+const REMOVE_USER_IMAGE = 'REMOVE_USER_IMAGE';
 
 export const setUserNowDB = (userDB) => {
   return {
@@ -28,6 +29,12 @@ export const updateImage = (payload) => {
   return {
     type: UPDATE_IMAGE,
     payload
+  };
+};
+
+export const removeUserImage = () => {
+  return {
+    type: REMOVE_USER_IMAGE
   };
 };
 
@@ -65,6 +72,13 @@ const user = (state = initialState, action) => {
         nowUser: {
           ...state.nowUser,
           user_img: action.payload
+        }
+      };
+    case REMOVE_USER_IMAGE:
+      return {
+        nowUser: {
+          ...state.nowUser,
+          user_img: ''
         }
       };
     default:
