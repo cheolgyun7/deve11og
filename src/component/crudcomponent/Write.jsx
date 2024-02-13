@@ -8,29 +8,14 @@ import { uuidv4 } from '@firebase/util';
 import { useDispatch, useSelector } from 'react-redux';
 import { completedEditBoard, deleteBoard, insertBoard, setBoard } from '../../redux/modules/board';
 import imageFrames from '../../image/imageFrames.png';
+import { useNavigate } from 'react-router';
 
 const Write = () => {
-  // // 파이어베이스에 저장된 데이터 가져오기
-  useEffect(() => {
-    const fetchData = async () => {
-      const boardData = query(collection(db, 'board'));
-      const querySnapshot = await getDocs(boardData);
-
-      const initialBoard = [];
-      querySnapshot.forEach((doc) => {
-        const data = {
-          id: doc.id,
-          ...doc.data()
-        };
-        initialBoard.push(data);
-      });
-      dispatch(setBoard(initialBoard));
-    };
-    fetchData();
-  }, []);
+  const nowUser = useSelector((state) => state.user.nowUser);
 
   const dispatch = useDispatch();
-  const board = useSelector((item) => item.board);
+  // const board = useSelector((item) => item.board);
+  const navigate = useNavigate();
 
   // 게시물 state들
   const [title, setTitle] = useState('');
@@ -87,19 +72,18 @@ const Write = () => {
     const imageUrl = await getDownloadURL(imgRef);
 
     try {
-      const newBoard = {
+      let newBoard = {
         category,
         title,
         contents,
         regDate,
         thumbnail: thumbnailId, // 이미지의 UUID를 게시물에 저장
         imageUrl,
-        nickName: '테스트',
-        user_id: '테스트',
+        nickname: nowUser.nickname,
+        user_id: nowUser.user_id,
         cnt: 0,
         liked: 0
       };
-      //이미지를 빈값으로 넣고, 스토리지에 이미지만 따로 저장하고, 이미지 다운로드 후에 새로 객체를 만들어서 데이터베이스에 적용
 
       // 유효성 검사
       if (!title) {
@@ -125,6 +109,8 @@ const Write = () => {
       imgRemove();
 
       alert('게시물이 등록되었습니다.');
+
+      navigate = `/${category}/게시물id`;
     } catch (error) {
       console.error('게시물 등록 실패', error);
     }
@@ -156,6 +142,8 @@ const Write = () => {
     }
   };
 
+  //  등록폼에 넣은 이미지 url을 구조분해할당으로 뽑아서 사용하세요
+
   // 수정
   const [isEditing, setIsEditing] = useState(false); // 수정 모드 여부 스테이트
   const [updateBoard, setUpdateBoard] = useState(''); //  수정 데이터 저장
@@ -186,9 +174,12 @@ const Write = () => {
         thumbnail: updateBoard.thumbnail,
         imageUrl
       };
+      console.log('imageUrl', imageUrl);
       await updateDoc(doc(db, 'board', question.id), completedBoard);
+      console.log('completedBoard', completedBoard);
       dispatch(completedEditBoard(completedBoard));
       alert('게시물이 수정되었습니다.');
+      navigate('/');
     } catch (error) {
       console.error('수정 실패', error);
     }
@@ -242,20 +233,22 @@ const Write = () => {
         </AddBoardForm>
       </AddBoard>
       {/* 수정, 삭제를 위한 테스트 코드 */}
-      {board.map((item) => {
-        return (
-          <div key={item.id}>
-            <img src={item.imageUrl} alt="" />
-            <div>아이디 ***************************{item.id}</div>
-            <div>{item.category}</div>
-            <div>{item.title}</div>
-            <div>{item.contents}</div>
-            <div>{item.regDate}</div>
-            <button onClick={() => editingBoard(item)}>수정</button>
-            <button onClick={() => removeBoard(item.id, item.thumbnail)}>삭제</button>
-          </div>
-        );
-      })}
+      {/* <div>
+        {board.map((item) => {
+          return (
+            <div key={item.id}>
+              <img src={item.imageUrl} alt="" />
+              <div>아이디 ***************************{item.id}</div>
+              <div>{item.category}</div>
+              <div>{item.title}</div>
+              <div>{item.contents}</div>
+              <div>{item.regDate}</div>
+              <button onClick={() => editingBoard(item)}>수정</button>
+              <button onClick={() => removeBoard(item.id, item.thumbnail)}>삭제</button>
+            </div>
+          );
+        })}
+      </div> */}
     </Section>
   );
 };
