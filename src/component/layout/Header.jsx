@@ -6,20 +6,56 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { auth } from '../../firebase';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { useDispatch } from 'react-redux';
-import { setUserLoginDB, setUserNowDB } from '../../redux/modules/user';
+import { setUserNowDB } from '../../redux/modules/user';
 import { useSelector } from 'react-redux';
+import { collection, getDocs } from 'firebase/firestore';
+import { db } from '../../firebase';
 
 const Header = () => {
   const [logoutBool, setLogoutBool] = useState(false);
   const [isActive, setIsActive] = useState(false);
+  const [userImg, setUserImg] = useState(null);
+  const userloginDB = useSelector((state) => state.user.userloginDB);
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const location = useLocation();
   const nowUser = useSelector((state) => state.user.nowUser);
+
   // 프로필사진
   const img = nowUser.user_img;
+  // 쿠키 가져오기
+  const getCookie = (cookieName) => {
+    cookieName = `${cookieName}=`;
+    let cookieData = document.cookie;
 
+    let cookieValue = '';
+    let start = cookieData.indexOf(cookieName);
+
+    if (start !== -1) {
+      start += cookieName.length;
+      let end = cookieData.indexOf(';', start);
+      if (end === -1) end = cookieData.length;
+      cookieValue = cookieData.substring(start, end);
+    }
+
+    return unescape(cookieValue);
+  };
+  const uid = getCookie('uid');
+
+  const showAllDocuments = async () => {
+    try {
+      const querySnapshot = await getDocs(collection(db, 'usersDB'));
+      const arr = [];
+      querySnapshot.forEach((doc) => {
+        arr.push(doc.data());
+      });
+    } catch (error) {
+      console.error('Error getting documents: ', error);
+    }
+  };
+
+  showAllDocuments();
   // location의 정보에 로그인창, 회원가입창 이면 true
   const loginPage = location.pathname === '/login';
   const registerPage = location.pathname === '/register';
@@ -40,12 +76,6 @@ const Header = () => {
         user_img: user_img
       })
     );
-    dispatch(setUserLoginDB({ user_id: user_id, email: email, nickname: nickname }));
-    // 쿠키
-    let todayDate = new Date();
-    // 쿠키 1시간 유효기간 설정
-    todayDate.setTime(todayDate.getTime() + 1 * 60 * 60 * 1000);
-    document.cookie = `uid=${user_id}; expires=${todayDate.toUTCString()};path=/;`;
   };
 
   // 쿠키삭제
@@ -97,8 +127,14 @@ const Header = () => {
       // 현재 유저가 로그인 되어있는지 확인
       onAuthStateChanged(auth, (user) => {
         if (user) {
+          // 쿠키
+          let todayDate = new Date();
+          // 쿠키 1시간 유효기간 설정
+          todayDate.setTime(todayDate.getTime() + 1 * 60 * 60 * 1000);
+          document.cookie = `uid=${user.uid}; expires=${todayDate.toUTCString()};path=/;`;
           setLogoutBool(true);
           signUser();
+          // img();
         } else {
           setLogoutBool(false);
         }
@@ -124,7 +160,7 @@ const Header = () => {
                 </ImgDiv>
                 <UserMenuDiv onBlur={userMenuOnBlur}>
                   <UserBtn onClick={userIsActiveBtn}>🔽</UserBtn>
-                  <UserUl isActive={isActive}>
+                  <UserUl $isActive={isActive}>
                     <UserLi>
                       <StyledLink to="/mypage">마이페이지</StyledLink>
                     </UserLi>
@@ -200,7 +236,7 @@ const UserBtn = styled.button`
 `;
 
 const UserUl = styled.ul`
-  display: ${({ isActive }) => (isActive ? 'block' : 'none')};
+  display: ${({ $isActive }) => ($isActive ? 'block' : 'none')};
   position: absolute;
   top: 100%;
   right: 0;

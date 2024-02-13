@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Section } from 'styles/SharedStyle';
-import { auth } from '../../firebase';
+import { auth, db } from '../../firebase';
 import {
   GithubAuthProvider,
   GoogleAuthProvider,
@@ -11,21 +11,34 @@ import {
 } from 'firebase/auth';
 import styled from 'styled-components';
 import gitIcon from '../../image/github-mark-white.svg';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { collection, doc, getDocs, query, setDoc } from 'firebase/firestore';
+import { setUserLoginDB } from '../../redux/modules/user';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [pwd, setPwd] = useState('');
   const navigate = useNavigate();
   const userloginDB = useSelector((state) => state.user.userloginDB);
-  console.log('--------------', userloginDB);
+  const dispatch = useDispatch();
+  const collectionRef = collection(db, 'usersDB');
+
+  // const emailTest = async () => {
+  //   const querySnapshot = await getDocs(collection(db, 'usersDB'));
+
+  //   querySnapshot.forEach((doc) => {
+  //     const email = doc.data().email;
+  //   });
+  // };
+  // console.log(emailTest);
 
   // 로그인
   const formOnSubmit = async (event) => {
     event.preventDefault();
     // 이메일 검사
-    const emailIncludes = userloginDB.some((prev) => prev.email === email);
-    if (!emailIncludes) {
+    const emailTest = userloginDB.some((prev) => prev.email === email);
+
+    if (!emailTest) {
       alert('이메일이 존재 하지 않습니다');
       return false;
     }
@@ -61,6 +74,23 @@ const Login = () => {
       // signInWithPopup 연동되는 것을 팝업창으로 확인
       const result = await signInWithPopup(auth, provier);
       const user = result.user;
+      const newData = {
+        nickname: user.displayName,
+        email: user.email,
+        user_img: user.photoURL,
+        user_id: user.uid
+      };
+
+      const docRef = doc(collectionRef, user.uid);
+      await setDoc(docRef, newData);
+      const q = query(collection(db, 'usersDB'));
+      const querySnapshot = await getDocs(q);
+      console.log(querySnapshot);
+      const initial = [];
+      querySnapshot.forEach((doc) => {
+        initial.push({ ...doc.data() });
+      });
+      dispatch(setUserLoginDB([...initial]));
       navigate('/');
       console.log(user);
     } catch (error) {
@@ -75,6 +105,23 @@ const Login = () => {
       // signInWithPopup 연동되는 것을 팝업창으로 확인
       const result = await signInWithPopup(auth, provier);
       const user = result.user;
+      const newData = {
+        nickname: user.displayName,
+        email: user.email,
+        user_img: user.photoURL,
+        user_id: user.uid
+      };
+
+      const docRef = doc(collectionRef, user.uid);
+      await setDoc(docRef, newData);
+      const q = query(collection(db, 'usersDB'));
+      const querySnapshot = await getDocs(q);
+      console.log(querySnapshot);
+      const initial = [];
+      querySnapshot.forEach((doc) => {
+        initial.push({ ...doc.data() });
+      });
+      dispatch(setUserLoginDB([...initial]));
       navigate('/');
       console.log(user);
     } catch (error) {
