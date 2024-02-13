@@ -3,10 +3,10 @@ import styled from 'styled-components';
 import { Section } from 'styles/SharedStyle';
 import { db, storage } from '../../firebase';
 import { addDoc, collection, deleteDoc, doc, getDocs, query, updateDoc } from 'firebase/firestore';
-import { deleteObject, ref, uploadBytes } from '@firebase/storage';
+import { deleteObject, getDownloadURL, ref, uploadBytes } from '@firebase/storage';
 import { uuidv4 } from '@firebase/util';
 import { useDispatch, useSelector } from 'react-redux';
-import { deleteBoard, insertBoard, setBoard } from '../../redux/modules/board';
+import { completedEditBoard, deleteBoard, insertBoard, setBoard, upBoard } from '../../redux/modules/board';
 import imageFrames from '../../image/imageFrames.png';
 import { useParams } from 'react-router-dom';
 
@@ -32,13 +32,6 @@ const Write = () => {
 
   const dispatch = useDispatch();
   const board = useSelector((item) => item.board);
-  const { userId } = useParams();
-  const question = useSelector((state) => {
-    // Redux 상태에서 userId와 일치하는 질문을 찾음
-    console.log(state.user);
-    return state.list.board.find((item) => item.user_id === userId);
-  });
-  console.log(question);
 
   // 게시물 state들
   const [title, setTitle] = useState('');
@@ -48,9 +41,6 @@ const Write = () => {
 
   // 이미지 id
   const thumbnailId = uuidv4();
-
-  // 썸네일 기본 이미지 url(깃헙에 저장된 이미지)
-  // const defaultImgUrl = 'https://github.com/cheolgyun7/deve11og/raw/dev/src/image/userImage.png';
 
   // 포커스 변수들
   const titleRef = useRef(null);
@@ -101,6 +91,7 @@ const Write = () => {
         cnt: 0,
         liked: 0
       };
+      //이미지를 빈값으로 넣고, 스토리지에 이미지만 따로 저장하고, 이미지 다운로드 후에 새로 객체를 만들어서 데이터베이스에 적용
 
       // 유효성 검사
       if (!title) {
@@ -129,7 +120,7 @@ const Write = () => {
       setCategory('');
       imgRemove();
 
-      alert(`"${title}" 게시물이 등록되었습니다.`);
+      alert('게시물이 등록되었습니다.');
     } catch (error) {
       console.error('게시물 등록 실패', error);
     }
@@ -165,30 +156,39 @@ const Write = () => {
   const [isEditing, setIsEditing] = useState(false); // 수정 모드 여부 스테이트
   const [updateBoard, setUpdateBoard] = useState(''); //  수정 데이터 저장
 
-  const editingBoard = (item) => {
+  const editingBoard = async (item) => {
     if (window.confirm('게시물을 수정하시겠습니까?')) {
       setUpdateBoard(item); // 수정할 데이터를 상태에 저장
       setIsEditing(true); // 수정 모드로 변경
+      console.log('thumbnailId', item.thumbnail);
+      const imageRef = ref(storage, `thumbnail/` + item.thumbnail);
+      const url = await getDownloadURL(imageRef);
+      setUpdateBoard((prevState) => ({ ...prevState, thumbnail: url }));
     }
   };
 
   // 수정 완료 버튼 클릭 시
   const updateBoardForm = async (e) => {
     e.preventDefault();
-
+    console.log('updateBoard', updateBoard);
     try {
       const completedBoard = {
         ...updateBoard,
         category,
         title,
         contents,
-        thumbnail: thumbnailId // 이미지의 UUID를 게시물에 저장
+        thumbnail: thumbnailId
         // user_id: '테스트'
       };
-
+      console.log('completedBoard', completedBoard);
       await updateDoc(doc(db, 'board', updateBoard.id), completedBoard);
-      dispatch(updateBoard(completedBoard));
-      alert(`"${title}" 게시물이 수정되었습니다.`);
+
+      dispatch(completedEditBoard(completedBoard));
+
+      // 파이어베이스에선 수정됨 이미지 수정 어찌하는지 찾아볼것
+      // 수정 후 오류 원인 해결 안됨
+
+      alert('게시물이 수정되었습니다.');
     } catch (error) {
       console.error('수정 실패', error);
     }
@@ -210,29 +210,31 @@ const Write = () => {
             type="text"
             placeholder="제목을 입력해 주세요"
           />
-          {/* 회원이 이미지 파일을 업로드 한 경우 미리보기 */}
-          {/* 인풋 파일에 이미지를 추가하면 URL.createObjectURL()함수가 이미지를 url로 변환해서 src에 넣어줌 */}
-          {thumbnail ? (
-            <PreviewDiv>
-              <img src={URL.createObjectURL(thumbnail)} alt="이미지" />
-              <button onClick={imgRemove}>이미지 삭제</button>
-            </PreviewDiv>
-          ) : (
-            <ThumbnailDiv>
-              <img src={imageFrames} alt="이미지 프레임" />
-              <label htmlFor="thumbnail">
-                <ThumbnailBtn>{isEditing ? '이미지 변경' : '이미지 추가'}</ThumbnailBtn>
-              </label>
-              <ThumbnailInput onChange={thumbnailChanged} type="file" accept="image/*" id="thumbnail" />
-            </ThumbnailDiv>
-          )}
+          <ContentDiv>
+            {/* 회원이 이미지 파일을 업로드 한 경우 미리보기 */}
+            {/* 인풋 파일에 이미지를 추가하면 URL.createObjectURL()함수가 이미지를 url로 변환해서 src에 넣어줌 */}
+            {thumbnail ? (
+              <PreviewDiv>
+                <img src={URL.createObjectURL(thumbnail)} alt="이미지" />
+                <button onClick={imgRemove}>이미지 삭제</button>
+              </PreviewDiv>
+            ) : (
+              <ThumbnailDiv>
+                <img src={isEditing ? updateBoard.thumbnail : imageFrames} alt="이미지" />
+                <label htmlFor="thumbnail">
+                  <ThumbnailBtn>{isEditing ? '이미지 변경' : '이미지 추가'}</ThumbnailBtn>
+                </label>
+                <ThumbnailInput onChange={thumbnailChanged} type="file" accept="image/*" id="thumbnail" />
+              </ThumbnailDiv>
+            )}
 
-          <textarea
-            value={isEditing ? updateBoard.contents : contents}
-            onChange={contentChanged}
-            ref={contentsRef}
-            placeholder="내용을 입력해 주세요"
-          ></textarea>
+            <textarea
+              value={isEditing ? updateBoard.contents : contents}
+              onChange={contentChanged}
+              ref={contentsRef}
+              placeholder="내용을 입력해 주세요"
+            ></textarea>
+          </ContentDiv>
           <AddBtnDiv>
             <button type="submit">{isEditing ? '수정 완료' : '작성 완료'}</button>
           </AddBtnDiv>
@@ -275,26 +277,29 @@ const AddBoardForm = styled.form`
   justify-content: space-evenly;
   border: 0.2rem solid #f5f5f5;
   position: relative;
+`;
+
+const ContentDiv = styled.div`
+  width: 95%;
+  display: flex;
+  flex-direction: row;
+
   textarea {
     width: 95%;
     height: 30rem;
     padding: 1rem;
     background-color: transparent;
     border: none;
-    border-radius: 2rem;
     font-size: 1rem;
   }
 `;
-
 const PreviewDiv = styled.div`
-  height: 25rem;
-
-  display: flex;
-  flex-direction: column;
+  width: 50%;
+  height: 30rem;
+  text-align: center;
   img {
     width: 100%;
-    height: 10rem;
-    margin-bottom: 0.5rem;
+    max-height: 30rem;
   }
   button {
     background-color: transparent;
@@ -307,15 +312,12 @@ const PreviewDiv = styled.div`
 `;
 
 const ThumbnailDiv = styled.div`
-  width: 30%;
-  height: 25rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  width: 50%;
+  height: 30rem;
+  text-align: center;
   img {
-    width: 50%;
-    height: 10rem;
-    margin-bottom: 0.5rem;
+    width: 100%;
+    max-height: 30rem;
   }
   button {
     cursor: pointer;
@@ -362,7 +364,7 @@ const AddBtnDiv = styled.div`
   gap: 1rem;
   position: absolute;
   bottom: -5%;
-  right: -5%;
+  right: -13%;
   button {
     background-color: transparent;
     border: none;

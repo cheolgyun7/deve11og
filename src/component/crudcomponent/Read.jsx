@@ -18,23 +18,24 @@ const Read = () => {
   ); // 비교 함수 추가
   console.log(list);
 
-  useEffect(() => {
-    const fetchImage = async () => {
-      const promise = list
-        .filter((item) => item.category === 'discussion')
-        .map(async (item) => {
-          const imageRef = ref(storage, `thumbnail/${item.thumbnail}`);
-          const imageUrl = await getDownloadURL(imageRef);
-          return {
-            ...item,
-            imageUrl
-          };
-        });
-      const result = await Promise.all(promise);
-      setImageCard(result);
-    };
-    fetchImage();
-  }, [list]); // useEffect의 의존성 변경
+  // useEffect(() => {
+  //   const fetchImage = async () => {
+  //     const promise = list
+  //       .filter((item) => item.category === 'discussion')
+  //       .map(async (item) => {
+  //         const imageRef = ref(storage, `thumbnail/${item.thumbnail}`);
+
+  //         const imageUrl = await getDownloadURL(imageRef);
+  //         return {
+  //           ...item,
+  //           imageUrl
+  //         };
+  //       });
+  //     const result = await Promise.all(promise);
+  //     setImageCard(result);
+  //   };
+  //   fetchImage();
+  // }, [list]); // useEffect의 의존성 변경
 
   const [imageCard, setImageCard] = useState([]);
 

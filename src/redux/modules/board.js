@@ -19,7 +19,7 @@ export const deleteBoard = (payload) => {
     payload
   };
 };
-export const updateBoard = (payload) => {
+export const completedEditBoard = (payload) => {
   return {
     type: UPDATE_BOARD,
     payload
@@ -27,19 +27,7 @@ export const updateBoard = (payload) => {
 };
 
 // 초기 상태값
-const initialState = [
-  {
-    category: '',
-    title: '',
-    contents: '',
-    regDate: '',
-    thumbnail: '', // 이미지의 UUID를 게시물에 저장
-    nickName: '',
-    user_id: '',
-    cnt: 0,
-    liked: 0
-  }
-];
+const initialState = [];
 
 // Action Values
 export const INSERT_BOARD = 'INSERT_BOARD';
