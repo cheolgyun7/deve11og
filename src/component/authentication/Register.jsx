@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
 import { Section } from 'styles/SharedStyle';
-import { createUserWithEmailAndPassword, signOut, updateProfile } from 'firebase/auth';
+import { createUserWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile } from 'firebase/auth';
 import { auth } from '../../firebase';
 import { Link, useNavigate } from 'react-router-dom';
 import { LoginBtn, LoginDiv, LoginForm, LoginInput, LoginMain } from './Login';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { collection, setDoc, doc, query, getDocs } from 'firebase/firestore';
+import { db } from '../../firebase';
+import { setUserLoginDB } from '../../redux/modules/user';
 
 const Register = () => {
   const [nickname, setNickname] = useState('');
@@ -14,6 +17,8 @@ const Register = () => {
 
   const navigate = useNavigate();
   const userloginDB = useSelector((state) => state.user.userloginDB);
+  const collectionRef = collection(db, 'usersDB');
+  const dispatch = useDispatch();
 
   // 회원가입
   const signUp = async (event) => {
@@ -35,10 +40,36 @@ const Register = () => {
             // import 해서 가져오면 안뜨는 오류 때문에 github에서 이미지링크로 가져왔습니다
             photoURL: 'https://github.com/cheolgyun7/deve11og/blob/dev/src/image/userImage.png?raw=true'
           });
+
+          onAuthStateChanged(auth, async (user) => {
+            if (user) {
+              const newData = {
+                nickname: user.displayName,
+                email: user.email,
+                user_img: user.photoURL,
+                user_id: user.uid
+              };
+              try {
+                const docRef = doc(collectionRef, user.uid);
+                await setDoc(docRef, newData);
+
+                const q = query(collection(db, 'usersDB'));
+                const querySnapshot = await getDocs(q);
+                console.log(querySnapshot);
+                const initial = [];
+                querySnapshot.forEach((doc) => {
+                  initial.push({ ...doc.data() });
+                });
+                dispatch(setUserLoginDB([...initial]));
+              } catch (error) {
+                console.error(error);
+              }
+            }
+          });
+          alert('회원가입 완료! 로그인해주세요!');
           // 회원가입하면 자동로그인 방지 위해 여기서 로그아웃
           signOut(auth);
 
-          alert('회원가입 완료! 로그인해주세요!');
           navigate('/login');
         } catch (error) {
           const errorCode = error.code;
