@@ -1,31 +1,36 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Section } from 'styles/SharedStyle';
-import { auth } from '../../firebase';
+import { auth, db } from '../../firebase';
 import {
   GithubAuthProvider,
   GoogleAuthProvider,
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
-  signInWithPopup
+  signInWithPopup,
+  updateProfile
 } from 'firebase/auth';
 import styled from 'styled-components';
 import gitIcon from '../../image/github-mark-white.svg';
-import { useSelector } from 'react-redux';
+import { collection, doc, getDocs, query, setDoc } from 'firebase/firestore';
+import { uuidv4 } from '@firebase/util';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [pwd, setPwd] = useState('');
   const navigate = useNavigate();
-  const userloginDB = useSelector((state) => state.user.userloginDB);
-  console.log('--------------', userloginDB);
+  const collectionRef = collection(db, 'usersDB');
+  const newGitGoogleName = uuidv4();
 
   // 로그인
   const formOnSubmit = async (event) => {
     event.preventDefault();
     // 이메일 검사
-    const emailIncludes = userloginDB.some((prev) => prev.email === email);
-    if (!emailIncludes) {
+    const userDB = localStorage.getItem('usersDB');
+    const json = JSON.parse(userDB);
+    const emailTest = json.some((prev) => prev.email === email);
+
+    if (!emailTest) {
       alert('이메일이 존재 하지 않습니다');
       return false;
     }
@@ -61,10 +66,44 @@ const Login = () => {
       // signInWithPopup 연동되는 것을 팝업창으로 확인
       const result = await signInWithPopup(auth, provier);
       const user = result.user;
+      const userDB = localStorage.getItem('usersDB');
+      const json = JSON.parse(userDB);
+      const nicknameIncludes = json.some((prev) => prev.nickname === user.displayName);
+
+      if (nicknameIncludes) {
+        // 닉네임이 이미 존재하는 경우 새로운 닉네임 생성
+        const newNickname = newGitGoogleName;
+
+        // 새로운 닉네임으로 프로필 업데이트
+        await updateProfile(user, {
+          displayName: newNickname
+        });
+
+        // 사용자 정보에 새로운 닉네임 반영
+        user.displayName = newNickname;
+      }
+      const newData = {
+        nickname: user.displayName,
+        email: user.email,
+        user_img: user.photoURL,
+        user_id: user.uid
+      };
+
+      const docRef = doc(collectionRef, user.uid);
+      await setDoc(docRef, newData);
+      const q = query(collection(db, 'usersDB'));
+      const querySnapshot = await getDocs(q);
+      console.log(querySnapshot);
+      const initial = [];
+      querySnapshot.forEach((doc) => {
+        initial.push({ ...doc.data() });
+      });
       navigate('/');
       console.log(user);
     } catch (error) {
+      alert('이미 있는 이메일 입니다!');
       console.log(error);
+      return false;
     }
   };
 
@@ -73,12 +112,49 @@ const Login = () => {
     const provier = new GithubAuthProvider();
     try {
       // signInWithPopup 연동되는 것을 팝업창으로 확인
+
       const result = await signInWithPopup(auth, provier);
       const user = result.user;
+
+      const userDB = localStorage.getItem('usersDB');
+      const json = JSON.parse(userDB);
+      const nicknameIncludes = json.some((prev) => prev.nickname === user.displayName);
+
+      if (nicknameIncludes) {
+        // 닉네임이 이미 존재하는 경우 새로운 닉네임 생성
+        const newNickname = newGitGoogleName;
+
+        // 새로운 닉네임으로 프로필 업데이트
+        await updateProfile(user, {
+          displayName: newNickname
+        });
+
+        // 사용자 정보에 새로운 닉네임 반영
+        user.displayName = newNickname;
+      }
+
+      const newData = {
+        nickname: user.displayName,
+        email: user.email,
+        user_img: user.photoURL,
+        user_id: user.uid
+      };
+
+      const docRef = doc(collectionRef, user.uid);
+      await setDoc(docRef, newData);
+      const q = query(collection(db, 'usersDB'));
+      const querySnapshot = await getDocs(q);
+      console.log(querySnapshot);
+      const initial = [];
+      querySnapshot.forEach((doc) => {
+        initial.push({ ...doc.data() });
+      });
       navigate('/');
       console.log(user);
     } catch (error) {
+      alert('이미 있는 이메일 입니다!');
       console.log(error);
+      return false;
     }
   };
 

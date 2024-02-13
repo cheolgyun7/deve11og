@@ -6,20 +6,32 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { auth } from '../../firebase';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { useDispatch } from 'react-redux';
-import { setUserLoginDB, setUserNowDB } from '../../redux/modules/user';
-import { useSelector } from 'react-redux';
+import { setUserNowDB } from '../../redux/modules/user';
+import { collection, getDocs, query } from 'firebase/firestore';
+import { db } from '../../firebase';
 
 const Header = () => {
   const [logoutBool, setLogoutBool] = useState(false);
   const [isActive, setIsActive] = useState(false);
+  const [userImg, setUserImg] = useState('');
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const location = useLocation();
-  const nowUser = useSelector((state) => state.user.nowUser);
-  // 프로필사진
-  const img = nowUser.user_img;
 
+  const showAllDocuments = async () => {
+    try {
+      const querySnapshot = await getDocs(collection(db, 'usersDB'));
+      const arr = [];
+      querySnapshot.forEach((doc) => {
+        arr.push(doc.data());
+      });
+    } catch (error) {
+      console.error('Error getting documents: ', error);
+    }
+  };
+
+  showAllDocuments();
   // location의 정보에 로그인창, 회원가입창 이면 true
   const loginPage = location.pathname === '/login';
   const registerPage = location.pathname === '/register';
@@ -32,6 +44,10 @@ const Header = () => {
     const email = userData.email;
     const nickname = userData.displayName;
     const user_img = userData.photoURL;
+    const userDB = localStorage.getItem('usersDB');
+    const json = JSON.parse(userDB);
+    const imgTest = json.findIndex((item) => item.user_id === user_id);
+    setUserImg(json[imgTest].user_img);
     dispatch(
       setUserNowDB({
         user_id: user_id,
@@ -40,12 +56,6 @@ const Header = () => {
         user_img: user_img
       })
     );
-    dispatch(setUserLoginDB({ user_id: user_id, email: email, nickname: nickname }));
-    // 쿠키
-    let todayDate = new Date();
-    // 쿠키 1시간 유효기간 설정
-    todayDate.setTime(todayDate.getTime() + 1 * 60 * 60 * 1000);
-    document.cookie = `uid=${user_id}; expires=${todayDate.toUTCString()};path=/;`;
   };
 
   // 쿠키삭제
@@ -95,10 +105,24 @@ const Header = () => {
   useEffect(() => {
     const loginCheck = () => {
       // 현재 유저가 로그인 되어있는지 확인
-      onAuthStateChanged(auth, (user) => {
+      onAuthStateChanged(auth, async (user) => {
         if (user) {
+          const q = query(collection(db, 'usersDB'));
+          const querySnapshot = await getDocs(q);
+          const initial = [];
+          querySnapshot.forEach((doc) => {
+            initial.push({ ...doc.data() });
+          });
+          localStorage.setItem('usersDB', JSON.stringify(initial));
+          // 쿠키
+          let todayDate = new Date();
+          // 쿠키 1시간 유효기간 설정
+          todayDate.setTime(todayDate.getTime() + 1 * 60 * 60 * 1000);
+          document.cookie = `uid=${user.uid}; expires=${todayDate.toUTCString()};path=/;`;
           setLogoutBool(true);
           signUser();
+
+          // console.log(userloginDB[imgTest].user_img);
         } else {
           setLogoutBool(false);
         }
@@ -119,8 +143,8 @@ const Header = () => {
             logoutBool ? (
               <>
                 {writePage ? '' : <NewPostBtn onClick={newPostBtnClick}>새 글 작성</NewPostBtn>}
-                <ImgDiv onClick={userIsActiveBtn} onBlur={userMenuOnBlur}>
-                  <ImgStyle src={img} alt="프로필사진" />
+                <ImgDiv tabIndex={0} onBlur={userMenuOnBlur}>
+                  <ImgStyle onClick={userIsActiveBtn} src={userImg} alt="프로필사진" />
                 </ImgDiv>
                 <UserMenuDiv onBlur={userMenuOnBlur}>
                   <UserBtn onClick={userIsActiveBtn}>🔽</UserBtn>

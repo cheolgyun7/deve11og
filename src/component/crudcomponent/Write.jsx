@@ -68,24 +68,16 @@ const Write = ({ isEditing, setIsEditing, item }) => {
       minute: '2-digit'
     });
 
-    // 스토리지에 이미지 등록
-    const imgRef = ref(storage, 'thumbnail/' + thumbnailId);
-    await uploadBytes(imgRef, thumbnail);
-
-    // 이미지 다운로드 URL 가져오기
-    const imageUrl = await getDownloadURL(imgRef);
-
+    e.preventDefault();
     try {
-      let newBoard = {
-        boardId,
+      const newBoard = {
         category,
         title,
         contents,
         regDate,
         thumbnail: thumbnailId, // 이미지의 UUID를 게시물에 저장
-        imageUrl,
-        nickname: nowUser.nickname,
-        user_id: nowUser.user_id,
+        nickName: '테스트',
+        user_id: '테스트',
         cnt: 0,
         liked: 0
       };
@@ -101,11 +93,14 @@ const Write = ({ isEditing, setIsEditing, item }) => {
         alert('카테고리를 선택해 주세요');
         return categoryRef.current.focus();
       }
+      // 스토리지에 이미지 등록
+      const imgRef = ref(storage, 'thumbnail/' + thumbnailId);
+
+      await uploadBytes(imgRef, thumbnail);
 
       // 파이어베이스 게시물 등록
       const collectionRef = collection(db, 'board');
       await addDoc(collectionRef, newBoard);
-
       dispatch(insertBoard(newBoard));
 
       setTitle('');

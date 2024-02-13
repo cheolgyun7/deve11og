@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { Section } from 'styles/SharedStyle';
-import { createUserWithEmailAndPassword, signOut, updateProfile } from 'firebase/auth';
+import { createUserWithEmailAndPassword, onAuthStateChanged, updateProfile } from 'firebase/auth';
 import { auth } from '../../firebase';
 import { Link, useNavigate } from 'react-router-dom';
 import { LoginBtn, LoginDiv, LoginForm, LoginInput, LoginMain } from './Login';
-import { useSelector } from 'react-redux';
+import { collection, setDoc, doc, query, getDocs } from 'firebase/firestore';
+import { db } from '../../firebase';
 
 const Register = () => {
   const [nickname, setNickname] = useState('');
@@ -13,13 +14,22 @@ const Register = () => {
   const [pwdCheck, setPwdCheck] = useState('');
 
   const navigate = useNavigate();
-  const userloginDB = useSelector((state) => state.user.userloginDB);
+  const collectionRef = collection(db, 'usersDB');
 
   // 회원가입
   const signUp = async (event) => {
     event.preventDefault();
     // 닉네임 검사
-    const nicknameIncludes = userloginDB.some((prev) => prev.nickname === nickname);
+    const q = query(collection(db, 'usersDB'));
+    const querySnapshot = await getDocs(q);
+    const initial = [];
+    querySnapshot.forEach((doc) => {
+      initial.push({ ...doc.data() });
+    });
+    localStorage.setItem('usersDB', JSON.stringify(initial));
+    const userDB = localStorage.getItem('usersDB');
+    const json = JSON.parse(userDB);
+    const nicknameIncludes = json.some((prev) => prev.nickname === nickname);
     if (nicknameIncludes) {
       alert('닉네임이 이미 존재합니다.');
       return false;
@@ -35,11 +45,31 @@ const Register = () => {
             // import 해서 가져오면 안뜨는 오류 때문에 github에서 이미지링크로 가져왔습니다
             photoURL: 'https://github.com/cheolgyun7/deve11og/blob/dev/src/image/userImage.png?raw=true'
           });
-          // 회원가입하면 자동로그인 방지 위해 여기서 로그아웃
-          signOut(auth);
 
-          alert('회원가입 완료! 로그인해주세요!');
-          navigate('/login');
+          onAuthStateChanged(auth, async (user) => {
+            if (user) {
+              const newData = {
+                nickname: user.displayName,
+                email: user.email,
+                user_img: user.photoURL,
+                user_id: user.uid
+              };
+              try {
+                const docRef = doc(collectionRef, user.uid);
+                await setDoc(docRef, newData);
+
+                const q = query(collection(db, 'usersDB'));
+                const querySnapshot = await getDocs(q);
+                const initial = [];
+                querySnapshot.forEach((doc) => {
+                  initial.push({ ...doc.data() });
+                });
+              } catch (error) {
+                console.error(error);
+              }
+            }
+          });
+          navigate('/');
         } catch (error) {
           const errorCode = error.code;
           if (errorCode === 'auth/email-already-in-use') {

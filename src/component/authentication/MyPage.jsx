@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { auth, db, storage } from '../../firebase';
+import { auth, storage } from '../../firebase';
 import { deleteObject, getDownloadURL, getStorage, ref, uploadBytes } from 'firebase/storage';
 import React, { useEffect, useRef, useState } from 'react';
 import { Section } from 'styles/SharedStyle';
@@ -7,8 +7,6 @@ import userDefaultImage from '../../image/userImage.png';
 import { sendPasswordResetEmail, updateProfile } from 'firebase/auth';
 import { useDispatch, useSelector } from 'react-redux';
 import { removeUserImage, updateImage, updateNickname } from '../../redux/modules/user';
-import { collection, getDocs, query, where } from 'firebase/firestore';
-import { Link } from 'react-router-dom';
 import MyBoardList from 'component/crudcomponent/MyBoardList';
 
 const MyPage = () => {
@@ -17,13 +15,12 @@ const MyPage = () => {
 
   const [isEditing, setIsEditing] = useState(false); //수정 상태
   const [nickname, setNickname] = useState('');
+  const [isImageRemovable, setIsImageRemovable] = useState(false);
 
   const nicknameRef = useRef(null);
   //기본 이미지
   const DEFAULT_IMAGE = 'https://github.com/cheolgyun7/deve11og/blob/dev/src/image/userImage.png?raw=true';
-  console.log(auth.currentUser);
 
-  console.log(auth.currentUser);
   const fileSelect = async (event) => {
     const file = event.target.files[0];
 
@@ -138,7 +135,15 @@ const MyPage = () => {
   const errorImage = (e) => {
     e.target.src = userDefaultImage;
   };
-  console.log(user_img);
+
+  useEffect(() => {
+    const googleImg = user_img ? user_img.indexOf('googleusercontent') : -1;
+    const githubImg = user_img ? user_img.indexOf('githubusercontent') : -1;
+    if (googleImg < 0 && githubImg < 0 && user_img !== null && user_img !== DEFAULT_IMAGE) {
+      setIsImageRemovable(true);
+    }
+  }, [user_img]);
+
   return (
     <Section>
       <PageTitleStyle>마이페이지</PageTitleStyle>
@@ -152,12 +157,7 @@ const MyPage = () => {
             이미지 업로드
             <input type="file" onChange={fileSelect} accept="image/*" />
           </FileLabelStyle>
-          {/* {!selectedFile ? <></> : <button onClick={handleUpload}>등록</button>} */}
-          {user_img !== null && user_img !== DEFAULT_IMAGE ? (
-            <BtnBlackText onClick={handleRemove}>이미지 제거</BtnBlackText>
-          ) : (
-            <></>
-          )}
+          {!isImageRemovable ? <></> : <BtnBlackText onClick={handleRemove}>이미지 제거</BtnBlackText>}
         </LeftAreaStyle>
         <RightAreaStyle>
           <p>{email}</p>
