@@ -1,13 +1,11 @@
 import React, { useState } from 'react';
 import { Section } from 'styles/SharedStyle';
-import { createUserWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile } from 'firebase/auth';
+import { createUserWithEmailAndPassword, onAuthStateChanged, updateProfile } from 'firebase/auth';
 import { auth } from '../../firebase';
 import { Link, useNavigate } from 'react-router-dom';
 import { LoginBtn, LoginDiv, LoginForm, LoginInput, LoginMain } from './Login';
-import { useDispatch, useSelector } from 'react-redux';
 import { collection, setDoc, doc, query, getDocs } from 'firebase/firestore';
 import { db } from '../../firebase';
-import { setUserLoginDB } from '../../redux/modules/user';
 
 const Register = () => {
   const [nickname, setNickname] = useState('');
@@ -16,15 +14,22 @@ const Register = () => {
   const [pwdCheck, setPwdCheck] = useState('');
 
   const navigate = useNavigate();
-  const userloginDB = useSelector((state) => state.user.userloginDB);
   const collectionRef = collection(db, 'usersDB');
-  const dispatch = useDispatch();
 
   // 회원가입
   const signUp = async (event) => {
     event.preventDefault();
     // 닉네임 검사
-    const nicknameIncludes = userloginDB.some((prev) => prev.nickname === nickname);
+    const q = query(collection(db, 'usersDB'));
+    const querySnapshot = await getDocs(q);
+    const initial = [];
+    querySnapshot.forEach((doc) => {
+      initial.push({ ...doc.data() });
+    });
+    localStorage.setItem('usersDB', JSON.stringify(initial));
+    const userDB = localStorage.getItem('usersDB');
+    const json = JSON.parse(userDB);
+    const nicknameIncludes = json.some((prev) => prev.nickname === nickname);
     if (nicknameIncludes) {
       alert('닉네임이 이미 존재합니다.');
       return false;
@@ -55,21 +60,15 @@ const Register = () => {
 
                 const q = query(collection(db, 'usersDB'));
                 const querySnapshot = await getDocs(q);
-                console.log(querySnapshot);
                 const initial = [];
                 querySnapshot.forEach((doc) => {
                   initial.push({ ...doc.data() });
                 });
-                dispatch(setUserLoginDB([...initial]));
               } catch (error) {
                 console.error(error);
               }
             }
           });
-          // alert('회원가입 완료! 로그인해주세요!');
-          // 회원가입하면 자동로그인 방지 위해 여기서 로그아웃
-          // signOut(auth);
-
           navigate('/');
         } catch (error) {
           const errorCode = error.code;
