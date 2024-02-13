@@ -18,10 +18,12 @@ const MyPage = () => {
   const [nickname, setNickname] = useState('');
   const [boards, setBoards] = useState([]);
 
-  const imgRef = useRef(null);
   const nicknameRef = useRef(null);
   //기본 이미지
   const DEFAULT_IMAGE = 'https://github.com/cheolgyun7/deve11og/blob/dev/src/image/userImage.png?raw=true';
+
+  //[상수] storage - 게시물의 썸네일 경로
+  const THUMBNAIL_DIRECTORY = 'thumbnail';
 
   const fileSelect = async (event) => {
     const file = event.target.files[0];
@@ -131,12 +133,26 @@ const MyPage = () => {
       const querySnapshot = await getDocs(q);
 
       const initial = [];
-      querySnapshot.forEach((doc) => {
-        initial.push({ id: doc.id, ...doc.data() });
+      querySnapshot.forEach(async (doc) => {
+        const data = doc.data();
+        const pathRef = ref(storage, `${THUMBNAIL_DIRECTORY}/${data.thumbnail}`);
+        // getDownloadURL(pathRef)
+        //   .then((url) => {
+        //     console.log('실행', url);
+        //     initial.push({ id: doc.id, ...doc.data(), thumbnail: url });
+        //     console.log('initial', initial);
+        //   })
+        //   .catch((error) => {
+        //     console.error(error);
+        //     alert('에러가 발생했습니다.');
+        //   });
+
+        // initial.push({ id: doc.id, ...doc.data() });
       });
 
       // firestore에서 가져온 데이터를 state에 전달
-      setBoards(initial);
+      console.log(initial);
+      setBoards([...initial]);
     };
 
     fetchData();
@@ -154,7 +170,7 @@ const MyPage = () => {
         <LeftAreaStyle>
           <FigureStyle>
             {/* TODO: 렌더링 되고 나서 이미지를 가져와서 늦게가져옴... 확인 필요 */}
-            <img src={user_img} onError={errorImage} ref={imgRef} alt="유저 이미지" />
+            <img src={user_img} onError={errorImage} alt="유저 이미지" />
           </FigureStyle>
           <FileLabelStyle>
             이미지 업로드
