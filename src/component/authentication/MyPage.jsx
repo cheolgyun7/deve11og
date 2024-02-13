@@ -20,9 +20,7 @@ const MyPage = () => {
   const nicknameRef = useRef(null);
   //기본 이미지
   const DEFAULT_IMAGE = 'https://github.com/cheolgyun7/deve11og/blob/dev/src/image/userImage.png?raw=true';
-  console.log(auth.currentUser);
 
-  console.log(auth.currentUser);
   const fileSelect = async (event) => {
     const file = event.target.files[0];
 
@@ -137,7 +135,6 @@ const MyPage = () => {
   const errorImage = (e) => {
     e.target.src = userDefaultImage;
   };
-  console.log('user_img', user_img);
 
   useEffect(() => {
     const googleImg = user_img.indexOf('googleusercontent');
@@ -160,12 +157,6 @@ const MyPage = () => {
             이미지 업로드
             <input type="file" onChange={fileSelect} accept="image/*" />
           </FileLabelStyle>
-          {/* {!selectedFile ? <></> : <button onClick={handleUpload}>등록</button>} */}
-          {/* {user_img !== null && user_img !== DEFAULT_IMAGE ? (
-            <BtnBlackText onClick={handleRemove}>이미지 제거</BtnBlackText>
-          ) : (
-            <></>
-          )} */}
           {!isImageRemovable ? <></> : <BtnBlackText onClick={handleRemove}>이미지 제거</BtnBlackText>}
         </LeftAreaStyle>
         <RightAreaStyle>
