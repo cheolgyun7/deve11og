@@ -86,6 +86,7 @@ const Login = () => {
       navigate('/');
       console.log(user);
     } catch (error) {
+      alert('이미 있는 이메일 입니다!');
       console.log(error);
     }
   };
@@ -130,9 +131,10 @@ const Login = () => {
         initial.push({ ...doc.data() });
       });
       dispatch(setUserLoginDB([...initial]));
-      // navigate('/');
+      navigate('/');
       console.log(user);
     } catch (error) {
+      alert('이미 있는 이메일 입니다!');
       console.log(error);
     }
   };

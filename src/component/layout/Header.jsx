@@ -23,7 +23,7 @@ const Header = () => {
   const nowUser = useSelector((state) => state.user.nowUser);
 
   // 프로필사진
-  const img = nowUser.user_img;
+  // const img = nowUser.user_img;
   // 쿠키 가져오기
   const getCookie = (cookieName) => {
     cookieName = `${cookieName}=`;
@@ -134,7 +134,9 @@ const Header = () => {
           document.cookie = `uid=${user.uid}; expires=${todayDate.toUTCString()};path=/;`;
           setLogoutBool(true);
           signUser();
-          // img();
+          const imgTest = userloginDB.findIndex((prev) => prev.email === user.email);
+          setUserImg(userloginDB[imgTest].user_img);
+          // console.log(userloginDB[imgTest].user_img);
         } else {
           setLogoutBool(false);
         }
@@ -156,7 +158,7 @@ const Header = () => {
               <>
                 {writePage ? '' : <NewPostBtn onClick={newPostBtnClick}>새 글 작성</NewPostBtn>}
                 <ImgDiv onClick={userIsActiveBtn} onBlur={userMenuOnBlur}>
-                  <ImgStyle src={img} alt="프로필사진" />
+                  <ImgStyle src={userImg} alt="프로필사진" />
                 </ImgDiv>
                 <UserMenuDiv onBlur={userMenuOnBlur}>
                   <UserBtn onClick={userIsActiveBtn}>🔽</UserBtn>
