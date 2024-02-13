@@ -8,31 +8,16 @@ import { uuidv4 } from '@firebase/util';
 import { useDispatch, useSelector } from 'react-redux';
 import { completedEditBoard, deleteBoard, insertBoard, setBoard } from '../../redux/modules/board';
 import imageFrames from '../../image/imageFrames.png';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 
-const Write = () => {
-  // // 파이어베이스에 저장된 데이터 가져오기
-  useEffect(() => {
-    const fetchData = async () => {
-      const boardData = query(collection(db, 'board'));
-      const querySnapshot = await getDocs(boardData);
-      const initialBoard = [];
-      querySnapshot.forEach((doc) => {
-        const data = {
-          id: doc.id,
-          ...doc.data()
-        };
-        initialBoard.push(data);
-      });
-      dispatch(setBoard(initialBoard));
-    };
-    fetchData();
-  }, []);
+const Write = ({ isEditing, setIsEditing, item }) => {
   const nowUser = useSelector((state) => state.user.nowUser);
+  // const { boardId } = useSelector((state) => state.board.id);
+  // console.log('boardId', boardId);
   const dispatch = useDispatch();
-  const board = useSelector((item) => item.board);
-  console.log('board', board);
+  // const board = useSelector((item) => item.board);
   const navigate = useNavigate();
+
   // 게시물 state들
   const [title, setTitle] = useState('');
   const [contents, setContents] = useState('');
@@ -40,6 +25,10 @@ const Write = () => {
   const [thumbnail, setThumbnail] = useState('');
   // 이미지 id
   const thumbnailId = uuidv4();
+
+  // 게시물 id
+  const boardId = uuidv4();
+
   // 포커스 변수들
   const titleRef = useRef(null);
   const contentsRef = useRef(null);
@@ -80,7 +69,8 @@ const Write = () => {
     // 이미지 다운로드 URL 가져오기
     const imageUrl = await getDownloadURL(imgRef);
     try {
-      let newBoard = {
+      const newBoard = {
+        boardId,
         category,
         title,
         contents,
@@ -103,6 +93,11 @@ const Write = () => {
         alert('카테고리를 선택해 주세요');
         return categoryRef.current.focus();
       }
+      // 스토리지에 이미지 등록
+      const imgRef = ref(storage, 'thumbnail/' + thumbnailId);
+
+      await uploadBytes(imgRef, thumbnail);
+
       // 파이어베이스 게시물 등록
       const collectionRef = collection(db, 'board');
       await addDoc(collectionRef, newBoard);
@@ -117,40 +112,20 @@ const Write = () => {
       console.error('게시물 등록 실패', error);
     }
   };
+
   // 이미지 미리보기 삭제 함수
   const imgRemove = () => {
     setThumbnail('');
   };
-  // 삭제
-  const removeBoard = async (id, thumbnail) => {
-    if (window.confirm('게시물을 삭제하시겠습니까?')) {
-      try {
-        // 이미지 삭제
-        const imgRef = ref(storage, 'thumbnail/' + thumbnail);
-        deleteObject(imgRef);
-        // 게시물 삭제
-        const boardRef = doc(db, 'board', id);
-        await deleteDoc(boardRef);
-        dispatch(deleteBoard(id, thumbnail));
-        alert('게시물이 삭제되었습니다.');
-      } catch (error) {
-        console.error('삭제 실패', error);
-      }
-    }
-  };
-  //  등록폼에 넣은 이미지 url을 구조분해할당으로 뽑아서 사용하세요
-  // 수정
-  const [isEditing, setIsEditing] = useState(false); // 수정 모드 여부 스테이트
-  const [updateBoard, setUpdateBoard] = useState(''); //  수정 데이터 저장
-  const editingBoard = async (item) => {
-    if (window.confirm('게시물을 수정하시겠습니까?')) {
-      setUpdateBoard(item); // 수정할 데이터를 상태에 저장
-      setIsEditing(true); // 수정 모드로 변경
-    }
-  };
+
   const question = useSelector((state) => {
     return state.list.board.find((item) => item.id === updateBoard.id);
   });
+  const [updateBoard, setUpdateBoard] = useState(''); //  수정 데이터 저장
+
+  if (isEditing) {
+    setUpdateBoard(item);
+  }
   // 수정 완료 버튼 클릭 시
   const updateBoardForm = async (e) => {
     e.preventDefault();
@@ -171,11 +146,13 @@ const Write = () => {
       console.log('completedBoard', completedBoard);
       dispatch(completedEditBoard(completedBoard));
       alert('게시물이 수정되었습니다.');
+      setIsEditing(false);
       navigate('/');
     } catch (error) {
       console.error('수정 실패', error);
     }
   };
+
   return (
     <Section>
       <AddBoard>
@@ -183,7 +160,7 @@ const Write = () => {
           <SelectBox value={isEditing ? updateBoard.category : category} onChange={categoryChanged} ref={categoryRef}>
             <option value="">카테고리를 선택해 주세요</option>
             <option value="discussion">커뮤니티</option>
-            <option value="techTalk">질문 및 답변</option>
+            <option value="asklist">질문 및 답변</option>
           </SelectBox>
           <TitleInput
             value={isEditing ? updateBoard.title : title}
@@ -221,23 +198,6 @@ const Write = () => {
           </AddBtnDiv>
         </AddBoardForm>
       </AddBoard>
-      {/* 수정, 삭제를 위한 테스트 코드 */}
-      <div>
-        {board.map((item) => {
-          return (
-            <div key={item.id}>
-              <img src={item.imageUrl} alt="" />
-              <div>아이디 ***************************{item.id}</div>
-              <div>{item.category}</div>
-              <div>{item.title}</div>
-              <div>{item.contents}</div>
-              <div>{item.regDate}</div>
-              <button onClick={() => editingBoard(item)}>수정</button>
-              <button onClick={() => removeBoard(item.id, item.thumbnail)}>삭제</button>
-            </div>
-          );
-        })}
-      </div>
     </Section>
   );
 };
