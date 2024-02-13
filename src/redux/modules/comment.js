@@ -2,6 +2,7 @@
 const SET_COMMENT = 'comment/SET_COMMENT';
 const ADD_COMMENT = 'comment/ADD_COMMENT';
 const UPDATE_COMMENT = 'comment/UPDATE_COMMENT';
+const DELETE_COMMENT = 'comment/DELETE_COMMENT';
 
 //Action Creator
 export const setComment = (payload) => {
@@ -22,6 +23,12 @@ export const updateComment = (payload) => {
     payload
   };
 };
+export const deleteComment = (payload) => {
+  return {
+    type: DELETE_COMMENT,
+    payload
+  };
+};
 
 //초깃값
 const initialState = {
@@ -37,6 +44,11 @@ const comment = (state = initialState, action) => {
       return { data: [action.payload, ...state.data] };
     case UPDATE_COMMENT:
       return { data: [...state.data, action.payload] };
+    case DELETE_COMMENT:
+      const deleteId = action.payload;
+      const newData = state.data.filter((el) => el.id !== deleteId);
+      console.log(newData);
+      return { data: [...newData] };
     default:
       return state;
   }
