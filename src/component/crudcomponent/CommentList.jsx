@@ -4,12 +4,17 @@ import { collection, getDocs, query } from 'firebase/firestore';
 import { db } from '../../firebase';
 import { useDispatch, useSelector } from 'react-redux';
 import { setComment } from '../../redux/modules/comment';
+import { BtnBlackBg, BtnBlackText } from 'styles/SharedStyle';
+import CommentItem from './CommentItem';
 
 export default function CommentList() {
   const { data } = useSelector((state) => state.comment);
-  const { user_id, user_img, nickname } = useSelector((state) => state.user.nowUser);
+  const { user_id } = useSelector((state) => state.user.nowUser);
   const dispatch = useDispatch();
   const [userData, setUserData] = useState();
+
+  //기본 이미지
+  const DEFAULT_IMAGE = 'https://github.com/cheolgyun7/deve11og/blob/dev/src/image/userImage.png?raw=true';
 
   //댓글 데이터 가져오기
   useEffect(() => {
@@ -50,72 +55,25 @@ export default function CommentList() {
 
     fetchUserData();
   }, []);
+  // console.log('userData', userData);
 
   return (
     <CommentListStyle>
       {data.map((el) => {
-        return (
-          <CommentItem key={el.id}>
-            <CommentTopInfo>
-              <ThumbBox>
-                <img src="" alt="" />
-              </ThumbBox>
-              <div>
-                <NicknameStyle>{el.nickname}</NicknameStyle>
-                <DateStyle>{el.regDate}</DateStyle>
-              </div>
-            </CommentTopInfo>
-            <CommentCont>
-              <p>{el.contents}</p>
-              {el.user_id === user_id ? (
-                <div>
-                  <button>수정</button>
-                  <button>삭제</button>
-                </div>
-              ) : (
-                <></>
-              )}
-            </CommentCont>
-          </CommentItem>
-        );
+        // let findData = null;
+        // if (userData) {
+        //   findData = userData.find((item) => {
+        //     return item.user_id === el.user_id;
+        //   });
+        // }
+        // console.log(findData);
+        return <CommentItem key={el.id} data={el}></CommentItem>;
       })}
     </CommentListStyle>
   );
 }
 
 const CommentListStyle = styled.ul`
-  margin: 0 auto;
+  margin: 0 auto 4rem;
   max-width: 1000px;
-`;
-const CommentItem = styled.li`
-  padding: 1rem 2rem;
-
-  & + li {
-    border-top: 1px solid #ddd;
-  }
-`;
-const CommentTopInfo = styled.div`
-  display: flex;
-  align-items: center;
-`;
-const ThumbBox = styled.figure`
-  margin-right: 1rem;
-  width: 5rem;
-  height: 5rem;
-  border-radius: 50%;
-  background-color: #eee;
-  overflow: hidden;
-`;
-const NicknameStyle = styled.strong`
-  display: block;
-`;
-const DateStyle = styled.span`
-  font-size: 0.8rem;
-  color: #999999;
-`;
-const CommentCont = styled.div`
-  margin-top: 1rem;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
 `;

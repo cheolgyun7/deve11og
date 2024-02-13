@@ -82,14 +82,7 @@ export default function CommentSection() {
           <ThumbNailBox>
             <img src={user_img} alt={`${nickname} 유저 프로필 이미지`} />
           </ThumbNailBox>
-          <CommentTextarea
-            name=""
-            id=""
-            cols="30"
-            rows="1"
-            onChange={handleChange}
-            // onKeyUp={handleKeyUp}
-          ></CommentTextarea>
+          <CommentInput type="text" value={contents} onChange={handleChange} />
         </CommentFormBox>
         <BtnBox>
           <BtnBlackBg>등록</BtnBlackBg>
@@ -122,13 +115,12 @@ const ThumbNailBox = styled.figure`
     max-width: 100%;
   }
 `;
-const CommentTextarea = styled.textarea`
+const CommentInput = styled.input`
   margin-left: 1rem;
   padding: 0.5rem;
   width: calc(100% - 6rem);
   border: 0;
   border-bottom: 1px solid #ddd;
-  resize: none;
   font-family: inherit;
 `;
 const BtnBox = styled.div`
