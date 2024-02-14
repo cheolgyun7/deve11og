@@ -26,7 +26,6 @@ const DetailPage = () => {
   });
 
   // 수정데이터를 담을 state
-  console.log(question, 'question');
   const [updateData, setUpdateData] = useState({
     ...question
   });
@@ -100,10 +99,10 @@ const DetailPage = () => {
           contents: updateData.contents,
           regDate: updateData.regDate,
           category: updateData.category,
-          thumbnail: imgFile.name ? imgFile.name : updateData.thumbnail,
+          thumbnail: imgFile.name ? imgFile.name : question.thumbnail,
           imageUrl
         };
-
+        console.log('updatedBoard', updatedBoard);
         await updateDoc(doc(db, 'board', id), updatedBoard);
 
         dispatch(updateBoard(updatedBoard));
