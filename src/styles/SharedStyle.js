@@ -248,6 +248,12 @@ export const BtnBlackBg = styled(BtnNormalStyle)`
   border: 1px solid #000000;
   color: #fff;
   border-radius: 5px;
+
+  &:hover {
+    border: 1px solid #000;
+    background: #fff;
+    color: #000;
+  }
 `;
 export const BtnBlackText = styled(BtnNormalStyle)`
   background: #ffffff;

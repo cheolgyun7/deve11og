@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { deleteDoc, doc, getDoc, updateDoc } from 'firebase/firestore';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Section } from 'styles/SharedStyle';
+import { BtnBlackBg, BtnBlackText, Section } from 'styles/SharedStyle';
 import { db, storage } from '../../firebase';
 import { updateBoard, setDeleteBoard } from '../../redux/modules/list';
 import styled from 'styled-components';
@@ -178,20 +178,20 @@ const DetailPage = () => {
             </>
           )}
           <p>
-            <button
+            <BtnBlackBg
               onClick={() => {
                 handleUpdate(question.id);
               }}
             >
               {isEdit ? '수정완료' : '수정'}
-            </button>
-            <button
+            </BtnBlackBg>
+            <BtnBlackText
               onClick={() => {
                 removeBoard(question.id, question.thumbnail);
               }}
             >
               삭제
-            </button>
+            </BtnBlackText>
           </p>
         </DetailPageBoxCard>
       </DetailPageBox>
