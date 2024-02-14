@@ -7,9 +7,9 @@ export const UPDATE_BOARD = 'UPDATE_BOARD';
 export const SET_DELETEBOARD = 'SET_DELETEBOARD';
 
 // 액션 생성자 함수 정의
-export const updateBoard = (updateBoard) => ({
+export const updateBoard = (board) => ({
   type: UPDATE_BOARD,
-  payload: updateBoard
+  payload: board
 });
 
 // 액션 생성자 함수
@@ -45,10 +45,11 @@ const list = (state = initialState, action) => {
         ...state,
         board: action.payload
       };
+
     case UPDATE_BOARD:
       // 업데이트된 게시물 정보를 받아와서 해당 게시물을 찾아 업데이트합니다.
-      const updatedBoard = state.board.map((item) => {
-        if (item.id === action.payload.id) {
+      const board = state.board.map((item) => {
+        if (item.id === action.payload.boardId) {
           // 수정된 게시물의 ID를 기준으로 찾음
           return action.payload; // 수정된 게시물 정보로 업데이트
         }
@@ -56,13 +57,13 @@ const list = (state = initialState, action) => {
       });
       return {
         ...state,
-        board: updatedBoard // 업데이트된 게시물로 상태 업데이트
+        board // 업데이트된 게시물로 상태 업데이트
       };
 
     case SET_DELETEBOARD:
       // action.payload => 삭제할 boardID
       const deleteBoardId = action.payload;
-      const deleteBoard = state.board.filter((board) => board.userId !== deleteBoardId);
+      const deleteBoard = state.board.filter((board) => board.id !== deleteBoardId);
       return {
         ...state,
         board: deleteBoard

@@ -8,10 +8,10 @@ import { useNavigate } from 'react-router-dom';
 
 const AskRespond = () => {
   const answer = useSelector((state) => state.list.board);
-  const filteredAskRespond = answer.filter((list) => list.category === 'techTalk');
+  const filteredAskRespond = answer.filter((list) => list.category === 'asklist');
   const navigate = useNavigate();
-  const askDetailClick = (userId) => {
-    navigate(`/detailPage/${userId}`);
+  const askDetailClick = (boardId) => {
+    navigate(`/detailPage/${boardId}`);
   };
   return (
     <AskRespondContents>
@@ -19,7 +19,7 @@ const AskRespond = () => {
       <AskRespondBox>
         <ul>
           {filteredAskRespond.map((list) => (
-            <li key={list.user_id} onClick={() => askDetailClick(list.user_id)}>
+            <li key={list.user_id} onClick={() => askDetailClick(list.id)}>
               <span>{list.title}</span>
               <span>{list.regDate}</span>
               <span>{list.nickname}</span>

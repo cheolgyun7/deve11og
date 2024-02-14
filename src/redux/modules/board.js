@@ -45,6 +45,8 @@ export const UPDATE_BOARD = 'UPDATE_BOARD';
 const board = (state = initialState, action) => {
   switch (action.type) {
     case SET_BOARD:
+      console.log('action.type', action.type);
+
       return action.payload;
     case INSERT_BOARD:
       // action.payload => 새 게시물(newBoard)
