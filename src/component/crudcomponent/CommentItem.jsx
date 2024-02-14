@@ -71,7 +71,7 @@ export default function CommentItem({ data, findData }) {
   const handleChange = (e) => {
     setContent(e.target.value);
   };
-  console.log(findData);
+
   return (
     <CommentItemStyle>
       <CommentTopInfo>
