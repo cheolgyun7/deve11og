@@ -8,7 +8,7 @@ import { collection, setDoc, doc, query, getDocs } from 'firebase/firestore';
 import { db } from '../../firebase';
 import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
-import { updateImage } from '../../redux/modules/user';
+import { setUserNowDB, updateImage, updateNickname } from '../../redux/modules/user';
 
 const Register = () => {
   const [nickname, setNickname] = useState('');
@@ -50,10 +50,8 @@ const Register = () => {
             // import 해서 가져오면 안뜨는 오류 때문에 github에서 이미지링크로 가져왔습니다
             photoURL: 'https://github.com/cheolgyun7/deve11og/blob/dev/src/image/userImage.png?raw=true'
           });
-
-          console.log('user', user);
           dispatch(updateImage(user.photoURL));
-
+          dispatch(updateNickname(user.displayName));
           onAuthStateChanged(auth, async (user) => {
             if (user) {
               const newData = {
@@ -62,6 +60,7 @@ const Register = () => {
                 user_img: user.photoURL,
                 user_id: user.uid
               };
+
               try {
                 const docRef = doc(collectionRef, user.uid);
                 await setDoc(docRef, newData);
@@ -70,7 +69,6 @@ const Register = () => {
               }
             }
           });
-          console.log('userState', userState);
           navigate('/');
         } catch (error) {
           const errorCode = error.code;
