@@ -6,7 +6,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { auth } from '../../firebase';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { useDispatch, useSelector } from 'react-redux';
-import { setUserNowDB, updateImage } from '../../redux/modules/user';
+import { setUserNowDB } from '../../redux/modules/user';
 import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../../firebase';
 
