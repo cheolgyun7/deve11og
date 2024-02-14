@@ -8,9 +8,7 @@ import { updateBoard } from '../../redux/modules/list';
 import styled from 'styled-components';
 import { deleteObject, getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import { deleteBoard } from '../../redux/modules/board';
-import { deleteBoard, setBoard } from '../../redux/modules/board';
 import CommentSection from './CommentSection';
-import imageFrames from '../../image/imageFrames.png';
 
 const DetailPage = () => {
   const dispatch = useDispatch();
@@ -168,35 +166,6 @@ const DetailPage = () => {
               <ContentsDiv>
                 {/* 등록된 이미지 */}
                 <img src={imageURL} alt="이미지" />
-
-                {/* <img src={imageURL ? imageURL : URL.createObjectURL(previewImg)} alt="이미지" /> */}
-                {/* <label htmlFor="thumbnail">
-                  <ThumbnailBtn>이미지 변경</ThumbnailBtn>
-                </label>
-                <ThumbnailInput onChange={imgChanged} type="file" accept="image/*" id="thumbnail" /> */}
-
-                {/* <label>
-                  이미지 업로드
-                  <input type="file" onChange={fileSelect} accept="image/*" />
-                </label>
-                {!isImageRemovable ? <></> : <BtnBlackText onClick={handleRemove}>이미지 제거</BtnBlackText>} */}
-
-                {/* {imageURL ? (
-                  <PreviewDiv>
-                    <img src={imageURL} alt="이미지" />
-                    <button onClick={imgRemove}>이미지 삭제</button>
-                  </PreviewDiv>
-                ) : (
-                  <ThumbnailDiv>
-                    <img src={URL.createObjectURL(previewImg)} alt="이미지" />
-
-                    <label htmlFor="thumbnail">
-                      <ThumbnailBtn>이미지 추가</ThumbnailBtn>
-                    </label>
-                    <ThumbnailInput onChange={imgChanged} type="file" accept="image/*" id="thumbnail" />
-                  </ThumbnailDiv>
-                )} */}
-
                 <textarea type="text" name="contents" value={updateData.contents} onChange={handleInputChange} />
               </ContentsDiv>
             </div>
@@ -233,11 +202,11 @@ const DetailPage = () => {
 };
 export default DetailPage;
 
-const PreviewDiv = styled.selectstyled.input``;
-const ThumbnailDiv = styled.selectstyled.div``;
-const ThumbnailInput = styled.selectstyled.input``;
-const ThumbnailBtn = styled.selectstyled.div`
-`;
+const PreviewDiv = styled.input``;
+const ThumbnailDiv = styled.div``;
+const ThumbnailInput = styled.input``;
+const ThumbnailBtn = styled.div``;
+const ContentsDiv = styled.div``;
 
 export const DetailPageBox = styled.div``;
 export const DetailPageBoxCard = styled.div`
