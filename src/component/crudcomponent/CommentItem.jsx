@@ -1,17 +1,15 @@
 import { deleteDoc, doc, updateDoc } from '@firebase/firestore';
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { deleteComment, updateComment } from '../../redux/modules/comment';
 import styled from 'styled-components';
 import { BtnBlackBg, BtnBlackText } from 'styles/SharedStyle';
 import { db } from '../../firebase';
 
-export default function CommentItem({ data, findData }) {
+export default function CommentItem({ data, findData, commentData, setCommentData }) {
   const { id, user_id, nickname, contents, regDate } = data;
   const { user_id: nowUserId } = useSelector((state) => state.user.nowUser);
   const [isEditing, setIsEditing] = useState(false);
   const [content, setContent] = useState(contents);
-  const dispatch = useDispatch();
 
   //기본 이미지
   const DEFAULT_IMAGE = 'https://github.com/cheolgyun7/deve11og/blob/dev/src/image/userImage.png?raw=true';
@@ -43,7 +41,13 @@ export default function CommentItem({ data, findData }) {
 
     try {
       await updateDoc(commentRef, { ...data, contents: content });
-      dispatch(updateComment({ ...data, contents: content }));
+      const findData = commentData.find((el) => {
+        return el.id === id;
+      });
+      findData.contents = content;
+      // setCommentData((prev) => {
+      //   return [...prev, findData];
+      // });
       alert('수정이 완료되었습니다.');
       setIsEditing(false);
     } catch (error) {
@@ -57,7 +61,10 @@ export default function CommentItem({ data, findData }) {
       if (window.confirm('정말 삭제를 진행할까요?')) {
         const commentRef = doc(db, 'comments', id);
         await deleteDoc(commentRef);
-        dispatch(deleteComment(id));
+        const newData = commentData.filter((el) => el.id !== id);
+        setCommentData((prev) => {
+          return [...newData];
+        });
         alert('삭제가 완료되었습니다.');
       } else {
         alert('삭제를 취소했습니다.');
