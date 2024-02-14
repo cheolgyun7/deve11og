@@ -1,19 +1,18 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import styled from 'styled-components';
 import { Section } from 'styles/SharedStyle';
 import { db, storage } from '../../firebase';
-import { addDoc, collection, deleteDoc, doc, getDocs, query, updateDoc } from 'firebase/firestore';
-import { deleteObject, getDownloadURL, ref, uploadBytes } from '@firebase/storage';
+import { addDoc, collection } from 'firebase/firestore';
+import { getDownloadURL, ref, uploadBytes } from '@firebase/storage';
 import { uuidv4 } from '@firebase/util';
 import { useDispatch, useSelector } from 'react-redux';
-import { completedEditBoard, deleteBoard, insertBoard, setBoard } from '../../redux/modules/board';
+import { insertBoard } from '../../redux/modules/board';
 import imageFrames from '../../image/imageFrames.png';
 import { useNavigate } from 'react-router';
 
 const Write = () => {
   const nowUser = useSelector((state) => state.user.nowUser);
   const dispatch = useDispatch();
-  const board = useSelector((item) => item.board);
   const navigate = useNavigate();
 
   // 게시물 state들

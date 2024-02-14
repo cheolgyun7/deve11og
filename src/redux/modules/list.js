@@ -1,8 +1,7 @@
 import { db } from '../../firebase';
-
+// 액션 타입 정의
 export const SET_BOARD = 'SET_BOARD';
 export const TOGGLE_LIKE = 'TOGGLE_LIKE';
-// 액션 타입 정의
 export const UPDATE_BOARD = 'UPDATE_BOARD';
 export const SET_DELETEBOARD = 'SET_DELETEBOARD';
 
