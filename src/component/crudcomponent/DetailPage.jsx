@@ -10,6 +10,7 @@ import { deleteObject, getDownloadURL, ref, uploadBytes } from 'firebase/storage
 import CommentSection from './CommentSection';
 
 const DetailPage = () => {
+  const { user_id } = useSelector((state) => state.user.nowUser);
   const dispatch = useDispatch();
   const { id } = useParams();
 
@@ -48,7 +49,8 @@ const DetailPage = () => {
           imageURL: data.imageURL,
           regDate: data.regDate,
           category: data.category,
-          thumbnail: data.thumbnail
+          thumbnail: data.thumbnail,
+          user_id: data.user_id
         });
         // 첫 렌더링시 데이터베이스에서 이미지 URL을 가져와서 ImageURL에 담는다
         setImageURL(url);
@@ -141,7 +143,7 @@ const DetailPage = () => {
 
   // 이미지 삭제
   const handleRemove = () => setimgFile('');
-
+  console.log(updateData);
   return (
     <Section>
       <DetailPageBox>
@@ -177,22 +179,26 @@ const DetailPage = () => {
               <span>{updateData.contents}</span>
             </>
           )}
-          <p>
-            <BtnBlackBg
-              onClick={() => {
-                handleUpdate(question.id);
-              }}
-            >
-              {isEdit ? '수정완료' : '수정'}
-            </BtnBlackBg>
-            <BtnBlackText
-              onClick={() => {
-                removeBoard(question.id, question.thumbnail);
-              }}
-            >
-              삭제
-            </BtnBlackText>
-          </p>
+          {user_id && updateData.user_id === user_id ? (
+            <p>
+              <BtnBlackBg
+                onClick={() => {
+                  handleUpdate(question.id);
+                }}
+              >
+                {isEdit ? '수정완료' : '수정'}
+              </BtnBlackBg>
+              <BtnBlackText
+                onClick={() => {
+                  removeBoard(question.id, question.thumbnail);
+                }}
+              >
+                삭제
+              </BtnBlackText>
+            </p>
+          ) : (
+            <></>
+          )}
         </DetailPageBoxCard>
       </DetailPageBox>
       {!isEdit ? <CommentSection /> : <></>}
