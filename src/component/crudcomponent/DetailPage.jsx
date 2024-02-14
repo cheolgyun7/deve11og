@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { deleteDoc, doc, getDoc, updateDoc } from 'firebase/firestore';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
-import { BtnBlackBg, BtnBlackText, Section } from 'styles/SharedStyle';
+import { Section } from 'styles/SharedStyle';
 import { db, storage } from '../../firebase';
 import { updateBoard, setDeleteBoard } from '../../redux/modules/list';
 import styled from 'styled-components';
@@ -10,7 +10,6 @@ import { deleteObject, getDownloadURL, ref, uploadBytes } from 'firebase/storage
 import CommentSection from './CommentSection';
 
 const DetailPage = () => {
-  const { user_id } = useSelector((state) => state.user.nowUser);
   const dispatch = useDispatch();
   const { id } = useParams();
 
@@ -49,8 +48,7 @@ const DetailPage = () => {
           imageURL: data.imageURL,
           regDate: data.regDate,
           category: data.category,
-          thumbnail: data.thumbnail,
-          user_id: data.user_id
+          thumbnail: data.thumbnail
         });
         // 첫 렌더링시 데이터베이스에서 이미지 URL을 가져와서 ImageURL에 담는다
         setImageURL(url);
@@ -143,7 +141,7 @@ const DetailPage = () => {
 
   // 이미지 삭제
   const handleRemove = () => setimgFile('');
-  console.log(updateData);
+
   return (
     <Section>
       <DetailPageBox>
@@ -154,23 +152,22 @@ const DetailPage = () => {
           </UpdateSelectBox>
           {/* 수정 상태를 확인하는 삼항 연산자 */}
           {isEdit === true ? (
-            <div>
+            <>
               <input type="text" name="title" value={updateData.title} onChange={handleInputChange} />
               <input type="text" name="regDate" value={updateData.regDate} onChange={handleInputChange} readOnly />
+              <div>
+                <ContentsDiv>
+                  {/* 등록된 이미지 */}
+                  {imageURL ? <img src={imageURL} alt="이미지" /> : <div>등록된 이미지가 없습니다</div>}
 
-              <ContentsDiv>
-                {/* 등록된 이미지 */}
-                {imageURL ? <img src={imageURL} alt="이미지" /> : <div>등록된 이미지가 없습니다</div>}
-
-                <label>
-                  이미지 업로드
+                  <label>이미지 업로드</label>
                   <input type="file" onChange={fileSelect} accept="image/*" />
-                </label>
-                {!isImageDelete ? <></> : <div onClick={handleRemove}>이미지 제거</div>}
 
+                  {!isImageDelete ? <></> : <div onClick={handleRemove}>이미지 제거</div>}
+                </ContentsDiv>
                 <textarea type="text" name="contents" value={updateData.contents} onChange={handleInputChange} />
-              </ContentsDiv>
-            </div>
+              </div>
+            </>
           ) : (
             <>
               <h2>{updateData.title}</h2>
@@ -179,29 +176,25 @@ const DetailPage = () => {
               <span>{updateData.contents}</span>
             </>
           )}
-          {user_id && updateData.user_id === user_id ? (
-            <p>
-              <BtnBlackBg
-                onClick={() => {
-                  handleUpdate(question.id);
-                }}
-              >
-                {isEdit ? '수정완료' : '수정'}
-              </BtnBlackBg>
-              <BtnBlackText
-                onClick={() => {
-                  removeBoard(question.id, question.thumbnail);
-                }}
-              >
-                삭제
-              </BtnBlackText>
-            </p>
-          ) : (
-            <></>
-          )}
+          <p>
+            <button
+              onClick={() => {
+                handleUpdate(question.id);
+              }}
+            >
+              {isEdit ? '수정완료' : '수정'}
+            </button>
+            <button
+              onClick={() => {
+                removeBoard(question.id, question.thumbnail);
+              }}
+            >
+              삭제
+            </button>
+          </p>
         </DetailPageBoxCard>
       </DetailPageBox>
-      {!isEdit ? <CommentSection /> : <></>}
+      <CommentSection />
     </Section>
   );
 };
