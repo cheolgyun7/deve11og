@@ -84,6 +84,11 @@ export const CardThumbnail = styled.p`
 `;
 export const CommunityThumbnail = styled.p`
   ${cardthumbnail}
+  img {
+    margin: 0 auto;
+    width: 100%;
+    object-fit: cover;
+  }
 `;
 export const AskRespondThumbnail = styled.p`
   ${cardthumbnail}
@@ -106,6 +111,7 @@ export const AskRespondListBox = styled.article`
 export const CommunityListBox = styled.article`
   ${cardSharedBox}
   width: 18%;
+  margin-bottom: 1rem;
   div {
     h4 {
       margin-bottom: 1rem;

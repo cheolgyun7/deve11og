@@ -23,7 +23,7 @@ const CommunityList = () => {
             return (
               <CommunityListBox key={card.id}>
                 <CommunityThumbnail>
-                  <img src={card.imageUrl} />
+                  <img src={card.imageUrl} alt="썸네일" />
                 </CommunityThumbnail>
                 <div>
                   <h4>{card.title}</h4>
@@ -52,6 +52,7 @@ export default CommunityList;
 
 export const CommunityBox = styled.div`
   display: flex;
+  flex-wrap: wrap;
   margin: 1rem 0;
   padding: 1rem 3rem;
   border-radius: 1rem;
