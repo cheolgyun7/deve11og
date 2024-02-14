@@ -1,11 +1,13 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { StyledIcon } from 'styles/SharedStyle';
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
 import { faHeart } from '@fortawesome/free-solid-svg-icons';
 import { CardArticle, CardThumbnail, LikeIcon, MainContents } from 'styles/SharedStyle';
 import { toggleLike } from '../../redux/modules/list';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { db } from '../../firebase';
 import { collection, getDocs, query } from 'firebase/firestore';
 import { setComment } from '../../redux/modules/comment';
@@ -21,7 +23,6 @@ const Read = () => {
     // const boardId = boardTestData[0].id;
     const fetchCommentData = async () => {
       const q = query(collection(db, 'comments'));
-      // const q = query(collection(db, 'comments'));
       const querySnapshot = await getDocs(q);
 
       const initialData = [];
@@ -75,6 +76,9 @@ const Read = () => {
           );
         })}
       </CardBox>
+      <Link to="/asklist">
+        <StyledIcon icon={faArrowRight} />
+      </Link>
     </MainContents>
   );
 };

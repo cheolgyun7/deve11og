@@ -141,6 +141,7 @@ export const AskRespondContents = styled.div`
 
 export const MainContents = styled.div`
   ${contentsShared}
+  position: relative;
   padding: 0 1rem;
   margin-bottom: 2rem;
   & > h2 {
