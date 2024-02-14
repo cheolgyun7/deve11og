@@ -97,7 +97,7 @@ const Write = () => {
 
       alert('게시물이 등록되었습니다.');
 
-      // navigate = `/${category}/게시물id`;
+      navigate('/');
     } catch (error) {
       console.error('게시물 등록 실패', error);
     }

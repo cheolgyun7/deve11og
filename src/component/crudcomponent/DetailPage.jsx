@@ -8,6 +8,7 @@ import { SET_DELETEBOARD, updateBoard } from '../../redux/modules/list';
 import styled from 'styled-components';
 import { deleteObject, getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import { deleteBoard, setBoard } from '../../redux/modules/board';
+import imageFrames from '../../image/imageFrames.png';
 
 const DetailPage = () => {
   const dispatch = useDispatch();
@@ -97,6 +98,7 @@ const DetailPage = () => {
         dispatch(updateBoard(updatedBoard));
 
         alert('게시물이 수정되었습니다.');
+        navigate('/');
       } catch (error) {
         console.error('게시물 수정 실패', error);
       }
@@ -120,12 +122,17 @@ const DetailPage = () => {
         dispatch(deleteBoard(id, thumbnail));
 
         alert('게시물이 삭제되었습니다.');
+        navigate('/');
       } catch (error) {
         console.error('삭제 실패', error);
       }
     }
   };
 
+  // 이미지 미리보기 삭제 함수
+  const imgRemove = () => {
+    // setThumbnail('');
+  };
   return (
     <Section>
       <DetailPageBox>
@@ -138,14 +145,36 @@ const DetailPage = () => {
             <>
               <input type="text" name="title" value={updateData.title} onChange={handleInputChange} />
               <input type="text" name="regDate" value={updateData.regDate} onChange={handleInputChange} readOnly />
-              <div>{<img src={imageURL} alt="미리보기" />}</div>
+              {/* <div>{<img src={imageURL} alt="미리보기" />}</div> */}
+              <textarea type="text" name="contents" value={updateData.contents} onChange={handleInputChange} />
+
+              {updateData.thumbnail ? (
+                <PreviewDiv>
+                  <img src={URL.createObjectURL(imageURL)} alt="이미지" />
+                  <button onClick={imgRemove}>이미지 삭제</button>
+                </PreviewDiv>
+              ) : (
+                <ThumbnailDiv>
+                  <img src={imageFrames} alt="이미지" />
+
+                  {/* <label htmlFor="thumbnail">
+                    <ThumbnailBtn>이미지 추가</ThumbnailBtn>
+                  </label> */}
+
+                  <ThumbnailInput
+                    onChange={handleInputChange}
+                    name="file"
+                    type="file"
+                    accept="image/*"
+                    id="thumbnail"
+                  />
+                </ThumbnailDiv>
+              )}
 
               <label htmlFor="thumbnail">
                 <div>이미지 변경</div>
               </label>
               <input onChange={handleInputChange} name="file" type="file" accept="image/*" id="thumbnail" />
-
-              <textarea type="text" name="contents" value={updateData.contents} onChange={handleInputChange} />
             </>
           ) : (
             <>
@@ -180,9 +209,11 @@ const DetailPage = () => {
 };
 export default DetailPage;
 
-// const ImgChangeInput = styled.selectstyled.input`
-// display: none;
-// `;
+const PreviewDiv = styled.selectstyled.input``;
+const ThumbnailDiv = styled.selectstyled.div``;
+const ThumbnailInput = styled.selectstyled.input``;
+const ThumbnailBtn = styled.selectstyled.div`
+`;
 
 export const DetailPageBox = styled.div``;
 export const DetailPageBoxCard = styled.div`

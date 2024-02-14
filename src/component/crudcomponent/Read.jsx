@@ -8,6 +8,7 @@ import { toggleLike } from '../../redux/modules/list';
 import { useNavigate } from 'react-router-dom';
 import { storage } from '../../firebase';
 import { getDownloadURL, ref } from 'firebase/storage';
+
 const Read = () => {
   const { user_id } = useSelector((state) => state.user.nowUser);
   console.log(user_id);
@@ -18,13 +19,14 @@ const Read = () => {
   const listBoard = useSelector((state) => state.list.board); // 비교 함수 추가
   console.log(listBoard);
   const filteredList = listBoard.filter((list) => list.category === 'discussion');
+
   // 좋아요 토글 핸들러 함수
-  const handleToggleLike = (postId, isLiked) => {
-    dispatch(toggleLike(postId, isLiked, user_id));
-    console.log(dispatch(toggleLike(postId, isLiked, user_id)));
+  const handleToggleLike = (id, isLiked) => {
+    dispatch(toggleLike(id, isLiked, user_id));
+    console.log(dispatch(toggleLike(id, isLiked, user_id)));
   };
-  const ModifyButton = (postId) => {
-    navigate(`/detailPage/${postId}`);
+  const ModifyButton = (id) => {
+    navigate(`/detailPage/${id}`);
   };
   return (
     <MainContents>
@@ -32,7 +34,7 @@ const Read = () => {
       <CardBox>
         {filteredList.map((item, index) => (
           <CardArticle key={item.user_id + index}>
-            <CardThumbnail onClick={() => ModifyButton(item.postId)}>
+            <CardThumbnail onClick={() => ModifyButton(item.id)}>
               <img src={item.imageUrl} alt="이미지" />
             </CardThumbnail>
             <div>
@@ -41,7 +43,7 @@ const Read = () => {
                 <span>{item.reg_date}</span>
                 <span>개의 댓글</span>
                 <span>
-                  <LikeIcon onClick={() => handleToggleLike(item.postId, item.liked)}>
+                  <LikeIcon onClick={() => handleToggleLike(item.id, item.liked)}>
                     <FontAwesomeIcon icon={faHeart} style={{ color: item.liked ? 'red' : 'black' }} />
                   </LikeIcon>
                   {item.liked.length} {/* 좋아요 수 */}
