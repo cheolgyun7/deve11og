@@ -1,37 +1,39 @@
 import React, { useState, useEffect } from 'react';
-import { collection, deleteDoc, doc, getDoc, getDocs, query, updateDoc } from 'firebase/firestore';
+import { deleteDoc, doc, getDoc, updateDoc } from 'firebase/firestore';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Section } from 'styles/SharedStyle';
 import { db, storage } from '../../firebase';
-import { SET_DELETEBOARD, updateBoard } from '../../redux/modules/list';
+import { updateBoard, setDeleteBoard } from '../../redux/modules/list';
 import styled from 'styled-components';
 import { deleteObject, getDownloadURL, ref, uploadBytes } from 'firebase/storage';
-import { deleteBoard, setBoard } from '../../redux/modules/board';
 import CommentSection from './CommentSection';
-import imageFrames from '../../image/imageFrames.png';
 
 const DetailPage = () => {
   const dispatch = useDispatch();
   const { id } = useParams();
-  const [imageURL, setImageURL] = useState('');
 
+  // 게시판 이미지URL state
+  const [imageURL, setImageURL] = useState('');
+  // 미리보기 이미지 state
+  const [imgFile, setimgFile] = useState('');
+
+  const navigate = useNavigate();
+
+  // question - 회원이 클릭한 게시물 (데이터베이스에 등록된 게시물)
   const question = useSelector((state) => {
     return state.list.board.find((item) => item.id === id);
   });
 
+  // 수정데이터를 담을 state
   console.log(question, 'question');
-  const navigate = useNavigate();
   const [updateData, setUpdateData] = useState({
-    title: '',
-    contents: '',
-    imageURL: '',
-    regDate: '',
-    category: '',
-    thumbnail: ''
+    ...question
   });
 
-  const [isEdit, setIsEdit] = useState(false); //수정가능한상태
+  // 수정 가능여부를 확인하는 state
+  const [isEdit, setIsEdit] = useState(false);
+  const [isImageDelete, setIsImageDelete] = useState(false);
 
   useEffect(() => {
     const fetchImage = async () => {
@@ -49,12 +51,14 @@ const DetailPage = () => {
           category: data.category,
           thumbnail: data.thumbnail
         });
+        // 첫 렌더링시 데이터베이스에서 이미지 URL을 가져와서 ImageURL에 담는다
         setImageURL(url);
       }
     };
     fetchImage();
   }, [id]);
 
+  // input의 change이벤트 묶음
   const handleInputChange = (e) => {
     if (isEdit) {
       // 입력 필드의 이름을 가져옴 (title 또는 contents)
@@ -77,20 +81,26 @@ const DetailPage = () => {
   };
 
   // 수정
+  const fileSelect = (e) => {
+    const file = e.target.files[0];
+    setIsImageDelete(true);
+    setimgFile(file);
+  };
   const handleUpdate = async (id) => {
     if (isEdit) {
-      const imgRef = ref(storage, 'thumbnail/' + question.thumbnailId);
-      await uploadBytes(imgRef, question.thumbnail);
-      const imageUrl = await getDownloadURL(imgRef);
-
       try {
+        const imgRef = ref(storage, 'thumbnail/' + imgFile.name);
+        await uploadBytes(imgRef, imgFile);
+        const imageUrl = await getDownloadURL(imgRef);
+        setImageURL(imageUrl);
+
         const updatedBoard = {
           ...question,
           title: updateData.title,
           contents: updateData.contents,
           regDate: updateData.regDate,
           category: updateData.category,
-          thumbnail: updateData.thumbnail,
+          thumbnail: imgFile.name ? imgFile.name : updateData.thumbnail,
           imageUrl
         };
 
@@ -99,6 +109,7 @@ const DetailPage = () => {
         dispatch(updateBoard(updatedBoard));
 
         alert('게시물이 수정되었습니다.');
+        setIsImageDelete(false);
         navigate('/');
       } catch (error) {
         console.error('게시물 수정 실패', error);
@@ -109,7 +120,6 @@ const DetailPage = () => {
 
   // 삭제
   const removeBoard = async (id, thumbnail) => {
-    console.log('id', id);
     if (window.confirm('게시물을 삭제하시겠습니까?')) {
       try {
         // 이미지 삭제
@@ -120,7 +130,7 @@ const DetailPage = () => {
         const boardRef = doc(db, 'board', id);
         await deleteDoc(boardRef);
 
-        dispatch(deleteBoard(id, thumbnail));
+        dispatch(setDeleteBoard(id, thumbnail));
 
         alert('게시물이 삭제되었습니다.');
         navigate('/');
@@ -130,10 +140,9 @@ const DetailPage = () => {
     }
   };
 
-  // 이미지 미리보기 삭제 함수
-  const imgRemove = () => {
-    // setThumbnail('');
-  };
+  // 이미지 삭제
+  const handleRemove = () => setimgFile('');
+
   return (
     <Section>
       <DetailPageBox>
@@ -142,37 +151,27 @@ const DetailPage = () => {
             <option value="discussion">커뮤니티</option>
             <option value="asklist">질문 및 답변</option>
           </UpdateSelectBox>
+          {/* 수정 상태를 확인하는 삼항 연산자 */}
           {isEdit === true ? (
-            <>
-              <input type="text" name="title" value={updateData.title} onChange={handleInputChange} />
-              <input type="text" name="regDate" value={updateData.regDate} onChange={handleInputChange} readOnly />
-              {/* <div>{<img src={imageURL} alt="미리보기" />}</div> */}
-              <textarea type="text" name="contents" value={updateData.contents} onChange={handleInputChange} />
+            <div>
+              <TitleDiv>
+                <input type="text" name="title" value={updateData.title} onChange={handleInputChange} />
+                <input type="text" name="regDate" value={updateData.regDate} onChange={handleInputChange} readOnly />
+              </TitleDiv>
 
-              {updateData.thumbnail ? (
-                <PreviewDiv>
-                  <img src={URL.createObjectURL(imageURL)} alt="이미지" />
-                  <button onClick={imgRemove}>이미지 삭제</button>
-                </PreviewDiv>
-              ) : (
-                <ThumbnailDiv>
-                  <img src={imageFrames} alt="이미지" />
+              <ContentsDiv>
+                {/* 등록된 이미지 */}
+                {imageURL ? <img src={imageURL} alt="이미지" /> : <div>등록된 이미지가 없습니다</div>}
 
-                  <ThumbnailInput
-                    onChange={handleInputChange}
-                    name="file"
-                    type="file"
-                    accept="image/*"
-                    id="thumbnail"
-                  />
-                </ThumbnailDiv>
-              )}
+                <label>
+                  이미지 업로드
+                  <input type="file" onChange={fileSelect} accept="image/*" />
+                </label>
+                {!isImageDelete ? <></> : <div onClick={handleRemove}>이미지 제거</div>}
 
-              <label htmlFor="thumbnail">
-                <div>이미지 변경</div>
-              </label>
-              <input onChange={handleInputChange} name="file" type="file" accept="image/*" id="thumbnail" />
-            </>
+                <textarea type="text" name="contents" value={updateData.contents} onChange={handleInputChange} />
+              </ContentsDiv>
+            </div>
           ) : (
             <>
               <h2>{updateData.title}</h2>
@@ -192,7 +191,6 @@ const DetailPage = () => {
             <button
               onClick={() => {
                 removeBoard(question.id, question.thumbnail);
-                // handleCancel(question.boardId);
               }}
             >
               삭제
@@ -206,10 +204,12 @@ const DetailPage = () => {
 };
 export default DetailPage;
 
-const PreviewDiv = styled.div``;
+const PreviewDiv = styled.input``;
 const ThumbnailDiv = styled.div``;
 const ThumbnailInput = styled.input``;
 const ThumbnailBtn = styled.div``;
+const ContentsDiv = styled.div``;
+const TitleDiv = styled.div``;
 
 export const DetailPageBox = styled.div``;
 export const DetailPageBoxCard = styled.div`
