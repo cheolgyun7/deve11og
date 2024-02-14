@@ -117,14 +117,12 @@ const Header = () => {
           querySnapshot.forEach((doc) => {
             initial.push({ ...doc.data() });
           });
-          // localStorage.setItem('usersDB', JSON.stringify(initial));
           // 쿠키
           let todayDate = new Date();
           // 쿠키 1시간 유효기간 설정
           todayDate.setTime(todayDate.getTime() + 1 * 60 * 60 * 1000);
           document.cookie = `uid=${user.uid}; expires=${todayDate.toUTCString()};path=/;`;
           setLogoutBool(true);
-          console.log('auth', auth);
           signUser();
         } else {
           setLogoutBool(false);

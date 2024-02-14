@@ -121,7 +121,7 @@ const Login = () => {
 
       const result = await signInWithPopup(auth, provier);
       const user = result.user;
-
+      console.log('name', user.displayName);
       const q = query(collection(db, 'usersDB'));
       const querySnapshot = await getDocs(q);
       const initial = [];
@@ -129,9 +129,10 @@ const Login = () => {
         initial.push({ ...doc.data() });
       });
 
-      // const userDB = localStorage.getItem('usersDB');
-      // const json = JSON.parse(userDB);
       const nicknameIncludes = initial.some((prev) => prev.nickname === user.displayName);
+      console.log('initial', initial);
+      console.log('name ggg', user.displayName);
+
       if (nicknameIncludes) {
         // 닉네임이 이미 존재하는 경우 새로운 닉네임 생성
         const newNickname = newGitGoogleName;

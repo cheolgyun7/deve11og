@@ -57,13 +57,6 @@ const Register = () => {
               try {
                 const docRef = doc(collectionRef, user.uid);
                 await setDoc(docRef, newData);
-
-                const q = query(collection(db, 'usersDB'));
-                const querySnapshot = await getDocs(q);
-                const initial = [];
-                querySnapshot.forEach((doc) => {
-                  initial.push({ ...doc.data() });
-                });
               } catch (error) {
                 console.error(error);
               }

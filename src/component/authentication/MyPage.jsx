@@ -30,19 +30,13 @@ const MyPage = () => {
       await uploadBytes(imageRef, file);
 
       const downloadURL = await getDownloadURL(imageRef);
-
-      // // 로컬스토리지 추가
-      // const userDB = localStorage.getItem('usersDB');
-      // const json = JSON.parse(userDB);
-      // const index = json.findIndex((prev) => prev.user_id === user_id);
-      // json[index].user_img = downloadURL;
-      // localStorage.setItem('usersDB', JSON.stringify(json));
-
       // 파이어스토어 이미지 변경
-      const nameRef = doc(db, 'usersDB', user_id);
-      const docSnap = await getDoc(nameRef);
-      const currentData = docSnap.data();
-      await updateDoc(nameRef, { ...currentData, user_img: downloadURL });
+      const imgRef = doc(db, 'usersDB', user_id);
+      const docSnap = await getDoc(imgRef);
+      if (docSnap.exists()) {
+        const userData = docSnap.data();
+        await updateDoc(imgRef, { ...userData, user_img: downloadURL });
+      }
 
       dispatch(updateImage(downloadURL));
 
@@ -69,18 +63,13 @@ const MyPage = () => {
     const desertRef = ref(storage, path);
     deleteObject(desertRef)
       .then(async () => {
-        // // 로컬스토리지 추가
-        // const userDB = localStorage.getItem('usersDB');
-        // const json = JSON.parse(userDB);
-        // const index = json.findIndex((prev) => prev.user_id === user_id);
-        // json[index].user_img = DEFAULT_IMAGE;
-        // localStorage.setItem('usersDB', JSON.stringify(json));
-
         // 파이어스토어 이미지 변경
-        const nameRef = doc(db, 'usersDB', user_id);
-        const docSnap = await getDoc(nameRef);
-        const currentData = docSnap.data();
-        await updateDoc(nameRef, { ...currentData, user_img: DEFAULT_IMAGE });
+        const imgRef = doc(db, 'usersDB', user_id);
+        const docSnap = await getDoc(imgRef);
+        if (docSnap.exists()) {
+          const userData = docSnap.data();
+          await updateDoc(imgRef, { ...userData, user_img: DEFAULT_IMAGE });
+        }
 
         dispatch(updateImage(DEFAULT_IMAGE));
 
@@ -123,20 +112,17 @@ const MyPage = () => {
     if (nicknameData === nickname) {
       return alert('이전 닉네임과 같습니다.');
     }
-    // // 로컬스토리지 추가
-    // const userDB = localStorage.getItem('usersDB');
-    // const json = JSON.parse(userDB);
-    // const index = json.findIndex((prev) => prev.user_id === user_id);
-    // json[index].nickname = nickname;
-    // localStorage.setItem('usersDB', JSON.stringify(json));
 
     dispatch(updateNickname(nickname));
 
-    // // 파이어스토어 닉네임변경
-    // const nameRef = doc(db, 'usersDB', user_id);
-    // const docSnap = await getDoc(nameRef);
-    // const currentData = docSnap.data();
-    // await updateDoc(nameRef, { ...currentData, nickname: nickname });
+    // 파이어스토어 닉네임변경
+
+    const nameRef = doc(db, 'usersDB', user_id);
+    const docSnap = await getDoc(nameRef);
+    if (docSnap.exists()) {
+      const userData = docSnap.data();
+      await updateDoc(nameRef, { ...userData, nickname: nickname });
+    }
 
     updateProfile(auth.currentUser, {
       displayName: nickname
