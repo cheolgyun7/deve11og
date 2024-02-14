@@ -5,7 +5,7 @@ import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import CommentList from './CommentList';
 import { BtnBlackBg } from 'styles/SharedStyle';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 export default function CommentSection() {
   const { user_id, user_img, nickname } = useSelector((state) => state.user.nowUser);
@@ -13,6 +13,10 @@ export default function CommentSection() {
   const [contents, setContents] = useState('');
   const [commentData, setCommentData] = useState();
   const contentRef = useRef(null);
+  const navigate = useNavigate();
+
+  //기본 이미지
+  const DEFAULT_IMAGE = 'https://github.com/cheolgyun7/deve11og/blob/dev/src/image/userImage.png?raw=true';
 
   //댓글 데이터 가져오기
   useEffect(() => {
@@ -42,6 +46,14 @@ export default function CommentSection() {
 
   const handelSubmit = async (e) => {
     e.preventDefault();
+
+    //로그인 유무 체크
+    if (!user_id) {
+      alert('로그인 후 이용 가능합니다. 로그인 화면으로 이동합니다.');
+      navigate('/login');
+      return;
+    }
+
     // 유효성 검사
     if (!contents.trim()) {
       return alert('내용을 입력해주세요');
@@ -86,7 +98,7 @@ export default function CommentSection() {
       <CommentFormWrap onSubmit={handelSubmit}>
         <CommentFormBox>
           <ThumbNailBox>
-            <img src={user_img} alt={`${nickname} 유저 프로필 이미지`} />
+            <img src={!user_id ? DEFAULT_IMAGE : user_img} alt={`${nickname} 유저 프로필 이미지`} />
           </ThumbNailBox>
           <CommentInput
             type="text"
