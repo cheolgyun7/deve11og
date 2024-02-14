@@ -26,32 +26,31 @@ const Login = () => {
   const formOnSubmit = async (event) => {
     event.preventDefault();
     // 이메일 검사
-    const userDB = localStorage.getItem('usersDB');
-    if (userDB !== null) {
-      const json = JSON.parse(userDB);
-      const emailTest = json.some((prev) => prev.email === email);
+    const q = query(collection(db, 'usersDB'));
+    const querySnapshot = await getDocs(q);
+    const initial = [];
+    querySnapshot.forEach((doc) => {
+      initial.push({ ...doc.data() });
+    });
 
-      if (!emailTest) {
-        alert('이메일이 존재 하지 않습니다');
-        return false;
-      }
-
-      try {
-        // signInWithEmailAndPassword 현재 입력된 이메일이 파이어베이스에 있는 계정과 같은지 비교
-        const userCredential = await signInWithEmailAndPassword(auth, email, pwd);
-        console.log(userCredential);
-        navigate('/');
-      } catch (error) {
-        const errorCode = error.code;
-        if (errorCode === 'auth/invalid-credential') {
-          // 비밀번호 에러
-          alert('비밀번호를 확인해주세요');
-          console.log('비밀번호', errorCode);
-        }
-      }
-    } else {
-      alert('운영진에게 문의주세요!');
+    const emailTest = initial.some((prev) => prev.email === email);
+    if (!emailTest) {
+      alert('이메일이 존재 하지 않습니다');
       return false;
+    }
+
+    try {
+      // signInWithEmailAndPassword 현재 입력된 이메일이 파이어베이스에 있는 계정과 같은지 비교
+      const userCredential = await signInWithEmailAndPassword(auth, email, pwd);
+      console.log(userCredential);
+      navigate('/');
+    } catch (error) {
+      const errorCode = error.code;
+      if (errorCode === 'auth/invalid-credential') {
+        // 비밀번호 에러
+        alert('비밀번호를 확인해주세요');
+        console.log('비밀번호', errorCode);
+      }
     }
   };
 
@@ -68,13 +67,21 @@ const Login = () => {
   // 구글 인증 버튼
   const loginGoogleBtn = async () => {
     const provier = new GoogleAuthProvider();
+
     try {
       // signInWithPopup 연동되는 것을 팝업창으로 확인
       const result = await signInWithPopup(auth, provier);
       const user = result.user;
-      const userDB = localStorage.getItem('usersDB');
-      const json = JSON.parse(userDB);
-      const nicknameIncludes = json.some((prev) => prev.nickname === user.displayName);
+      const q = query(collection(db, 'usersDB'));
+      const querySnapshot = await getDocs(q);
+      const initial = [];
+      querySnapshot.forEach((doc) => {
+        initial.push({ ...doc.data() });
+      });
+
+      // const userDB = localStorage.getItem('usersDB');
+      // const json = JSON.parse(userDB);
+      const nicknameIncludes = initial.some((prev) => prev.nickname === user.displayName);
 
       if (nicknameIncludes) {
         // 닉네임이 이미 존재하는 경우 새로운 닉네임 생성
@@ -97,18 +104,11 @@ const Login = () => {
 
       const docRef = doc(collectionRef, user.uid);
       await setDoc(docRef, newData);
-      const q = query(collection(db, 'usersDB'));
-      const querySnapshot = await getDocs(q);
-      console.log(querySnapshot);
-      const initial = [];
-      querySnapshot.forEach((doc) => {
-        initial.push({ ...doc.data() });
-      });
       navigate('/');
       console.log(user);
     } catch (error) {
       alert('이미 있는 이메일 입니다!');
-      console.log(error);
+      console.log('error', error);
       return false;
     }
   };
@@ -122,9 +122,16 @@ const Login = () => {
       const result = await signInWithPopup(auth, provier);
       const user = result.user;
 
-      const userDB = localStorage.getItem('usersDB');
-      const json = JSON.parse(userDB);
-      const nicknameIncludes = json.some((prev) => prev.nickname === user.displayName);
+      const q = query(collection(db, 'usersDB'));
+      const querySnapshot = await getDocs(q);
+      const initial = [];
+      querySnapshot.forEach((doc) => {
+        initial.push({ ...doc.data() });
+      });
+
+      // const userDB = localStorage.getItem('usersDB');
+      // const json = JSON.parse(userDB);
+      const nicknameIncludes = initial.some((prev) => prev.nickname === user.displayName);
       if (nicknameIncludes) {
         // 닉네임이 이미 존재하는 경우 새로운 닉네임 생성
         const newNickname = newGitGoogleName;
@@ -147,13 +154,7 @@ const Login = () => {
 
       const docRef = doc(collectionRef, user.uid);
       await setDoc(docRef, newData);
-      const q = query(collection(db, 'usersDB'));
-      const querySnapshot = await getDocs(q);
-      console.log(querySnapshot);
-      const initial = [];
-      querySnapshot.forEach((doc) => {
-        initial.push({ ...doc.data() });
-      });
+
       navigate('/');
       console.log(user);
     } catch (error) {

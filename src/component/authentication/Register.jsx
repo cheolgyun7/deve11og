@@ -26,10 +26,10 @@ const Register = () => {
     querySnapshot.forEach((doc) => {
       initial.push({ ...doc.data() });
     });
-    localStorage.setItem('usersDB', JSON.stringify(initial));
-    const userDB = localStorage.getItem('usersDB');
-    const json = JSON.parse(userDB);
-    const nicknameIncludes = json.some((prev) => prev.nickname === nickname);
+    // localStorage.setItem('usersDB', JSON.stringify(initial));
+    // const userDB = localStorage.getItem('usersDB');
+    // const json = JSON.parse(userDB);
+    const nicknameIncludes = initial.some((prev) => prev.nickname === nickname);
     if (nicknameIncludes) {
       alert('닉네임이 이미 존재합니다.');
       return false;
