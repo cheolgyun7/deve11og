@@ -79,7 +79,7 @@ const DetailPage = () => {
   const handleUpdate = async (id) => {
     if (isEdit) {
       const imgRef = ref(storage, 'thumbnail/' + question.thumbnailId);
-      await uploadBytes(imgRef, question.thumbnail);
+      await uploadBytes(imgRef, updateData.thumbnail);
       const imageUrl = await getDownloadURL(imgRef);
 
       try {
@@ -129,10 +129,10 @@ const DetailPage = () => {
     }
   };
 
-  // 이미지 미리보기 삭제 함수
-  const imgRemove = () => {
-    // setThumbnail('');
-  };
+  // // 이미지 미리보기 삭제 함수
+  // const imgRemove = () => {
+  //   // setImageURL('');
+  // };
   return (
     <Section>
       <DetailPageBox>
@@ -145,21 +145,22 @@ const DetailPage = () => {
             <>
               <input type="text" name="title" value={updateData.title} onChange={handleInputChange} />
               <input type="text" name="regDate" value={updateData.regDate} onChange={handleInputChange} readOnly />
+
               {/* <div>{<img src={imageURL} alt="미리보기" />}</div> */}
               <textarea type="text" name="contents" value={updateData.contents} onChange={handleInputChange} />
 
               {updateData.thumbnail ? (
                 <PreviewDiv>
-                  <img src={URL.createObjectURL(imageURL)} alt="이미지" />
-                  <button onClick={imgRemove}>이미지 삭제</button>
+                  <img src={imageURL} alt="이미지" />
+                  {/* <button onClick={imgRemove}>이미지 삭제</button> */}
                 </PreviewDiv>
               ) : (
                 <ThumbnailDiv>
                   <img src={imageFrames} alt="이미지" />
 
-                  {/* <label htmlFor="thumbnail">
+                  <label htmlFor="thumbnail">
                     <ThumbnailBtn>이미지 추가</ThumbnailBtn>
-                  </label> */}
+                  </label>
 
                   <ThumbnailInput
                     onChange={handleInputChange}
@@ -171,9 +172,9 @@ const DetailPage = () => {
                 </ThumbnailDiv>
               )}
 
-              <label htmlFor="thumbnail">
+              {/* <label htmlFor="thumbnail">
                 <div>이미지 변경</div>
-              </label>
+              </label> */}
               <input onChange={handleInputChange} name="file" type="file" accept="image/*" id="thumbnail" />
             </>
           ) : (
@@ -209,11 +210,10 @@ const DetailPage = () => {
 };
 export default DetailPage;
 
-const PreviewDiv = styled.selectstyled.input``;
-const ThumbnailDiv = styled.selectstyled.div``;
-const ThumbnailInput = styled.selectstyled.input``;
-const ThumbnailBtn = styled.selectstyled.div`
-`;
+const PreviewDiv = styled.div``;
+const ThumbnailDiv = styled.div``;
+const ThumbnailInput = styled.input``;
+const ThumbnailBtn = styled.div``;
 
 export const DetailPageBox = styled.div``;
 export const DetailPageBoxCard = styled.div`
