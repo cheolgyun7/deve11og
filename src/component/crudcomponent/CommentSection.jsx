@@ -49,8 +49,8 @@ export default function CommentSection() {
         board_id: params.id
       };
       const collectionRef = collection(db, 'comments');
-      await addDoc(collectionRef, newComment);
-      dispatch(addComment(newComment));
+      const ref = await addDoc(collectionRef, newComment);
+      dispatch(addComment({ ...newComment, id: ref.id }));
       alert('등록이 완료되었습니다.');
       e.target.reset();
     } catch (error) {
