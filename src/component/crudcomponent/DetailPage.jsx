@@ -102,10 +102,10 @@ const DetailPage = () => {
           thumbnail: imgFile.name ? imgFile.name : question.thumbnail,
           imageUrl
         };
-        console.log('updatedBoard', updatedBoard);
         await updateDoc(doc(db, 'board', id), updatedBoard);
 
         dispatch(updateBoard(updatedBoard));
+        console.log('updatedBoard', updatedBoard);
 
         alert('게시물이 수정되었습니다.');
         setIsImageDelete(false);

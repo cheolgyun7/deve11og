@@ -19,6 +19,7 @@ const Read = () => {
   const dispatch = useDispatch();
   const filteredList = listBoard.filter((list) => list.category === 'discussion');
   const { data } = useSelector((state) => state.comment);
+  console.log('listBoard', listBoard);
   useEffect(() => {
     // const boardId = boardTestData[0].id;
     const fetchCommentData = async () => {
@@ -45,6 +46,7 @@ const Read = () => {
   const ModifyButton = (id) => {
     navigate(`/detailPage/${id}`);
   };
+  console.log('filteredList', filteredList);
   return (
     <MainContents>
       <h2>커뮤니티</h2>
