@@ -8,6 +8,9 @@ import { updateBoard } from '../../redux/modules/list';
 import styled from 'styled-components';
 import { deleteObject, getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import { deleteBoard } from '../../redux/modules/board';
+import { deleteBoard, setBoard } from '../../redux/modules/board';
+import CommentSection from './CommentSection';
+import imageFrames from '../../image/imageFrames.png';
 
 const DetailPage = () => {
   const dispatch = useDispatch();
@@ -224,22 +227,16 @@ const DetailPage = () => {
           </p>
         </DetailPageBoxCard>
       </DetailPageBox>
+      <CommentSection />
     </Section>
   );
 };
 export default DetailPage;
 
-const ContentsDiv = styled.div`
-  display: flex;
-`;
-
-const PreviewDiv = styled.div``;
-const ThumbnailDiv = styled.div``;
-const ThumbnailInput = styled.input``;
-const ThumbnailBtn = styled.div`
-  width: 100%;
-  background-color: blue;
-  padding: 100px;
+const PreviewDiv = styled.selectstyled.input``;
+const ThumbnailDiv = styled.selectstyled.div``;
+const ThumbnailInput = styled.selectstyled.input``;
+const ThumbnailBtn = styled.selectstyled.div`
 `;
 
 export const DetailPageBox = styled.div``;

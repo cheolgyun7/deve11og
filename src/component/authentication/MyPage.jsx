@@ -38,6 +38,12 @@ const MyPage = () => {
       json[index].user_img = downloadURL;
       localStorage.setItem('usersDB', JSON.stringify(json));
 
+      // 파이어스토어 이미지 변경
+      const nameRef = doc(db, 'usersDB', user_id);
+      const docSnap = await getDoc(nameRef);
+      const currentData = docSnap.data();
+      await updateDoc(nameRef, { ...currentData, user_img: downloadURL });
+
       dispatch(updateImage(downloadURL));
 
       updateProfile(auth.currentUser, {
@@ -62,13 +68,19 @@ const MyPage = () => {
     const path = ref(storage, user_img).fullPath;
     const desertRef = ref(storage, path);
     deleteObject(desertRef)
-      .then(() => {
+      .then(async () => {
         // 로컬스토리지 추가
         const userDB = localStorage.getItem('usersDB');
         const json = JSON.parse(userDB);
         const index = json.findIndex((prev) => prev.user_id === user_id);
         json[index].user_img = DEFAULT_IMAGE;
         localStorage.setItem('usersDB', JSON.stringify(json));
+
+        // 파이어스토어 이미지 변경
+        const nameRef = doc(db, 'usersDB', user_id);
+        const docSnap = await getDoc(nameRef);
+        const currentData = docSnap.data();
+        await updateDoc(nameRef, { ...currentData, user_img: DEFAULT_IMAGE });
 
         dispatch(updateImage(DEFAULT_IMAGE));
 
