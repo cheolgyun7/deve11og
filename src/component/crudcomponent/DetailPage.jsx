@@ -20,15 +20,13 @@ const DetailPage = () => {
 
   const navigate = useNavigate();
 
-  // 기본 이미지
-  const defaultImg = 'https://github.com/cheolgyun7/deve11og/blob/dev/src/image/talking-img.png';
-
   // question - 회원이 클릭한 게시물 (데이터베이스에 등록된 게시물)
   const question = useSelector((state) => {
     return state.list.board.find((item) => item.id === id);
   });
 
   // 수정데이터를 담을 state
+  console.log(question, 'question');
   const [updateData, setUpdateData] = useState({
     ...question
   });
@@ -39,11 +37,6 @@ const DetailPage = () => {
 
   useEffect(() => {
     const fetchImage = async () => {
-      const docRef = doc(db, 'board', id);
-      const docSnap = await getDoc(docRef);
-      if (docSnap) {
-        const data = docSnap.data();
-        const imageRef = ref(storage, `thumbnail/${data.thumbnail}`);
       const docRef = doc(db, 'board', id);
       const docSnap = await getDoc(docRef);
       if (docSnap) {
@@ -107,7 +100,7 @@ const DetailPage = () => {
           contents: updateData.contents,
           regDate: updateData.regDate,
           category: updateData.category,
-          thumbnail: imgFile.name,
+          thumbnail: imgFile.name ? imgFile.name : updateData.thumbnail,
           imageUrl
         };
 
@@ -160,40 +153,25 @@ const DetailPage = () => {
           </UpdateSelectBox>
           {/* 수정 상태를 확인하는 삼항 연산자 */}
           {isEdit === true ? (
-            <>
-              <input type="text" name="title" value={updateData.title} onChange={handleInputChange} />
-              <input type="text" name="regDate" value={updateData.regDate} onChange={handleInputChange} readOnly />
-              {/* <div>{<img src={imageURL} alt="미리보기" />}</div> */}
-              <textarea type="text" name="contents" value={updateData.contents} onChange={handleInputChange} />
+            <div>
+              <TitleDiv>
+                <input type="text" name="title" value={updateData.title} onChange={handleInputChange} />
+                <input type="text" name="regDate" value={updateData.regDate} onChange={handleInputChange} readOnly />
+              </TitleDiv>
 
-              {updateData.thumbnail ? (
-                <PreviewDiv>
-                  <img src={URL.createObjectURL(imageURL)} alt="이미지" />
-                  <button onClick={imgRemove}>이미지 삭제</button>
-                </PreviewDiv>
-              ) : (
-                <ThumbnailDiv>
-                  <img src={imageFrames} alt="이미지" />
+              <ContentsDiv>
+                {/* 등록된 이미지 */}
+                {imageURL ? <img src={imageURL} alt="이미지" /> : <div>등록된 이미지가 없습니다</div>}
 
-                  {/* <label htmlFor="thumbnail">
-                    <ThumbnailBtn>이미지 추가</ThumbnailBtn>
-                  </label> */}
+                <label>
+                  이미지 업로드
+                  <input type="file" onChange={fileSelect} accept="image/*" />
+                </label>
+                {!isImageDelete ? <></> : <div onClick={handleRemove}>이미지 제거</div>}
 
-                  <ThumbnailInput
-                    onChange={handleInputChange}
-                    name="file"
-                    type="file"
-                    accept="image/*"
-                    id="thumbnail"
-                  />
-                </ThumbnailDiv>
-              )}
-
-              <label htmlFor="thumbnail">
-                <div>이미지 변경</div>
-              </label>
-              <input onChange={handleInputChange} name="file" type="file" accept="image/*" id="thumbnail" />
-            </>
+                <textarea type="text" name="contents" value={updateData.contents} onChange={handleInputChange} />
+              </ContentsDiv>
+            </div>
           ) : (
             <>
               <h2>{updateData.title}</h2>
