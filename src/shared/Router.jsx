@@ -21,7 +21,7 @@ const Router = () => {
           <Route path="/write" element={<Write />}></Route>
           <Route path="/read" element={<Read />}></Route>
           <Route path="/asklist" element={<AskList />}></Route>
-          <Route path="/detailPage/:userId" element={<DetailPage />}></Route>
+          <Route path="/detailPage/:id" element={<DetailPage />}></Route>
         </Routes>
       </Layout>
     </BrowserRouter>
