@@ -38,7 +38,6 @@ const initialState = {
 const comment = (state = initialState, action) => {
   switch (action.type) {
     case SET_COMMENT:
-      console.log('action.payload', action.payload);
       return { data: [...action.payload] };
     case ADD_COMMENT:
       return { data: [action.payload, ...state.data] };
@@ -52,7 +51,6 @@ const comment = (state = initialState, action) => {
     case DELETE_COMMENT:
       const deleteId = action.payload;
       const newData = state.data.filter((el) => el.id !== deleteId);
-      console.log(newData);
       return { data: [...newData] };
     default:
       return state;
