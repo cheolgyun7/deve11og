@@ -12,6 +12,9 @@ export default function CommentList() {
   const { user_id } = useSelector((state) => state.user.nowUser);
   const dispatch = useDispatch();
   const [userData, setUserData] = useState();
+  const { boardData } = useSelector((state) => state.board);
+  console.log('boardData', boardData);
+  const params = useParams();
 
   //기본 이미지
   const DEFAULT_IMAGE = 'https://github.com/cheolgyun7/deve11og/blob/dev/src/image/userImage.png?raw=true';
@@ -20,8 +23,8 @@ export default function CommentList() {
   useEffect(() => {
     // const boardId = boardTestData[0].id;
     const fetchCommentData = async () => {
-      // const q = query(collection(db, 'comments'), where('board_id', '==', boardId));
-      const q = query(collection(db, 'comments'));
+      const q = query(collection(db, 'comments'), where('board_id', '==', params.id));
+      // const q = query(collection(db, 'comments'));
       const querySnapshot = await getDocs(q);
 
       const initialData = [];

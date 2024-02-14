@@ -6,10 +6,12 @@ import styled from 'styled-components';
 import { addComment } from '../../redux/modules/comment';
 import CommentList from './CommentList';
 import { BtnBlackBg } from 'styles/SharedStyle';
+import { useParams } from 'react-router-dom';
 
 export default function CommentSection() {
   const { user_id, user_img, nickname } = useSelector((state) => state.user.nowUser);
   const dispatch = useDispatch();
+  const params = useParams();
 
   // console.log(user_id, user_img, nickname);
 
@@ -43,7 +45,8 @@ export default function CommentSection() {
         regDate,
         nickname,
         user_id,
-        board_id: boardTestData[0].id //임시로 파이어베이스 첫 번째 데이터의 id로 부여함. 나중에 useParam으로 id 가져와서 하는 등 변경 필요
+        // board_id: boardTestData[0].id //임시로 파이어베이스 첫 번째 데이터의 id로 부여함. 나중에 useParam으로 id 가져와서 하는 등 변경 필요
+        board_id: params.id
       };
       const collectionRef = collection(db, 'comments');
       await addDoc(collectionRef, newComment);
