@@ -6,12 +6,19 @@ import styled from 'styled-components';
 import { BtnBlackBg, BtnBlackText } from 'styles/SharedStyle';
 import { db } from '../../firebase';
 
-export default function CommentItem({ data }) {
+export default function CommentItem({ data, findData }) {
   const { id, user_id, nickname, contents, regDate } = data;
   const { user_id: nowUserId } = useSelector((state) => state.user.nowUser);
   const [isEditing, setIsEditing] = useState(false);
   const [content, setContent] = useState(contents);
   const dispatch = useDispatch();
+
+  //기본 이미지
+  const DEFAULT_IMAGE = 'https://github.com/cheolgyun7/deve11og/blob/dev/src/image/userImage.png?raw=true';
+
+  // 유저 정보 - 업데이트 되면 반영됨
+  const nowNickname = findData && findData.nickname ? findData.nickname : nickname;
+  const nowUserImg = findData && findData.user_img ? findData.user_img : DEFAULT_IMAGE;
 
   //수정 모드 활성화
   const handleEditClick = () => {
@@ -64,15 +71,15 @@ export default function CommentItem({ data }) {
   const handleChange = (e) => {
     setContent(e.target.value);
   };
-
+  console.log(findData);
   return (
     <CommentItemStyle>
       <CommentTopInfo>
         <ThumbBox>
-          {/* <img src={findData && findData.user_img ? DEFAULT_IMAGE : findData.user_img} alt="" /> */}
+          <img src={nowUserImg} alt={`${nowNickname} 유저 프로필 이미지`} />
         </ThumbBox>
         <div>
-          <NicknameStyle>{nickname}</NicknameStyle>
+          <NicknameStyle>{nowNickname}</NicknameStyle>
           <DateStyle>{regDate}</DateStyle>
         </div>
       </CommentTopInfo>
