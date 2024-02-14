@@ -5,19 +5,19 @@ import logoImg from '../../image/logo.png';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { auth } from '../../firebase';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
-import { useDispatch } from 'react-redux';
-import { setUserNowDB } from '../../redux/modules/user';
+import { useDispatch, useSelector } from 'react-redux';
+import { setUserNowDB, updateImage } from '../../redux/modules/user';
 import { collection, getDocs, query } from 'firebase/firestore';
 import { db } from '../../firebase';
 
 const Header = () => {
   const [logoutBool, setLogoutBool] = useState(false);
   const [isActive, setIsActive] = useState(false);
-  const [userImg, setUserImg] = useState('');
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const location = useLocation();
+  const { user_img: userImage } = useSelector((state) => state.user.nowUser);
 
   const showAllDocuments = async () => {
     try {
@@ -45,17 +45,22 @@ const Header = () => {
     const nickname = userData.displayName;
     const user_img = userData.photoURL;
     const userDB = localStorage.getItem('usersDB');
-    const json = JSON.parse(userDB);
-    const imgTest = json.findIndex((item) => item.user_id === user_id);
-    setUserImg(json[imgTest].user_img);
-    dispatch(
-      setUserNowDB({
-        user_id: user_id,
-        email: email,
-        nickname: nickname,
-        user_img: user_img
-      })
-    );
+    if (userDB !== null) {
+      const json = JSON.parse(userDB);
+      const imgTest = json.findIndex((item) => item.user_id === user_id);
+      dispatch(updateImage(json[imgTest].user_img));
+      dispatch(
+        setUserNowDB({
+          user_id: user_id,
+          email: email,
+          nickname: nickname,
+          user_img: user_img
+        })
+      );
+    } else {
+      alert('운영진에게 문의주세요!');
+      return false;
+    }
   };
 
   // 쿠키삭제
@@ -121,8 +126,6 @@ const Header = () => {
           document.cookie = `uid=${user.uid}; expires=${todayDate.toUTCString()};path=/;`;
           setLogoutBool(true);
           signUser();
-
-          // console.log(userloginDB[imgTest].user_img);
         } else {
           setLogoutBool(false);
         }
@@ -144,7 +147,7 @@ const Header = () => {
               <>
                 {writePage ? '' : <NewPostBtn onClick={newPostBtnClick}>새 글 작성</NewPostBtn>}
                 <ImgDiv tabIndex={0} onBlur={userMenuOnBlur}>
-                  <ImgStyle onClick={userIsActiveBtn} src={userImg} alt="프로필사진" />
+                  <ImgStyle onClick={userIsActiveBtn} src={userImage} alt="프로필사진" />
                 </ImgDiv>
                 <UserMenuDiv onBlur={userMenuOnBlur}>
                   <UserBtn onClick={userIsActiveBtn}>🔽</UserBtn>
