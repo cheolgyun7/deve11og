@@ -209,11 +209,10 @@ const DetailPage = () => {
 };
 export default DetailPage;
 
-const PreviewDiv = styled.selectstyled.input``;
-const ThumbnailDiv = styled.selectstyled.div``;
-const ThumbnailInput = styled.selectstyled.input``;
-const ThumbnailBtn = styled.selectstyled.div`
-`;
+const PreviewDiv = styled.div``;
+const ThumbnailDiv = styled.div``;
+const ThumbnailInput = styled.input``;
+const ThumbnailBtn = styled.div``;
 
 export const DetailPageBox = styled.div``;
 export const DetailPageBoxCard = styled.div`
