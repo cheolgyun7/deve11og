@@ -1,6 +1,6 @@
-import { addDoc, collection, getDocs, query, where } from 'firebase/firestore';
+import { addDoc, collection } from 'firebase/firestore';
 import { db } from '../../firebase';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { addComment } from '../../redux/modules/comment';
@@ -12,11 +12,7 @@ export default function CommentSection() {
   const { user_id, user_img, nickname } = useSelector((state) => state.user.nowUser);
   const dispatch = useDispatch();
   const params = useParams();
-
-  // console.log(user_id, user_img, nickname);
-
   const [contents, setContents] = useState('');
-  const [boardTestData, setBoardTestData] = useState(''); //테스트로 id 만 가져오는 state - 삭제 예정
 
   const handleChange = (e) => {
     setContents(e.target.value);
@@ -58,25 +54,6 @@ export default function CommentSection() {
       console.error(error);
     }
   };
-
-  //게시물 데이터 가져오기 - 임시로 만듬, 삭제 예정
-  useEffect(() => {
-    const fetchBoardData = async () => {
-      const q = query(collection(db, 'board'));
-      const querySnapshot = await getDocs(q);
-
-      const initialData = [];
-
-      querySnapshot.forEach((doc) => {
-        initialData.push({ id: doc.id, ...doc.data() });
-      });
-
-      // firestore에서 가져온 데이터를 state에 전달
-      setBoardTestData(initialData);
-    };
-
-    fetchBoardData();
-  }, []);
 
   return (
     <>
