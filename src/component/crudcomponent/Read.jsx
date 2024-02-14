@@ -8,7 +8,6 @@ import { toggleLike } from '../../redux/modules/list';
 import { useNavigate } from 'react-router-dom';
 import { storage } from '../../firebase';
 import { getDownloadURL, ref } from 'firebase/storage';
-
 const Read = () => {
   const { user_id } = useSelector((state) => state.user.nowUser);
   console.log(user_id);
@@ -19,7 +18,6 @@ const Read = () => {
   const listBoard = useSelector((state) => state.list.board); // 비교 함수 추가
   console.log(listBoard);
   const filteredList = listBoard.filter((list) => list.category === 'discussion');
-  console.log(filteredList);
   // 좋아요 토글 핸들러 함수
   const handleToggleLike = (postId, isLiked) => {
     dispatch(toggleLike(postId, isLiked, user_id));
@@ -59,9 +57,7 @@ const Read = () => {
     </MainContents>
   );
 };
-
 export default Read;
-
 export const CardBox = styled.div`
   display: flex;
   margin: 0 3rem;
