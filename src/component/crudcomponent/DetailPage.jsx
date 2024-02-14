@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { deleteDoc, doc, updateDoc } from 'firebase/firestore';
+import { deleteDoc, doc, getDoc, updateDoc } from 'firebase/firestore';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Section } from 'styles/SharedStyle';
 import { db, storage } from '../../firebase';
-import { updateBoard } from '../../redux/modules/list';
+import { updateBoard, setDeleteBoard } from '../../redux/modules/list';
 import styled from 'styled-components';
 import { deleteObject, getDownloadURL, ref, uploadBytes } from 'firebase/storage';
-import { deleteBoard } from '../../redux/modules/board';
 import CommentSection from './CommentSection';
 
 const DetailPage = () => {
@@ -17,60 +16,49 @@ const DetailPage = () => {
   // 게시판 이미지URL state
   const [imageURL, setImageURL] = useState('');
   // 미리보기 이미지 state
-  const [previewImg, setPreviewImg] = useState('');
+  const [imgFile, setimgFile] = useState('');
 
   const navigate = useNavigate();
 
+  // 기본 이미지
   const defaultImg = 'https://github.com/cheolgyun7/deve11og/blob/dev/src/image/talking-img.png';
 
-  // 이미지 url이 없으면 기본 이미지 넣어주는 로직 어디에 끼워야할지 생각할것
-  //   if (imageURL===''){
-  //     const imageRef = ref(storage, 'defaultThumbnail/','defultImg.png');
-  //     const url = await getDownloadURL(imageRef);
-  //     setImageURL(url);
-  //   }
-
-  // 이미지 미리보기 change함수
-  const imgChanged = (e) => setPreviewImg(e.target.files[0]);
-
-  // question - 회원이 클릭한 게시물 (데이터베이스에 등록된 게시물 id와 userId가 같은걸 가져온다)
+  // question - 회원이 클릭한 게시물 (데이터베이스에 등록된 게시물)
   const question = useSelector((state) => {
     return state.list.board.find((item) => item.id === id);
   });
 
   // 수정데이터를 담을 state
   const [updateData, setUpdateData] = useState({
-    title: '',
-    contents: '',
-    imageURL: '',
-    regDate: '',
-    category: '',
-    thumbnail: ''
+    ...question
   });
 
   // 수정 가능여부를 확인하는 state
   const [isEdit, setIsEdit] = useState(false);
+  const [isImageDelete, setIsImageDelete] = useState(false);
 
   useEffect(() => {
-    // 첫 렌더링시 데이터베이스에서 이미지 URL을 가져와서 ImageURL에 담는다
-
     const fetchImage = async () => {
-      const imageRef = ref(storage, `thumbnail/${question.thumbnail}`);
-      const url = await getDownloadURL(imageRef);
-      setImageURL(url);
+      const docRef = doc(db, 'board', id);
+      const docSnap = await getDoc(docRef);
+      if (docSnap) {
+        const data = docSnap.data();
+        const imageRef = ref(storage, `thumbnail/${data.thumbnail}`);
+        const url = await getDownloadURL(imageRef);
+        setUpdateData({
+          title: data.title,
+          contents: data.contents,
+          imageURL: data.imageURL,
+          regDate: data.regDate,
+          category: data.category,
+          thumbnail: data.thumbnail
+        });
+        // 첫 렌더링시 데이터베이스에서 이미지 URL을 가져와서 ImageURL에 담는다
+        setImageURL(url);
+      }
     };
     fetchImage();
-
-    // 화면 렌더링시 데이터 베이스에서 가져온 데이터를 수정 데이터를 담는 state에 담아준다
-    setUpdateData({
-      title: question.title,
-      contents: question.contents,
-      imageURL: question.imageURL,
-      regDate: question.regDate,
-      category: question.category,
-      thumbnail: question.thumbnail
-    });
-  }, [question]); // 게시물의 상태가 변경될때마다 화면은 재렌더링한다
+  }, [id]);
 
   // input의 change이벤트 묶음
   const handleInputChange = (e) => {
@@ -95,20 +83,26 @@ const DetailPage = () => {
   };
 
   // 수정
+  const fileSelect = (e) => {
+    const file = e.target.files[0];
+    setIsImageDelete(true);
+    setimgFile(file);
+  };
   const handleUpdate = async (id) => {
     if (isEdit) {
-      const imgRef = ref(storage, 'thumbnail/' + question.thumbnail);
-      await uploadBytes(imgRef, updateData.thumbnail);
-      const imageUrl = await getDownloadURL(imgRef);
-
       try {
+        const imgRef = ref(storage, 'thumbnail/' + imgFile.name);
+        await uploadBytes(imgRef, imgFile);
+        const imageUrl = await getDownloadURL(imgRef);
+        setImageURL(imageUrl);
+
         const updatedBoard = {
           ...question,
           title: updateData.title,
           contents: updateData.contents,
           regDate: updateData.regDate,
           category: updateData.category,
-          thumbnail: updateData.thumbnail,
+          thumbnail: imgFile.name,
           imageUrl
         };
 
@@ -117,6 +111,7 @@ const DetailPage = () => {
         dispatch(updateBoard(updatedBoard));
 
         alert('게시물이 수정되었습니다.');
+        setIsImageDelete(false);
         navigate('/');
       } catch (error) {
         console.error('게시물 수정 실패', error);
@@ -137,7 +132,7 @@ const DetailPage = () => {
         const boardRef = doc(db, 'board', id);
         await deleteDoc(boardRef);
 
-        dispatch(deleteBoard(id, thumbnail));
+        dispatch(setDeleteBoard(id, thumbnail));
 
         alert('게시물이 삭제되었습니다.');
         navigate('/');
@@ -147,8 +142,8 @@ const DetailPage = () => {
     }
   };
 
-  // // 이미지 미리보기 삭제 함수
-  const imgRemove = () => setPreviewImg('');
+  // 이미지 삭제
+  const handleRemove = () => setimgFile('');
 
   return (
     <Section>
@@ -161,11 +156,21 @@ const DetailPage = () => {
           {/* 수정 상태를 확인하는 삼항 연산자 */}
           {isEdit === true ? (
             <div>
-              <input type="text" name="title" value={updateData.title} onChange={handleInputChange} />
-              <input type="text" name="regDate" value={updateData.regDate} onChange={handleInputChange} readOnly />
+              <TitleDiv>
+                <input type="text" name="title" value={updateData.title} onChange={handleInputChange} />
+                <input type="text" name="regDate" value={updateData.regDate} onChange={handleInputChange} readOnly />
+              </TitleDiv>
+
               <ContentsDiv>
                 {/* 등록된 이미지 */}
-                <img src={imageURL} alt="이미지" />
+                {imageURL ? <img src={imageURL} alt="이미지" /> : <div>등록된 이미지가 없습니다</div>}
+
+                <label>
+                  이미지 업로드
+                  <input type="file" onChange={fileSelect} accept="image/*" />
+                </label>
+                {!isImageDelete ? <></> : <div onClick={handleRemove}>이미지 제거</div>}
+
                 <textarea type="text" name="contents" value={updateData.contents} onChange={handleInputChange} />
               </ContentsDiv>
             </div>
@@ -188,7 +193,6 @@ const DetailPage = () => {
             <button
               onClick={() => {
                 removeBoard(question.id, question.thumbnail);
-                // handleCancel(question.boardId);
               }}
             >
               삭제
@@ -207,6 +211,7 @@ const ThumbnailDiv = styled.div``;
 const ThumbnailInput = styled.input``;
 const ThumbnailBtn = styled.div``;
 const ContentsDiv = styled.div``;
+const TitleDiv = styled.div``;
 
 export const DetailPageBox = styled.div``;
 export const DetailPageBoxCard = styled.div`
