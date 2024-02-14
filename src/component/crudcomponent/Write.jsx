@@ -13,7 +13,6 @@ import { useNavigate } from 'react-router';
 const Write = () => {
   const nowUser = useSelector((state) => state.user.nowUser);
   const dispatch = useDispatch();
-  const board = useSelector((item) => item.board);
   const navigate = useNavigate();
 
   // 게시물 state들

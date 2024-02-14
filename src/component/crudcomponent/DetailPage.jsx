@@ -1,26 +1,43 @@
 import React, { useState, useEffect } from 'react';
-import { collection, deleteDoc, doc, getDoc, getDocs, query, updateDoc } from 'firebase/firestore';
+import { deleteDoc, doc, updateDoc } from 'firebase/firestore';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Section } from 'styles/SharedStyle';
 import { db, storage } from '../../firebase';
-import { SET_DELETEBOARD, updateBoard } from '../../redux/modules/list';
+import { updateBoard } from '../../redux/modules/list';
 import styled from 'styled-components';
 import { deleteObject, getDownloadURL, ref, uploadBytes } from 'firebase/storage';
-import { deleteBoard, setBoard } from '../../redux/modules/board';
-import imageFrames from '../../image/imageFrames.png';
+import { deleteBoard } from '../../redux/modules/board';
 
 const DetailPage = () => {
   const dispatch = useDispatch();
-  const { userId } = useParams();
-  const [imageURL, setImageURL] = useState('');
+  const { id } = useParams();
 
+  // 게시판 이미지URL state
+  const [imageURL, setImageURL] = useState('');
+  // 미리보기 이미지 state
+  const [previewImg, setPreviewImg] = useState('');
+
+  const navigate = useNavigate();
+
+  const defaultImg = 'https://github.com/cheolgyun7/deve11og/blob/dev/src/image/talking-img.png';
+
+  // 이미지 url이 없으면 기본 이미지 넣어주는 로직 어디에 끼워야할지 생각할것
+  //   if (imageURL===''){
+  //     const imageRef = ref(storage, 'defaultThumbnail/','defultImg.png');
+  //     const url = await getDownloadURL(imageRef);
+  //     setImageURL(url);
+  //   }
+
+  // 이미지 미리보기 change함수
+  const imgChanged = (e) => setPreviewImg(e.target.files[0]);
+
+  // question - 회원이 클릭한 게시물 (데이터베이스에 등록된 게시물 id와 userId가 같은걸 가져온다)
   const question = useSelector((state) => {
-    return state.list.board.find((item) => item.id === userId);
+    return state.list.board.find((item) => item.id === id);
   });
 
-  // console.log(question, 'question');
-  const navigate = useNavigate();
+  // 수정데이터를 담을 state
   const [updateData, setUpdateData] = useState({
     title: '',
     contents: '',
@@ -30,30 +47,31 @@ const DetailPage = () => {
     thumbnail: ''
   });
 
-  const [isEdit, setIsEdit] = useState(false); //수정가능한상태
+  // 수정 가능여부를 확인하는 state
+  const [isEdit, setIsEdit] = useState(false);
 
   useEffect(() => {
+    // 첫 렌더링시 데이터베이스에서 이미지 URL을 가져와서 ImageURL에 담는다
+
     const fetchImage = async () => {
-      if (question) {
-        const imageRef = ref(storage, `thumbnail/${question.thumbnail}`);
-        const url = await getDownloadURL(imageRef);
-        setImageURL(url);
-      }
+      const imageRef = ref(storage, `thumbnail/${question.thumbnail}`);
+      const url = await getDownloadURL(imageRef);
+      setImageURL(url);
     };
     fetchImage();
 
-    if (question) {
-      setUpdateData({
-        title: question.title,
-        contents: question.contents,
-        imageURL: question.imageURL,
-        regDate: question.regDate,
-        category: question.category,
-        thumbnail: question.thumbnail
-      });
-    }
-  }, [question]);
+    // 화면 렌더링시 데이터 베이스에서 가져온 데이터를 수정 데이터를 담는 state에 담아준다
+    setUpdateData({
+      title: question.title,
+      contents: question.contents,
+      imageURL: question.imageURL,
+      regDate: question.regDate,
+      category: question.category,
+      thumbnail: question.thumbnail
+    });
+  }, [question]); // 게시물의 상태가 변경될때마다 화면은 재렌더링한다
 
+  // input의 change이벤트 묶음
   const handleInputChange = (e) => {
     if (isEdit) {
       // 입력 필드의 이름을 가져옴 (title 또는 contents)
@@ -78,7 +96,7 @@ const DetailPage = () => {
   // 수정
   const handleUpdate = async (id) => {
     if (isEdit) {
-      const imgRef = ref(storage, 'thumbnail/' + question.thumbnailId);
+      const imgRef = ref(storage, 'thumbnail/' + question.thumbnail);
       await uploadBytes(imgRef, updateData.thumbnail);
       const imageUrl = await getDownloadURL(imgRef);
 
@@ -108,7 +126,6 @@ const DetailPage = () => {
 
   // 삭제
   const removeBoard = async (id, thumbnail) => {
-    console.log('id', id);
     if (window.confirm('게시물을 삭제하시겠습니까?')) {
       try {
         // 이미지 삭제
@@ -130,9 +147,8 @@ const DetailPage = () => {
   };
 
   // // 이미지 미리보기 삭제 함수
-  // const imgRemove = () => {
-  //   // setImageURL('');
-  // };
+  const imgRemove = () => setPreviewImg('');
+
   return (
     <Section>
       <DetailPageBox>
@@ -141,48 +157,51 @@ const DetailPage = () => {
             <option value="discussion">커뮤니티</option>
             <option value="asklist">질문 및 답변</option>
           </UpdateSelectBox>
+          {/* 수정 상태를 확인하는 삼항 연산자 */}
           {isEdit === true ? (
-            <>
+            <div>
               <input type="text" name="title" value={updateData.title} onChange={handleInputChange} />
               <input type="text" name="regDate" value={updateData.regDate} onChange={handleInputChange} readOnly />
+              <ContentsDiv>
+                {/* 등록된 이미지 */}
+                <img src={imageURL} alt="이미지" />
 
-              {/* <div>{<img src={imageURL} alt="미리보기" />}</div> */}
-              <textarea type="text" name="contents" value={updateData.contents} onChange={handleInputChange} />
+                {/* <img src={imageURL ? imageURL : URL.createObjectURL(previewImg)} alt="이미지" /> */}
+                {/* <label htmlFor="thumbnail">
+                  <ThumbnailBtn>이미지 변경</ThumbnailBtn>
+                </label>
+                <ThumbnailInput onChange={imgChanged} type="file" accept="image/*" id="thumbnail" /> */}
 
-              {updateData.thumbnail ? (
-                <PreviewDiv>
-                  <img src={imageURL} alt="이미지" />
-                  {/* <button onClick={imgRemove}>이미지 삭제</button> */}
-                </PreviewDiv>
-              ) : (
-                <ThumbnailDiv>
-                  <img src={imageFrames} alt="이미지" />
+                {/* <label>
+                  이미지 업로드
+                  <input type="file" onChange={fileSelect} accept="image/*" />
+                </label>
+                {!isImageRemovable ? <></> : <BtnBlackText onClick={handleRemove}>이미지 제거</BtnBlackText>} */}
 
-                  <label htmlFor="thumbnail">
-                    <ThumbnailBtn>이미지 추가</ThumbnailBtn>
-                  </label>
+                {/* {imageURL ? (
+                  <PreviewDiv>
+                    <img src={imageURL} alt="이미지" />
+                    <button onClick={imgRemove}>이미지 삭제</button>
+                  </PreviewDiv>
+                ) : (
+                  <ThumbnailDiv>
+                    <img src={URL.createObjectURL(previewImg)} alt="이미지" />
 
-                  <ThumbnailInput
-                    onChange={handleInputChange}
-                    name="file"
-                    type="file"
-                    accept="image/*"
-                    id="thumbnail"
-                  />
-                </ThumbnailDiv>
-              )}
+                    <label htmlFor="thumbnail">
+                      <ThumbnailBtn>이미지 추가</ThumbnailBtn>
+                    </label>
+                    <ThumbnailInput onChange={imgChanged} type="file" accept="image/*" id="thumbnail" />
+                  </ThumbnailDiv>
+                )} */}
 
-              {/* <label htmlFor="thumbnail">
-                <div>이미지 변경</div>
-              </label> */}
-              <input onChange={handleInputChange} name="file" type="file" accept="image/*" id="thumbnail" />
-            </>
+                <textarea type="text" name="contents" value={updateData.contents} onChange={handleInputChange} />
+              </ContentsDiv>
+            </div>
           ) : (
             <>
               <h2>{updateData.title}</h2>
               <span>{updateData.regDate}</span>
               <div>{<img src={imageURL} alt="미리보기" />}</div>
-
               <span>{updateData.contents}</span>
             </>
           )}
@@ -210,10 +229,18 @@ const DetailPage = () => {
 };
 export default DetailPage;
 
+const ContentsDiv = styled.div`
+  display: flex;
+`;
+
 const PreviewDiv = styled.div``;
 const ThumbnailDiv = styled.div``;
 const ThumbnailInput = styled.input``;
-const ThumbnailBtn = styled.div``;
+const ThumbnailBtn = styled.div`
+  width: 100%;
+  background-color: blue;
+  padding: 100px;
+`;
 
 export const DetailPageBox = styled.div``;
 export const DetailPageBoxCard = styled.div`
