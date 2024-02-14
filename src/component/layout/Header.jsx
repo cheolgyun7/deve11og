@@ -97,7 +97,7 @@ const Header = () => {
           const email = user.email;
           const nickname = user.displayName;
           const user_img = user.photoURL;
-          dispatch(updateImage(user_img));
+          // dispatch(updateImage(user_img));
           dispatch(
             setUserNowDB({
               user_id: user_id,
