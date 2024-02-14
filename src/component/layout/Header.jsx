@@ -4,7 +4,7 @@ import { HeaderBox, LayoutStyle } from 'styles/SharedStyle';
 import logoImg from '../../image/logo.png';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { auth } from '../../firebase';
-import { getAuth, onAuthStateChanged, signOut } from 'firebase/auth';
+import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { useDispatch, useSelector } from 'react-redux';
 import { setUserNowDB, updateImage } from '../../redux/modules/user';
 import { collection, getDocs, query } from 'firebase/firestore';
@@ -39,13 +39,11 @@ const Header = () => {
 
   // 로그인시 redux에 dispatch
   const signUser = () => {
-    const auth = getAuth();
     const userData = auth.currentUser;
     const user_id = userData.uid;
     const email = userData.email;
     const nickname = userData.displayName;
     const user_img = userData.photoURL;
-    // const userDB = localStorage.getItem('usersDB');
     if (userData) {
       dispatch(updateImage(user_img));
       dispatch(
@@ -119,7 +117,6 @@ const Header = () => {
           querySnapshot.forEach((doc) => {
             initial.push({ ...doc.data() });
           });
-          localStorage.setItem('usersDB', JSON.stringify(initial));
           // 쿠키
           let todayDate = new Date();
           // 쿠키 1시간 유효기간 설정
