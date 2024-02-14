@@ -158,10 +158,6 @@ const DetailPage = () => {
                 <ThumbnailDiv>
                   <img src={imageFrames} alt="이미지" />
 
-                  {/* <label htmlFor="thumbnail">
-                    <ThumbnailBtn>이미지 추가</ThumbnailBtn>
-                  </label> */}
-
                   <ThumbnailInput
                     onChange={handleInputChange}
                     name="file"
@@ -182,7 +178,6 @@ const DetailPage = () => {
               <h2>{updateData.title}</h2>
               <span>{updateData.regDate}</span>
               <div>{<img src={imageURL} alt="미리보기" />}</div>
-
               <span>{updateData.contents}</span>
             </>
           )}

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -6,9 +6,8 @@ import { faHeart } from '@fortawesome/free-solid-svg-icons';
 import { CardArticle, CardThumbnail, LikeIcon, MainContents } from 'styles/SharedStyle';
 import { toggleLike } from '../../redux/modules/list';
 import { useNavigate } from 'react-router-dom';
-import { db, storage } from '../../firebase';
-import { getDownloadURL, ref } from 'firebase/storage';
-import { collection, getDocs, query, where } from 'firebase/firestore';
+import { db } from '../../firebase';
+import { collection, getDocs, query } from 'firebase/firestore';
 import { setComment } from '../../redux/modules/comment';
 
 const Read = () => {
@@ -18,9 +17,6 @@ const Read = () => {
   const dispatch = useDispatch();
   const filteredList = listBoard.filter((list) => list.category === 'discussion');
   const { data } = useSelector((state) => state.comment);
-  console.log('commemts', data);
-  console.log('filter', filteredList);
-  console.log(useSelector((state) => state.comment === filteredList.id));
   useEffect(() => {
     // const boardId = boardTestData[0].id;
     const fetchCommentData = async () => {
