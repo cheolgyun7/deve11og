@@ -6,6 +6,9 @@ import { Link, useNavigate } from 'react-router-dom';
 import { LoginBtn, LoginDiv, LoginForm, LoginInput, LoginMain } from './Login';
 import { collection, setDoc, doc, query, getDocs } from 'firebase/firestore';
 import { db } from '../../firebase';
+import { useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
+import { updateImage } from '../../redux/modules/user';
 
 const Register = () => {
   const [nickname, setNickname] = useState('');
@@ -15,6 +18,8 @@ const Register = () => {
 
   const navigate = useNavigate();
   const collectionRef = collection(db, 'usersDB');
+  const userState = useSelector((state) => state.user.nowUser);
+  const dispatch = useDispatch();
 
   // 회원가입
   const signUp = async (event) => {
@@ -46,6 +51,9 @@ const Register = () => {
             photoURL: 'https://github.com/cheolgyun7/deve11og/blob/dev/src/image/userImage.png?raw=true'
           });
 
+          console.log('user', user);
+          dispatch(updateImage(user.photoURL));
+
           onAuthStateChanged(auth, async (user) => {
             if (user) {
               const newData = {
@@ -62,6 +70,7 @@ const Register = () => {
               }
             }
           });
+          console.log('userState', userState);
           navigate('/');
         } catch (error) {
           const errorCode = error.code;
