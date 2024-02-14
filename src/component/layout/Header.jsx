@@ -7,7 +7,7 @@ import { auth } from '../../firebase';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { useDispatch, useSelector } from 'react-redux';
 import { setUserNowDB, updateImage } from '../../redux/modules/user';
-import { collection, getDocs, query } from 'firebase/firestore';
+import { collection, getDocs } from 'firebase/firestore';
 import { db } from '../../firebase';
 
 const Header = () => {
@@ -36,31 +36,6 @@ const Header = () => {
   const loginPage = location.pathname === '/login';
   const registerPage = location.pathname === '/register';
   const writePage = location.pathname === '/write';
-
-  // 로그인시 redux에 dispatch
-  const signUser = () => {
-    const userData = auth.currentUser;
-    const user_id = userData.uid;
-    const email = userData.email;
-    const nickname = userData.displayName;
-    const user_img = userData.photoURL;
-    if (userData) {
-      dispatch(updateImage(user_img));
-      dispatch(
-        setUserNowDB({
-          user_id: user_id,
-          email: email,
-          nickname: nickname,
-          user_img: user_img
-        })
-      );
-    } else {
-      alert('로그인실패!');
-      return false;
-    }
-    // const json = JSON.parse(userDB);
-    // const imgTest = json.findIndex((item) => item.user_id === user_id);
-  };
 
   // 쿠키삭제
   const deleteCookie = (name) => {
@@ -109,21 +84,28 @@ const Header = () => {
   useEffect(() => {
     const loginCheck = () => {
       // 현재 유저가 로그인 되어있는지 확인
-      onAuthStateChanged(auth, async (user) => {
+      onAuthStateChanged(auth, (user) => {
         if (user) {
-          const q = query(collection(db, 'usersDB'));
-          const querySnapshot = await getDocs(q);
-          const initial = [];
-          querySnapshot.forEach((doc) => {
-            initial.push({ ...doc.data() });
-          });
+          console.log('user', user);
           // 쿠키
           let todayDate = new Date();
           // 쿠키 1시간 유효기간 설정
           todayDate.setTime(todayDate.getTime() + 1 * 60 * 60 * 1000);
           document.cookie = `uid=${user.uid}; expires=${todayDate.toUTCString()};path=/;`;
           setLogoutBool(true);
-          signUser();
+          const user_id = user.uid;
+          const email = user.email;
+          const nickname = user.displayName;
+          const user_img = user.photoURL;
+          dispatch(updateImage(user_img));
+          dispatch(
+            setUserNowDB({
+              user_id: user_id,
+              email: email,
+              nickname: nickname,
+              user_img: user_img
+            })
+          );
         } else {
           setLogoutBool(false);
         }
