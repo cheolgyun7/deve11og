@@ -1,39 +1,112 @@
-import React, { useEffect, useState } from 'react';
-import { collection, deleteDoc, doc, getDocs, query } from 'firebase/firestore';
+import React, { useState, useEffect } from 'react';
+import { collection, deleteDoc, doc, getDoc, getDocs, query, updateDoc } from 'firebase/firestore';
 import { useSelector, useDispatch } from 'react-redux';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Section } from 'styles/SharedStyle';
 import { db, storage } from '../../firebase';
+import { SET_DELETEBOARD, updateBoard } from '../../redux/modules/list';
 import styled from 'styled-components';
+import { deleteObject, getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import { deleteBoard, setBoard } from '../../redux/modules/board';
-import Write from './Write';
-import { deleteObject, ref } from '@firebase/storage';
-import { useNavigate } from 'react-router-dom';
+
 const DetailPage = () => {
-  // // 파이어베이스에 저장된 데이터 가져오기
-  useEffect(() => {
-    const fetchData = async () => {
-      const boardData = query(collection(db, 'board'));
-      const querySnapshot = await getDocs(boardData);
-
-      const initialBoard = [];
-      querySnapshot.forEach((doc) => {
-        const data = {
-          id: doc.id,
-          ...doc.data()
-        };
-        initialBoard.push(data);
-      });
-      dispatch(setBoard(initialBoard));
-    };
-    fetchData();
-  }, []);
-
-  const board = useSelector((item) => item.board);
   const dispatch = useDispatch();
+  const { userId } = useParams();
+  const [imageURL, setImageURL] = useState('');
+
+  const question = useSelector((state) => {
+    return state.list.board.find((item) => item.id === userId);
+  });
+
+  // console.log(question, 'question');
   const navigate = useNavigate();
+  const [updateData, setUpdateData] = useState({
+    title: '',
+    contents: '',
+    imageURL: '',
+    regDate: '',
+    category: '',
+    thumbnail: ''
+  });
+
+  const [isEdit, setIsEdit] = useState(false); //수정가능한상태
+
+  useEffect(() => {
+    const fetchImage = async () => {
+      if (question) {
+        const imageRef = ref(storage, `thumbnail/${question.thumbnail}`);
+        const url = await getDownloadURL(imageRef);
+        setImageURL(url);
+      }
+    };
+    fetchImage();
+
+    if (question) {
+      setUpdateData({
+        title: question.title,
+        contents: question.contents,
+        imageURL: question.imageURL,
+        regDate: question.regDate,
+        category: question.category,
+        thumbnail: question.thumbnail
+      });
+    }
+  }, [question]);
+
+  const handleInputChange = (e) => {
+    if (isEdit) {
+      // 입력 필드의 이름을 가져옴 (title 또는 contents)
+      const fieldName = e.target.name;
+
+      // 입력된 값
+      const fieldValue = e.target.value;
+
+      // 기존 boardData 복사
+      const updatedData = { ...updateData };
+
+      // 해당 필드 업데이트
+      updatedData[fieldName] = fieldValue;
+
+      // 업데이트된 데이터로 boardData 업데이트
+      setUpdateData(updatedData);
+    } else {
+      alert('수정버튼을 누르고 수정하세요');
+    }
+  };
+
+  // 수정
+  const handleUpdate = async (id) => {
+    if (isEdit) {
+      const imgRef = ref(storage, 'thumbnail/' + question.thumbnailId);
+      await uploadBytes(imgRef, question.thumbnail);
+      const imageUrl = await getDownloadURL(imgRef);
+
+      try {
+        const updatedBoard = {
+          ...question,
+          title: updateData.title,
+          contents: updateData.contents,
+          regDate: updateData.regDate,
+          category: updateData.category,
+          thumbnail: updateData.thumbnail,
+          imageUrl
+        };
+
+        await updateDoc(doc(db, 'board', id), updatedBoard);
+
+        dispatch(updateBoard(updatedBoard));
+
+        alert('게시물이 수정되었습니다.');
+      } catch (error) {
+        console.error('게시물 수정 실패', error);
+      }
+    }
+    setIsEdit(!isEdit);
+  };
 
   // 삭제
   const removeBoard = async (id, thumbnail) => {
+    console.log('id', id);
     if (window.confirm('게시물을 삭제하시겠습니까?')) {
       try {
         // 이미지 삭제
@@ -53,53 +126,67 @@ const DetailPage = () => {
     }
   };
 
-  // 수정
-  const [isEditing, setIsEditing] = useState(false); // 수정 모드 여부 스테이트
-  // const [updateBoard, setUpdateBoard] = useState(''); //  수정 데이터 저장
-
-  const editingBoard = async (item) => {
-    if (window.confirm('게시물을 수정하시겠습니까?')) {
-      // setUpdateBoard(item); // 수정할 데이터를 상태에 저장
-      // setIsEditing(true); // 수정 모드로 변경
-      navigate('/write');
-      return <Write isEditing={isEditing} setIsEditing={setIsEditing(true)} item={item} />;
-    }
-  };
-
   return (
     <Section>
       <DetailPageBox>
         <DetailPageBoxCard>
-          <ContentsBox>
-            {board.map((item) => {
-              return (
-                <div key={item.id}>
-                  <TitleBox>
-                    <SelectDiv>{item.category}</SelectDiv>
-                    <TitleDiv>{item.title}</TitleDiv>
-                  </TitleBox>
+          <UpdateSelectBox name="category" value={updateData.category} onChange={handleInputChange}>
+            <option value="discussion">커뮤니티</option>
+            <option value="asklist">질문 및 답변</option>
+          </UpdateSelectBox>
+          {isEdit === true ? (
+            <>
+              <input type="text" name="title" value={updateData.title} onChange={handleInputChange} />
+              <input type="text" name="regDate" value={updateData.regDate} onChange={handleInputChange} readOnly />
+              <div>{<img src={imageURL} alt="미리보기" />}</div>
 
-                  <ImgBox>
-                    <ImgDiv src={item.imageUrl} alt="이미지" />
-                    <ContentDiv>{item.contents}</ContentDiv>
-                  </ImgBox>
+              <label htmlFor="thumbnail">
+                <div>이미지 변경</div>
+              </label>
+              <input onChange={handleInputChange} name="file" type="file" accept="image/*" id="thumbnail" />
 
-                  <div>{item.regDate}</div>
-                  <button onClick={() => editingBoard(item)}>수정</button>
-                  <button onClick={() => removeBoard(item.id, item.thumbnail)}>삭제</button>
-                </div>
-              );
-            })}
-          </ContentsBox>
+              <textarea type="text" name="contents" value={updateData.contents} onChange={handleInputChange} />
+            </>
+          ) : (
+            <>
+              <h2>{updateData.title}</h2>
+              <span>{updateData.regDate}</span>
+              <div>{<img src={imageURL} alt="미리보기" />}</div>
+
+              <span>{updateData.contents}</span>
+            </>
+          )}
+          <p>
+            <button
+              onClick={() => {
+                handleUpdate(question.id);
+              }}
+            >
+              {isEdit ? '수정완료' : '수정'}
+            </button>
+            <button
+              onClick={() => {
+                removeBoard(question.id, question.thumbnail);
+                // handleCancel(question.boardId);
+              }}
+            >
+              삭제
+            </button>
+          </p>
         </DetailPageBoxCard>
       </DetailPageBox>
     </Section>
   );
 };
 export default DetailPage;
+
+// const ImgChangeInput = styled.selectstyled.input`
+// display: none;
+// `;
+
 export const DetailPageBox = styled.div``;
 export const DetailPageBoxCard = styled.div`
-  /* width: 75%;
+  width: 75%;
   height: 50vh;
   position: relative;
   padding: 1rem;
@@ -149,25 +236,10 @@ export const DetailPageBoxCard = styled.div`
       max-width: 100%;
       max-height: 100%;
     }
-  } */
+  }
 `;
 export const UpdateSelectBox = styled.select`
-  /* position: absolute;
+  position: absolute;
   top: 1rem;
-  right: 1rem; */
+  right: 1rem;
 `;
-const ContentsBox = styled.div`
-  width: 75%;
-  height: 75vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-evenly;
-  border: 0.2rem solid #f5f5f5;
-`;
-const SelectDiv = styled.div``;
-const TitleBox = styled.div``;
-const TitleDiv = styled.div``;
-const ImgBox = styled.div``;
-const ImgDiv = styled.div``;
-const ContentDiv = styled.div``;

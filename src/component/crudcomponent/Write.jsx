@@ -10,12 +10,10 @@ import { completedEditBoard, deleteBoard, insertBoard, setBoard } from '../../re
 import imageFrames from '../../image/imageFrames.png';
 import { useNavigate } from 'react-router';
 
-const Write = ({ isEditing, setIsEditing, item }) => {
+const Write = () => {
   const nowUser = useSelector((state) => state.user.nowUser);
-  // const { boardId } = useSelector((state) => state.board.id);
-  // console.log('boardId', boardId);
   const dispatch = useDispatch();
-  // const board = useSelector((item) => item.board);
+  const board = useSelector((item) => item.board);
   const navigate = useNavigate();
 
   // 게시물 state들
@@ -23,36 +21,25 @@ const Write = ({ isEditing, setIsEditing, item }) => {
   const [contents, setContents] = useState('');
   const [category, setCategory] = useState('');
   const [thumbnail, setThumbnail] = useState('');
+
   // 이미지 id
   const thumbnailId = uuidv4();
-
-  // 게시물 id
-  const boardId = uuidv4();
 
   // 포커스 변수들
   const titleRef = useRef(null);
   const contentsRef = useRef(null);
   const categoryRef = useRef(null);
+
   // 게시물 state change 이벤트
-  const titleChanged = (e) => {
-    setTitle(e.target.value);
-    setUpdateBoard((prevState) => ({ ...prevState, title: e.target.value }));
-  };
-  const contentChanged = (e) => {
-    setContents(e.target.value);
-    setUpdateBoard((prevState) => ({ ...prevState, contents: e.target.value }));
-  };
-  const categoryChanged = (e) => {
-    setCategory(e.target.value);
-    setUpdateBoard((prevState) => ({ ...prevState, category: e.target.value }));
-  };
-  const thumbnailChanged = (e) => {
-    setThumbnail(e.target.files[0]);
-    setUpdateBoard((prevState) => ({ ...prevState, thumbnail: e.target.value }));
-  };
+  const titleChanged = (e) => setTitle(e.target.value);
+  const contentChanged = (e) => setContents(e.target.value);
+  const categoryChanged = (e) => setCategory(e.target.value);
+  const thumbnailChanged = (e) => setThumbnail(e.target.files[0]);
+
   // 게시물 등록
   const addBoardForm = async (e) => {
     e.preventDefault();
+
     // 게시물 등록일 함수
     const now = new Date();
     const regDate = now.toLocaleDateString('ko-KR', {
@@ -63,14 +50,16 @@ const Write = ({ isEditing, setIsEditing, item }) => {
       hour12: false, // 24시간 형식 표기
       minute: '2-digit'
     });
+
     // 스토리지에 이미지 등록
     const imgRef = ref(storage, 'thumbnail/' + thumbnailId);
     await uploadBytes(imgRef, thumbnail);
+
     // 이미지 다운로드 URL 가져오기
     const imageUrl = await getDownloadURL(imgRef);
+
     try {
-      const newBoard = {
-        boardId,
+      let newBoard = {
         category,
         title,
         contents,
@@ -82,6 +71,7 @@ const Write = ({ isEditing, setIsEditing, item }) => {
         cnt: 0,
         liked: 0
       };
+
       // 유효성 검사
       if (!title) {
         alert('제목을 입력해 주세요');
@@ -93,21 +83,21 @@ const Write = ({ isEditing, setIsEditing, item }) => {
         alert('카테고리를 선택해 주세요');
         return categoryRef.current.focus();
       }
-      // 스토리지에 이미지 등록
-      const imgRef = ref(storage, 'thumbnail/' + thumbnailId);
-
-      await uploadBytes(imgRef, thumbnail);
 
       // 파이어베이스 게시물 등록
       const collectionRef = collection(db, 'board');
       await addDoc(collectionRef, newBoard);
+
       dispatch(insertBoard(newBoard));
+
       setTitle('');
       setContents('');
       setCategory('');
       imgRemove();
+
       alert('게시물이 등록되었습니다.');
-      navigate = `/${category}/게시물id`;
+
+      // navigate = `/${category}/게시물id`;
     } catch (error) {
       console.error('게시물 등록 실패', error);
     }
@@ -118,52 +108,17 @@ const Write = ({ isEditing, setIsEditing, item }) => {
     setThumbnail('');
   };
 
-  const question = useSelector((state) => {
-    return state.list.board.find((item) => item.id === updateBoard.id);
-  });
-  const [updateBoard, setUpdateBoard] = useState(''); //  수정 데이터 저장
-
-  if (isEditing) {
-    setUpdateBoard(item);
-  }
-  // 수정 완료 버튼 클릭 시
-  const updateBoardForm = async (e) => {
-    e.preventDefault();
-    const imgRef = ref(storage, 'thumbnail/' + thumbnailId);
-    await uploadBytes(imgRef, thumbnail);
-    const imageUrl = await getDownloadURL(imgRef);
-    try {
-      const completedBoard = {
-        ...updateBoard,
-        category: updateBoard.category,
-        title: updateBoard.title,
-        contents: updateBoard.contents,
-        thumbnail: updateBoard.thumbnail,
-        imageUrl
-      };
-      console.log('imageUrl', imageUrl);
-      await updateDoc(doc(db, 'board', question.id), completedBoard);
-      console.log('completedBoard', completedBoard);
-      dispatch(completedEditBoard(completedBoard));
-      alert('게시물이 수정되었습니다.');
-      setIsEditing(false);
-      navigate('/');
-    } catch (error) {
-      console.error('수정 실패', error);
-    }
-  };
-
   return (
     <Section>
       <AddBoard>
-        <AddBoardForm onSubmit={isEditing ? updateBoardForm : addBoardForm}>
-          <SelectBox value={isEditing ? updateBoard.category : category} onChange={categoryChanged} ref={categoryRef}>
+        <AddBoardForm onSubmit={addBoardForm}>
+          <SelectBox value={category} onChange={categoryChanged} ref={categoryRef}>
             <option value="">카테고리를 선택해 주세요</option>
             <option value="discussion">커뮤니티</option>
             <option value="asklist">질문 및 답변</option>
           </SelectBox>
           <TitleInput
-            value={isEditing ? updateBoard.title : title}
+            value={title}
             onChange={titleChanged}
             ref={titleRef}
             type="text"
@@ -179,28 +134,31 @@ const Write = ({ isEditing, setIsEditing, item }) => {
               </PreviewDiv>
             ) : (
               <ThumbnailDiv>
-                <img src={isEditing ? updateBoard.imageUrl : imageFrames} alt="이미지" />
+                <img src={imageFrames} alt="이미지" />
+
                 <label htmlFor="thumbnail">
-                  <ThumbnailBtn>{isEditing ? '이미지 변경' : '이미지 추가'}</ThumbnailBtn>
+                  <ThumbnailBtn>이미지 추가</ThumbnailBtn>
                 </label>
                 <ThumbnailInput onChange={thumbnailChanged} type="file" accept="image/*" id="thumbnail" />
               </ThumbnailDiv>
             )}
+
             <textarea
-              value={isEditing ? updateBoard.contents : contents}
+              value={contents}
               onChange={contentChanged}
               ref={contentsRef}
               placeholder="내용을 입력해 주세요"
             ></textarea>
           </ContentDiv>
           <AddBtnDiv>
-            <button type="submit">{isEditing ? '수정 완료' : '작성 완료'}</button>
+            <button type="submit">작성 완료</button>
           </AddBtnDiv>
         </AddBoardForm>
       </AddBoard>
     </Section>
   );
 };
+
 export default Write;
 
 const AddBoard = styled.div`
