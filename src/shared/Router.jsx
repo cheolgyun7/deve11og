@@ -8,6 +8,7 @@ import Write from 'component/crudcomponent/Write';
 import Read from 'component/crudcomponent/Read';
 import AskList from 'component/crudcomponent/AskList';
 import DetailPage from 'component/crudcomponent/DetailPage';
+import CommunityList from 'component/crudcomponent/CommunityList';
 
 const Router = () => {
   return (
@@ -21,6 +22,7 @@ const Router = () => {
           <Route path="/write" element={<Write />}></Route>
           <Route path="/read" element={<Read />}></Route>
           <Route path="/asklist" element={<AskList />}></Route>
+          <Route path="/communityList" element={<CommunityList />}></Route>
           <Route path="/detailPage/:id" element={<DetailPage />}></Route>
         </Routes>
       </Layout>
