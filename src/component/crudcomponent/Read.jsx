@@ -13,13 +13,14 @@ import { setComment } from '../../redux/modules/comment';
 
 const Read = () => {
   // const { user_id } = useSelector((state) => state.user.nowUser);
-  console.log(useSelector((state) => state));
   const navigate = useNavigate();
   const listBoard = useSelector((state) => state.list.board); // 비교 함수 추가
   const dispatch = useDispatch();
   const filteredList = listBoard.filter((list) => list.category === 'discussion');
   const { data } = useSelector((state) => state.comment);
   console.log('commemts', data);
+  console.log('filter', filteredList);
+  console.log(useSelector((state) => state.comment === filteredList.id));
   useEffect(() => {
     // const boardId = boardTestData[0].id;
     const fetchCommentData = async () => {
@@ -40,10 +41,10 @@ const Read = () => {
     fetchCommentData();
   }, []);
   // 좋아요 토글 핸들러 함수
-  // const handleToggleLike = (id, isLiked) => {
-  //   dispatch(toggleLike(id, isLiked, user_id));
-  //   console.log(dispatch(toggleLike(id, isLiked, user_id)));
-  // };
+  const handleToggleLike = (id, isLiked) => {
+    dispatch(toggleLike(id, isLiked));
+    console.log(dispatch(toggleLike(id, isLiked)));
+  };
   const ModifyButton = (id) => {
     navigate(`/detailPage/${id}`);
   };
@@ -51,29 +52,32 @@ const Read = () => {
     <MainContents>
       <h2>커뮤니티</h2>
       <CardBox>
-        {filteredList.map((item, index) => (
-          <CardArticle key={item.user_id + index}>
-            <CardThumbnail onClick={() => ModifyButton(item.id)}>
-              <img src={item.imageUrl} alt="이미지" />
-            </CardThumbnail>
-            <div>
-              <h4 onClick={() => ModifyButton(item.id)}>{item.title}</h4>
-              <p>
-                <span>{item.reg_date}</span>
-                <span>개의 댓글</span>
-                <span>
-                  {/* <LikeIcon onClick={() => handleToggleLike(item.id, item.liked)}>
-                    <FontAwesomeIcon icon={faHeart} style={{ color: item.liked ? 'red' : 'black' }} />
-                  </LikeIcon>
-                  {item.liked.length} 좋아요 수 */}
-                </span>
-              </p>
-              <p>
-                <span>by {item.nickname}</span>
-              </p>
-            </div>
-          </CardArticle>
-        ))}
+        {filteredList.map((item, index) => {
+          const commentCount = data.filter((comment) => comment.board_id === item.id).length;
+          return (
+            <CardArticle key={index}>
+              <CardThumbnail onClick={() => ModifyButton(item.id)}>
+                <img src={item.imageUrl} alt="이미지" />
+              </CardThumbnail>
+              <div>
+                <h4 onClick={() => ModifyButton(item.id)}>{item.title}</h4>
+                <p>
+                  <span>{item.regDate.slice(0, -6)}</span>
+                  <span>{commentCount}개의 댓글</span>
+                  <span>
+                    <LikeIcon onClick={() => handleToggleLike(item.id, item.liked)}>
+                      <FontAwesomeIcon icon={faHeart} style={{ color: item.liked ? 'red' : 'black' }} />
+                    </LikeIcon>
+                    {item.liked.length}
+                  </span>
+                </p>
+                <p>
+                  <span>by {item.nickname}</span>
+                </p>
+              </div>
+            </CardArticle>
+          );
+        })}
       </CardBox>
     </MainContents>
   );
