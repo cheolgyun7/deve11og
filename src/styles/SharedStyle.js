@@ -41,6 +41,7 @@ export const LayoutStyle = styled.div`
   margin: 0 auto;
   width: 100%;
   max-width: 1500px;
+  display: flex;
 `;
 
 // 카드 공통css
