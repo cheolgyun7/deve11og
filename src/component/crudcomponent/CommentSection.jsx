@@ -1,6 +1,6 @@
 import { addDoc, collection, getDocs, query, where } from 'firebase/firestore';
 import { db } from '../../firebase';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import CommentList from './CommentList';
@@ -12,6 +12,7 @@ export default function CommentSection() {
   const params = useParams();
   const [contents, setContents] = useState('');
   const [commentData, setCommentData] = useState();
+  const contentRef = useRef(null);
 
   //댓글 데이터 가져오기
   useEffect(() => {
@@ -30,6 +31,10 @@ export default function CommentSection() {
 
     fetchCommentData();
   }, []);
+
+  useEffect(() => {
+    contentRef.current.focus();
+  });
 
   const handleChange = (e) => {
     setContents(e.target.value);
@@ -68,6 +73,7 @@ export default function CommentSection() {
         return [newComment, ...prev];
       });
       alert('등록이 완료되었습니다.');
+      setContents('');
       e.target.reset();
     } catch (error) {
       alert('에러가 발생했습니다. 다시 시도해주세요.');
@@ -82,7 +88,13 @@ export default function CommentSection() {
           <ThumbNailBox>
             <img src={user_img} alt={`${nickname} 유저 프로필 이미지`} />
           </ThumbNailBox>
-          <CommentInput type="text" value={contents} onChange={handleChange} />
+          <CommentInput
+            type="text"
+            value={contents}
+            onChange={handleChange}
+            ref={contentRef}
+            placeholder="내용을 입력해주세요"
+          />
         </CommentFormBox>
         <BtnBox>
           <BtnBlackBg>등록</BtnBlackBg>
