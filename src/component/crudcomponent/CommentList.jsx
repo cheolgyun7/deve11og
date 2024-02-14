@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-import { collection, getDocs, query } from 'firebase/firestore';
+import { collection, getDocs, query, where } from 'firebase/firestore';
 import { db } from '../../firebase';
 import { useDispatch, useSelector } from 'react-redux';
 import { setComment } from '../../redux/modules/comment';
 import { BtnBlackBg, BtnBlackText } from 'styles/SharedStyle';
 import CommentItem from './CommentItem';
+import { useParams } from 'react-router-dom';
 
 export default function CommentList() {
   const { data } = useSelector((state) => state.comment);
@@ -15,7 +16,6 @@ export default function CommentList() {
   const { boardData } = useSelector((state) => state.board);
   console.log('boardData', boardData);
   const params = useParams();
-
   //기본 이미지
   const DEFAULT_IMAGE = 'https://github.com/cheolgyun7/deve11og/blob/dev/src/image/userImage.png?raw=true';
 
