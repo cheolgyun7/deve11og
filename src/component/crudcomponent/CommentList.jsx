@@ -17,8 +17,6 @@ export default function CommentList() {
   const { boardData } = useSelector((state) => state.board);
   console.log('boardData', boardData);
   const params = useParams();
-  //기본 이미지
-  const DEFAULT_IMAGE = 'https://github.com/cheolgyun7/deve11og/blob/dev/src/image/userImage.png?raw=true';
 
   //댓글 데이터 가져오기
   useEffect(() => {
@@ -64,14 +62,14 @@ export default function CommentList() {
   return (
     <CommentListStyle>
       {data.map((el) => {
-        // let findData = null;
-        // if (userData) {
-        //   findData = userData.find((item) => {
-        //     return item.user_id === el.user_id;
-        //   });
-        // }
+        let findData = null;
+        if (userData) {
+          findData = userData.find((item) => {
+            return item.user_id === el.user_id;
+          });
+        }
         // console.log(findData);
-        return <CommentItem key={el.id} data={el}></CommentItem>;
+        return <CommentItem key={el.id} data={el} findData={findData}></CommentItem>;
       })}
     </CommentListStyle>
   );
