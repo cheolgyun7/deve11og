@@ -72,7 +72,6 @@ export default function CommentItem({ data }) {
           {/* <img src={findData && findData.user_img ? DEFAULT_IMAGE : findData.user_img} alt="" /> */}
         </ThumbBox>
         <div>
-          {user_id}
           <NicknameStyle>{nickname}</NicknameStyle>
           <DateStyle>{regDate}</DateStyle>
         </div>
