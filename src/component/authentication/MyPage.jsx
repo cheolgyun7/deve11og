@@ -2,7 +2,7 @@ import styled from 'styled-components';
 import { auth, db, storage } from '../../firebase';
 import { deleteObject, getDownloadURL, getStorage, ref, uploadBytes } from 'firebase/storage';
 import React, { useEffect, useRef, useState } from 'react';
-import { Section } from 'styles/SharedStyle';
+import { BtnBlackBg, BtnBlackText, Section } from 'styles/SharedStyle';
 import userDefaultImage from '../../image/userImage.png';
 import { sendPasswordResetEmail, updateProfile } from 'firebase/auth';
 import { useDispatch, useSelector } from 'react-redux';
@@ -225,24 +225,6 @@ const MyPage = () => {
 };
 
 export default MyPage;
-
-const BtnNormalStyle = styled.button`
-  padding: 0.2rem 0.4rem;
-  font-size: 0.9rem;
-  transition: 0.3s;
-`;
-const BtnBlackBg = styled(BtnNormalStyle)`
-  background: #000000;
-  border: 1px solid #000000;
-  color: #fff;
-  border-radius: 5px;
-`;
-const BtnBlackText = styled(BtnNormalStyle)`
-  background: #ffffff;
-  border: 1px solid #ffffff;
-  color: #000000;
-  border-radius: 5px;
-`;
 
 const PageTitleStyle = styled.h2`
   /* position: relative; */
