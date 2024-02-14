@@ -1,13 +1,14 @@
 import styled from 'styled-components';
-import { auth, storage } from '../../firebase';
+import { auth, db, storage } from '../../firebase';
 import { deleteObject, getDownloadURL, getStorage, ref, uploadBytes } from 'firebase/storage';
 import React, { useEffect, useRef, useState } from 'react';
 import { Section } from 'styles/SharedStyle';
 import userDefaultImage from '../../image/userImage.png';
 import { sendPasswordResetEmail, updateProfile } from 'firebase/auth';
 import { useDispatch, useSelector } from 'react-redux';
-import { removeUserImage, updateImage, updateNickname } from '../../redux/modules/user';
+import { updateImage, updateNickname } from '../../redux/modules/user';
 import MyBoardList from 'component/crudcomponent/MyBoardList';
+import { doc, getDoc, updateDoc } from 'firebase/firestore';
 
 const MyPage = () => {
   const dispatch = useDispatch();
@@ -29,6 +30,14 @@ const MyPage = () => {
       await uploadBytes(imageRef, file);
 
       const downloadURL = await getDownloadURL(imageRef);
+
+      // 로컬스토리지 추가
+      const userDB = localStorage.getItem('usersDB');
+      const json = JSON.parse(userDB);
+      const index = json.findIndex((prev) => prev.user_id === user_id);
+      json[index].user_img = downloadURL;
+      localStorage.setItem('usersDB', JSON.stringify(json));
+
       dispatch(updateImage(downloadURL));
 
       updateProfile(auth.currentUser, {
@@ -54,10 +63,17 @@ const MyPage = () => {
     const desertRef = ref(storage, path);
     deleteObject(desertRef)
       .then(() => {
-        dispatch(removeUserImage());
+        // 로컬스토리지 추가
+        const userDB = localStorage.getItem('usersDB');
+        const json = JSON.parse(userDB);
+        const index = json.findIndex((prev) => prev.user_id === user_id);
+        json[index].user_img = DEFAULT_IMAGE;
+        localStorage.setItem('usersDB', JSON.stringify(json));
+
+        dispatch(updateImage(DEFAULT_IMAGE));
 
         updateProfile(auth.currentUser, {
-          photoURL: ''
+          photoURL: DEFAULT_IMAGE
         })
           .then(() => {
             alert('삭제가 완료되었습니다.');
@@ -95,7 +111,20 @@ const MyPage = () => {
     if (nicknameData === nickname) {
       return alert('이전 닉네임과 같습니다.');
     }
+    // 로컬스토리지 추가
+    const userDB = localStorage.getItem('usersDB');
+    const json = JSON.parse(userDB);
+    const index = json.findIndex((prev) => prev.user_id === user_id);
+    json[index].nickname = nickname;
+    localStorage.setItem('usersDB', JSON.stringify(json));
+
     dispatch(updateNickname(nickname));
+
+    // 파이어스토어 닉네임변경
+    const nameRef = doc(db, 'usersDB', user_id);
+    const docSnap = await getDoc(nameRef);
+    const currentData = docSnap.data();
+    await updateDoc(nameRef, { ...currentData, nickname: nickname });
 
     updateProfile(auth.currentUser, {
       displayName: nickname
