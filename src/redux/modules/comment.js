@@ -43,7 +43,12 @@ const comment = (state = initialState, action) => {
     case ADD_COMMENT:
       return { data: [action.payload, ...state.data] };
     case UPDATE_COMMENT:
-      return { data: [...state.data, action.payload] };
+      const { id, contents } = action.payload;
+      const findIdx = state.data.findIndex((el) => {
+        return el.id === id;
+      });
+      state.data[findIdx].contents = contents;
+      return { data: [...state.data] };
     case DELETE_COMMENT:
       const deleteId = action.payload;
       const newData = state.data.filter((el) => el.id !== deleteId);
