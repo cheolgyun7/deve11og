@@ -195,7 +195,7 @@ const DetailPage = () => {
           </p>
         </DetailPageBoxCard>
       </DetailPageBox>
-      <CommentSection />
+      {!isEdit ? <CommentSection /> : <></>}
     </Section>
   );
 };
