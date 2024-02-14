@@ -211,7 +211,7 @@ const DetailPage = () => {
 };
 export default DetailPage;
 
-const PreviewDiv = styled.input``;
+const PreviewDiv = styled.div``;
 const ThumbnailDiv = styled.div``;
 const ThumbnailInput = styled.input``;
 const ThumbnailBtn = styled.div``;
