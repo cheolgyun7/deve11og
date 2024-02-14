@@ -10,6 +10,7 @@ import { useParams } from 'react-router-dom';
 
 export default function CommentList() {
   const { data } = useSelector((state) => state.comment);
+  console.log(data);
   const { user_id } = useSelector((state) => state.user.nowUser);
   const dispatch = useDispatch();
   const [userData, setUserData] = useState();
