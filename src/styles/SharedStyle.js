@@ -79,8 +79,15 @@ export const CardThumbnail = styled.p`
   img {
     margin: 0 auto;
     width: 100%;
+    height: auto; /* 이미지의 비율을 유지하기 위해 */
     object-fit: cover;
+    transition: transform 0.3s ease; /* 호버 시에 자연스럽게 크기가 변하도록 트랜지션 설정 */
   }
+
+  &:hover img {
+    transform: scale(1.5); /* 호버 시 이미지를 1.1배로 확대 */
+  }
+  overflow: hidden;
 `;
 export const CommunityThumbnail = styled.p`
   ${cardthumbnail}
@@ -150,7 +157,8 @@ export const AskRespondContents = styled.div`
   padding: 0 1rem 1rem;
   position: relative;
   min-width: 48%;
-  min-height: 20rem;
+  height: 20rem;
+  overflow: hidden;
   & > h2 {
     ${contentsShared}
     &::after {

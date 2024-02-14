@@ -90,4 +90,7 @@ export default Read;
 export const CardBox = styled.div`
   display: flex;
   margin: 0 3rem;
+  flex-wrap: wrap;
+  height: 20rem;
+  overflow: hidden;
 `;

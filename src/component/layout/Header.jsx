@@ -253,4 +253,6 @@ const ImgDiv = styled.div`
   width: 3rem;
   height: 3rem;
   cursor: pointer;
+  overflow: hidden;
+  border-radius: 50%;
 `;
