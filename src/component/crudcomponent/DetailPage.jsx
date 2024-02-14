@@ -153,10 +153,8 @@ const DetailPage = () => {
           {/* 수정 상태를 확인하는 삼항 연산자 */}
           {isEdit === true ? (
             <div>
-              <TitleDiv>
-                <input type="text" name="title" value={updateData.title} onChange={handleInputChange} />
-                <input type="text" name="regDate" value={updateData.regDate} onChange={handleInputChange} readOnly />
-              </TitleDiv>
+              <input type="text" name="title" value={updateData.title} onChange={handleInputChange} />
+              <input type="text" name="regDate" value={updateData.regDate} onChange={handleInputChange} readOnly />
 
               <ContentsDiv>
                 {/* 등록된 이미지 */}

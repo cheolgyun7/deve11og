@@ -51,34 +51,38 @@ const Read = () => {
     <MainContents>
       <h2>커뮤니티</h2>
       <CardBox>
-        {filteredList.map((item, index) => {
-          const commentCount = data.filter((comment) => comment.board_id === item.id).length;
-          return (
-            <CardArticle key={index}>
-              <CardThumbnail onClick={() => ModifyButton(item.id)}>
-                <img src={item.imageUrl} alt="이미지" />
-              </CardThumbnail>
-              <div>
-                <h4 onClick={() => ModifyButton(item.id)}>{item.title}</h4>
-                <p>
-                  <span>{item.regDate.slice(0, -6)}</span>
-                  <span>{commentCount}개의 댓글</span>
-                  <span>
-                    <LikeIcon onClick={() => handleToggleLike(item.id, item.liked)}>
-                      <FontAwesomeIcon icon={faHeart} style={{ color: item.liked ? 'red' : 'black' }} />
-                    </LikeIcon>
-                    {item.liked.length}
-                  </span>
-                </p>
-                <p>
-                  <span>by {item.nickname}</span>
-                </p>
-              </div>
-            </CardArticle>
-          );
-        })}
+        {filteredList.length === 0 ? (
+          <span>등록된 커뮤니티 글이 없습니다</span>
+        ) : (
+          filteredList.map((item, index) => {
+            const commentCount = data.filter((comment) => comment.board_id === item.id).length;
+            return (
+              <CardArticle key={index}>
+                <CardThumbnail onClick={() => ModifyButton(item.id)}>
+                  <img src={item.imageUrl} alt="이미지" />
+                </CardThumbnail>
+                <div>
+                  <h4 onClick={() => ModifyButton(item.id)}>{item.title}</h4>
+                  <p>
+                    <span>{item.regDate.slice(0, -6)}</span>
+                    <span>{commentCount}개의 댓글</span>
+                    <span>
+                      <LikeIcon onClick={() => handleToggleLike(item.id, item.liked)}>
+                        <FontAwesomeIcon icon={faHeart} style={{ color: item.liked ? 'red' : 'black' }} />
+                      </LikeIcon>
+                      {item.liked.length}
+                    </span>
+                  </p>
+                  <p>
+                    <span>by {item.nickname}</span>
+                  </p>
+                </div>
+              </CardArticle>
+            );
+          })
+        )}
       </CardBox>
-      <Link to="/asklist">
+      <Link to="/communityList">
         <StyledIcon icon={faArrowRight} />
       </Link>
     </MainContents>
@@ -88,4 +92,7 @@ export default Read;
 export const CardBox = styled.div`
   display: flex;
   margin: 0 3rem;
+  flex-wrap: wrap;
+  height: 20rem;
+  overflow: hidden;
 `;
