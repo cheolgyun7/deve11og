@@ -72,29 +72,29 @@ const Login = () => {
       // signInWithPopup 연동되는 것을 팝업창으로 확인
       const result = await signInWithPopup(auth, provier);
       const user = result.user;
-      const q = query(collection(db, 'usersDB'));
-      const querySnapshot = await getDocs(q);
-      const initial = [];
-      querySnapshot.forEach((doc) => {
-        initial.push({ ...doc.data() });
-      });
+      // const q = query(collection(db, 'usersDB'));
+      // const querySnapshot = await getDocs(q);
+      // const initial = [];
+      // querySnapshot.forEach((doc) => {
+      //   initial.push({ ...doc.data() });
+      // });
 
-      // const userDB = localStorage.getItem('usersDB');
-      // const json = JSON.parse(userDB);
-      const nicknameIncludes = initial.some((prev) => prev.nickname === user.displayName);
+      // // const userDB = localStorage.getItem('usersDB');
+      // // const json = JSON.parse(userDB);
+      // const nicknameIncludes = initial.some((prev) => prev.nickname === user.displayName);
 
-      if (nicknameIncludes) {
-        // 닉네임이 이미 존재하는 경우 새로운 닉네임 생성
-        const newNickname = newGitGoogleName;
+      // if (nicknameIncludes) {
+      //   // 닉네임이 이미 존재하는 경우 새로운 닉네임 생성
+      //   const newNickname = newGitGoogleName;
 
-        // 새로운 닉네임으로 프로필 업데이트
-        await updateProfile(user, {
-          displayName: newNickname
-        });
+      //   // 새로운 닉네임으로 프로필 업데이트
+      //   await updateProfile(user, {
+      //     displayName: newNickname
+      //   });
 
-        // 사용자 정보에 새로운 닉네임 반영
-        user.displayName = newNickname;
-      }
+      //   // 사용자 정보에 새로운 닉네임 반영
+      //   user.displayName = newNickname;
+      // }
       const newData = {
         nickname: user.displayName,
         email: user.email,
@@ -121,30 +121,30 @@ const Login = () => {
 
       const result = await signInWithPopup(auth, provier);
       const user = result.user;
-      console.log('name', user.displayName);
-      const q = query(collection(db, 'usersDB'));
-      const querySnapshot = await getDocs(q);
-      const initial = [];
-      querySnapshot.forEach((doc) => {
-        initial.push({ ...doc.data() });
-      });
+      // console.log('name', user.displayName);
+      // const q = query(collection(db, 'usersDB'));
+      // const querySnapshot = await getDocs(q);
+      // const initial = [];
+      // querySnapshot.forEach((doc) => {
+      //   initial.push({ ...doc.data() });
+      // });
 
-      const nicknameIncludes = initial.some((prev) => prev.nickname === user.displayName);
-      console.log('initial', initial);
-      console.log('name ggg', user.displayName);
+      // const nicknameIncludes = initial.some((prev) => prev.nickname === user.displayName);
+      // console.log('initial', initial);
+      // console.log('name ggg', user.displayName);
 
-      if (nicknameIncludes) {
-        // 닉네임이 이미 존재하는 경우 새로운 닉네임 생성
-        const newNickname = newGitGoogleName;
+      // if (nicknameIncludes) {
+      //   // 닉네임이 이미 존재하는 경우 새로운 닉네임 생성
+      //   const newNickname = newGitGoogleName;
 
-        // 새로운 닉네임으로 프로필 업데이트
-        await updateProfile(user, {
-          displayName: newNickname
-        });
+      //   // 새로운 닉네임으로 프로필 업데이트
+      //   await updateProfile(user, {
+      //     displayName: newNickname
+      //   });
 
-        // 사용자 정보에 새로운 닉네임 반영
-        user.displayName = newNickname;
-      }
+      //   // 사용자 정보에 새로운 닉네임 반영
+      //   user.displayName = newNickname;
+      // }
 
       const newData = {
         nickname: user.displayName,
