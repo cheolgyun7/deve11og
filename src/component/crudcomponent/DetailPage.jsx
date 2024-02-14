@@ -20,7 +20,7 @@ const DetailPage = () => {
     return state.list.board.find((item) => item.id === id);
   });
 
-  // console.log(question, 'question');
+  console.log(question, 'question');
   const navigate = useNavigate();
   const [updateData, setUpdateData] = useState({
     title: '',
@@ -35,25 +35,25 @@ const DetailPage = () => {
 
   useEffect(() => {
     const fetchImage = async () => {
-      if (question) {
-        const imageRef = ref(storage, `thumbnail/${question.thumbnail}`);
+      const docRef = doc(db, 'board', id);
+      const docSnap = await getDoc(docRef);
+      if (docSnap) {
+        const data = docSnap.data();
+        const imageRef = ref(storage, `thumbnail/${data.thumbnail}`);
         const url = await getDownloadURL(imageRef);
+        setUpdateData({
+          title: data.title,
+          contents: data.contents,
+          imageURL: data.imageURL,
+          regDate: data.regDate,
+          category: data.category,
+          thumbnail: data.thumbnail
+        });
         setImageURL(url);
       }
     };
     fetchImage();
-
-    if (question) {
-      setUpdateData({
-        title: question.title,
-        contents: question.contents,
-        imageURL: question.imageURL,
-        regDate: question.regDate,
-        category: question.category,
-        thumbnail: question.thumbnail
-      });
-    }
-  }, [question]);
+  }, [id]);
 
   const handleInputChange = (e) => {
     if (isEdit) {
