@@ -194,3 +194,22 @@ export const LikeIcon = styled.span`
     color: red; /* 호버 시 변경할 색상 */
   }
 `;
+
+// 공통 버튼
+export const BtnNormalStyle = styled.button`
+  padding: 0.2rem 0.4rem;
+  font-size: 0.9rem;
+  transition: 0.3s;
+`;
+export const BtnBlackBg = styled(BtnNormalStyle)`
+  background: #000000;
+  border: 1px solid #000000;
+  color: #fff;
+  border-radius: 5px;
+`;
+export const BtnBlackText = styled(BtnNormalStyle)`
+  background: #ffffff;
+  border: 1px solid #ffffff;
+  color: #000000;
+  border-radius: 5px;
+`;

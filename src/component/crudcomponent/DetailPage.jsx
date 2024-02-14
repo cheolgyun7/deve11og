@@ -8,15 +8,16 @@ import { SET_DELETEBOARD, updateBoard } from '../../redux/modules/list';
 import styled from 'styled-components';
 import { deleteObject, getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import { deleteBoard, setBoard } from '../../redux/modules/board';
+import CommentSection from './CommentSection';
 import imageFrames from '../../image/imageFrames.png';
 
 const DetailPage = () => {
   const dispatch = useDispatch();
-  const { userId } = useParams();
+  const { id } = useParams();
   const [imageURL, setImageURL] = useState('');
 
   const question = useSelector((state) => {
-    return state.list.board.find((item) => item.id === userId);
+    return state.list.board.find((item) => item.id === id);
   });
 
   // console.log(question, 'question');
@@ -204,16 +205,16 @@ const DetailPage = () => {
           </p>
         </DetailPageBoxCard>
       </DetailPageBox>
+      <CommentSection />
     </Section>
   );
 };
 export default DetailPage;
 
-const PreviewDiv = styled.selectstyled.input``;
-const ThumbnailDiv = styled.selectstyled.div``;
-const ThumbnailInput = styled.selectstyled.input``;
-const ThumbnailBtn = styled.selectstyled.div`
-`;
+const PreviewDiv = styled.input``;
+const ThumbnailDiv = styled.div``;
+const ThumbnailInput = styled.input``;
+const ThumbnailBtn = styled.div``;
 
 export const DetailPageBox = styled.div``;
 export const DetailPageBoxCard = styled.div`

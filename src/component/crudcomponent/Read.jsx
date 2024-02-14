@@ -38,7 +38,7 @@ const Read = () => {
               <img src={item.imageUrl} alt="이미지" />
             </CardThumbnail>
             <div>
-              <h4 onClick={() => ModifyButton(item.postId)}>{item.title}</h4>
+              <h4 onClick={() => ModifyButton(item.id)}>{item.title}</h4>
               <p>
                 <span>{item.reg_date}</span>
                 <span>개의 댓글</span>
