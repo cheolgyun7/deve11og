@@ -44,6 +44,11 @@ const DetailPage = () => {
       if (docSnap) {
         const data = docSnap.data();
         const imageRef = ref(storage, `thumbnail/${data.thumbnail}`);
+      const docRef = doc(db, 'board', id);
+      const docSnap = await getDoc(docRef);
+      if (docSnap) {
+        const data = docSnap.data();
+        const imageRef = ref(storage, `thumbnail/${data.thumbnail}`);
         const url = await getDownloadURL(imageRef);
         setUpdateData({
           title: data.title,
@@ -155,25 +160,40 @@ const DetailPage = () => {
           </UpdateSelectBox>
           {/* 수정 상태를 확인하는 삼항 연산자 */}
           {isEdit === true ? (
-            <div>
-              <TitleDiv>
-                <input type="text" name="title" value={updateData.title} onChange={handleInputChange} />
-                <input type="text" name="regDate" value={updateData.regDate} onChange={handleInputChange} readOnly />
-              </TitleDiv>
+            <>
+              <input type="text" name="title" value={updateData.title} onChange={handleInputChange} />
+              <input type="text" name="regDate" value={updateData.regDate} onChange={handleInputChange} readOnly />
+              {/* <div>{<img src={imageURL} alt="미리보기" />}</div> */}
+              <textarea type="text" name="contents" value={updateData.contents} onChange={handleInputChange} />
 
-              <ContentsDiv>
-                {/* 등록된 이미지 */}
-                {imageURL ? <img src={imageURL} alt="이미지" /> : <div>등록된 이미지가 없습니다</div>}
+              {updateData.thumbnail ? (
+                <PreviewDiv>
+                  <img src={URL.createObjectURL(imageURL)} alt="이미지" />
+                  <button onClick={imgRemove}>이미지 삭제</button>
+                </PreviewDiv>
+              ) : (
+                <ThumbnailDiv>
+                  <img src={imageFrames} alt="이미지" />
 
-                <label>
-                  이미지 업로드
-                  <input type="file" onChange={fileSelect} accept="image/*" />
-                </label>
-                {!isImageDelete ? <></> : <div onClick={handleRemove}>이미지 제거</div>}
+                  {/* <label htmlFor="thumbnail">
+                    <ThumbnailBtn>이미지 추가</ThumbnailBtn>
+                  </label> */}
 
-                <textarea type="text" name="contents" value={updateData.contents} onChange={handleInputChange} />
-              </ContentsDiv>
-            </div>
+                  <ThumbnailInput
+                    onChange={handleInputChange}
+                    name="file"
+                    type="file"
+                    accept="image/*"
+                    id="thumbnail"
+                  />
+                </ThumbnailDiv>
+              )}
+
+              <label htmlFor="thumbnail">
+                <div>이미지 변경</div>
+              </label>
+              <input onChange={handleInputChange} name="file" type="file" accept="image/*" id="thumbnail" />
+            </>
           ) : (
             <>
               <h2>{updateData.title}</h2>
