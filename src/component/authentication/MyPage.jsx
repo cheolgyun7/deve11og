@@ -1,13 +1,14 @@
 import styled from 'styled-components';
-import { auth, storage } from '../../firebase';
+import { auth, db, storage } from '../../firebase';
 import { deleteObject, getDownloadURL, getStorage, ref, uploadBytes } from 'firebase/storage';
 import React, { useEffect, useRef, useState } from 'react';
 import { Section } from 'styles/SharedStyle';
 import userDefaultImage from '../../image/userImage.png';
 import { sendPasswordResetEmail, updateProfile } from 'firebase/auth';
 import { useDispatch, useSelector } from 'react-redux';
-import { removeUserImage, updateImage, updateNickname } from '../../redux/modules/user';
+import { updateImage, updateNickname } from '../../redux/modules/user';
 import MyBoardList from 'component/crudcomponent/MyBoardList';
+import { doc, getDoc, updateDoc } from 'firebase/firestore';
 
 const MyPage = () => {
   const dispatch = useDispatch();
@@ -118,6 +119,12 @@ const MyPage = () => {
     localStorage.setItem('usersDB', JSON.stringify(json));
 
     dispatch(updateNickname(nickname));
+
+    // 파이어스토어 닉네임변경
+    const nameRef = doc(db, 'usersDB', user_id);
+    const docSnap = await getDoc(nameRef);
+    const currentData = docSnap.data();
+    await updateDoc(nameRef, { ...currentData, nickname: nickname });
 
     updateProfile(auth.currentUser, {
       displayName: nickname
