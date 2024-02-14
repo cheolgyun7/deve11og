@@ -4,7 +4,7 @@ import { HeaderBox, LayoutStyle } from 'styles/SharedStyle';
 import logoImg from '../../image/logo.png';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { auth } from '../../firebase';
-import { onAuthStateChanged, signOut } from 'firebase/auth';
+import { getAuth, onAuthStateChanged, signOut } from 'firebase/auth';
 import { useDispatch, useSelector } from 'react-redux';
 import { setUserNowDB, updateImage } from '../../redux/modules/user';
 import { collection, getDocs, query } from 'firebase/firestore';
@@ -39,16 +39,15 @@ const Header = () => {
 
   // 로그인시 redux에 dispatch
   const signUser = () => {
+    const auth = getAuth();
     const userData = auth.currentUser;
     const user_id = userData.uid;
     const email = userData.email;
     const nickname = userData.displayName;
     const user_img = userData.photoURL;
-    const userDB = localStorage.getItem('usersDB');
-    if (userDB !== null) {
-      const json = JSON.parse(userDB);
-      const imgTest = json.findIndex((item) => item.user_id === user_id);
-      dispatch(updateImage(json[imgTest].user_img));
+    // const userDB = localStorage.getItem('usersDB');
+    if (userData) {
+      dispatch(updateImage(user_img));
       dispatch(
         setUserNowDB({
           user_id: user_id,
@@ -58,9 +57,11 @@ const Header = () => {
         })
       );
     } else {
-      alert('운영진에게 문의주세요!');
+      alert('로그인실패!');
       return false;
     }
+    // const json = JSON.parse(userDB);
+    // const imgTest = json.findIndex((item) => item.user_id === user_id);
   };
 
   // 쿠키삭제
