@@ -82,6 +82,9 @@ export const CardThumbnail = styled.p`
     object-fit: cover;
   }
 `;
+export const CommunityThumbnail = styled.p`
+  ${cardthumbnail}
+`;
 export const AskRespondThumbnail = styled.p`
   ${cardthumbnail}
 `;
@@ -100,7 +103,18 @@ export const AskRespondListBox = styled.article`
     }
   }
 `;
-
+export const CommunityListBox = styled.article`
+  ${cardSharedBox}
+  width: 18%;
+  div {
+    h4 {
+      margin-bottom: 1rem;
+    }
+    p {
+      margin-top: 1rem;
+    }
+  }
+`;
 // 메인페이지 title제목과  공통css공유
 const contentsShared = `
 &>h2{
@@ -172,6 +186,18 @@ export const AboutContents = styled.div`
 `;
 
 export const AskRespondDetail = styled.div`
+  position: relative;
+  margin: 2rem;
+  ${contentsShared}
+  &>h2 {
+    margin: auto;
+  }
+  &::after {
+    background-color: #ff7d7d;
+  }
+`;
+
+export const CommunityDetail = styled.div`
   position: relative;
   margin: 2rem;
   ${contentsShared}
