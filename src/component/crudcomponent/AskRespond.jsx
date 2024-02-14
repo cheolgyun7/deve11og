@@ -19,7 +19,7 @@ const AskRespond = () => {
       <AskRespondBox>
         <ul>
           {filteredAskRespond.map((list) => (
-            <li key={list.user_id} onClick={() => askDetailClick(list.id)}>
+            <li key={list.id} onClick={() => askDetailClick(list.id)}>
               <span>{list.title}</span>
               <span>{list.regDate}</span>
               <span>{list.nickname}</span>
