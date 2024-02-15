@@ -58,6 +58,9 @@ h4 {
   font-size: 1.2rem;
   font-weight: bold;
   margin-bottom: 2rem;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
 }
 p {
   display: flex;
@@ -86,6 +89,7 @@ export const CardThumbnail = styled.p`
 
   &:hover img {
     transform: scale(1.5); /* 호버 시 이미지를 1.1배로 확대 */
+    cursor: pointer;
   }
   overflow: hidden;
 `;
@@ -99,9 +103,16 @@ export const CommunityThumbnail = styled.p`
 `;
 export const AskRespondThumbnail = styled.p`
   ${cardthumbnail}
+  overflow: hidden;
 `;
 export const CardArticle = styled.article`
   ${cardSharedBox}
+  h4 {
+    &:hover {
+      color: #006e91;
+      cursor: pointer;
+    }
+  }
 `;
 export const AskRespondListBox = styled.article`
   ${cardSharedBox}
@@ -122,6 +133,10 @@ export const CommunityListBox = styled.article`
   div {
     h4 {
       margin-bottom: 1rem;
+      &:hover {
+        color: #006e91;
+        cursor: pointer;
+      }
     }
     p {
       margin-top: 1rem;
@@ -175,7 +190,7 @@ export const MainContents = styled.div`
   & > h2 {
     ${contentsShared}
     &::after {
-      background-color: #e6c6ff;
+      background-color: #b4e3f2;
     }
   }
 `;
@@ -219,7 +234,7 @@ export const CommunityDetail = styled.div`
     margin: auto;
   }
   &::after {
-    background-color: #ff7d7d;
+    background-color: #b4e3f2;
   }
 `;
 

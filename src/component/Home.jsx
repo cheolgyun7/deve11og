@@ -17,12 +17,8 @@ const Home = () => {
       const fetchedBoard = [];
       querySnapshot.forEach((doc) => {
         const boardData = doc.data();
-        // boardData.user_id = doc.id;
         fetchedBoard.push({ ...boardData, id: doc.id });
       });
-
-      console.log('fetchedBoard', fetchedBoard);
-
       dispatch(setBoard(fetchedBoard));
     };
     fetchData();

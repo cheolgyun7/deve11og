@@ -3,7 +3,6 @@ import styled from 'styled-components';
 import { collection, getDocs, query } from 'firebase/firestore';
 import { db } from '../../firebase';
 import CommentItem from './CommentItem';
-import { useParams } from 'react-router-dom';
 
 export default function CommentList({ commentData, setCommentData }) {
   const [userData, setUserData] = useState();

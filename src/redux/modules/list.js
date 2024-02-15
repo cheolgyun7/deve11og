@@ -1,4 +1,3 @@
-import { db } from '../../firebase';
 // 액션 타입 정의
 export const SET_BOARD = 'SET_BOARD';
 export const TOGGLE_LIKE = 'TOGGLE_LIKE';
@@ -68,7 +67,7 @@ const list = (state = initialState, action) => {
         board: deleteBoard
       };
     case TOGGLE_LIKE:
-      const { postId, isLiked, user_id } = action.payload;
+      const { postId, isLiked } = action.payload;
       const likedBoard = state.board.map((item) => {
         if (item.id === postId) {
           return {
@@ -82,33 +81,7 @@ const list = (state = initialState, action) => {
         ...state,
         board: likedBoard
       };
-    // case TOGGLE_LIKE:
-    //   const { postId, isLiked, userId } = action.payload;
-    //   const updatedBoard = state.board.map((item) => {
-    //     if (item.id === postId) {
-    //       return {
-    //         ...item,
-    //         isLiked: isLiked
-    //       };
-    //     }
-    //     return item;
-    //   });
 
-    //   // Firebase에 좋아요 정보 업데이트
-    //   db.firestore()
-    //     .collection('likes')
-    //     .doc(userId)
-    //     .set(
-    //       {
-    //         likedPosts: updatedBoard.filter((item) => item.isLiked).map((item) => item.id)
-    //       },
-    //       { merge: true }
-    //     );
-
-    //   return {
-    //     ...state,
-    //     board: updatedBoard
-    //   };
     default:
       return state;
   }

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useSelector } from 'react-redux';
 import styled from 'styled-components';
 import { AskRespondContents, StyledIcon } from 'styles/SharedStyle';
@@ -13,8 +13,7 @@ const AskRespond = () => {
   const askDetailClick = (boardId) => {
     navigate(`/detailPage/${boardId}`);
   };
-  const [showAll, setShowAll] = useState(false);
-  const limitedList = showAll ? filteredAskRespond : filteredAskRespond.slice(0, 3);
+
   return (
     <AskRespondContents>
       <h2>질문 및 답변</h2>
@@ -24,7 +23,7 @@ const AskRespond = () => {
             <li key={list.id}>
               <span onClick={() => askDetailClick(list.id)}>{list.title}</span>
               <span>{list.regDate}</span>
-              <span>{list.nickname}</span>
+              <span>작성자 :{list.nickname}</span>
             </li>
           ))}
         </ul>
@@ -62,6 +61,9 @@ export const AskRespondBox = styled.div`
         &:hover {
           color: #ff7d7d;
         }
+      }
+      &:last-of-type {
+        color: #ff9060;
       }
     }
   }
