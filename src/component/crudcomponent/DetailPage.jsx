@@ -175,7 +175,7 @@ const DetailPage = () => {
             <>
               <h2>{updateData.title}</h2>
               <span>{updateData.regDate}</span>
-              <ContentsDiv>{<img src={imageURL} alt="미리보기" />}</ContentsDiv>
+              <div>{<img src={imageURL} alt="미리보기" />}</div>
               <span>{updateData.contents}</span>
             </>
           )}
@@ -206,13 +206,6 @@ const DetailPage = () => {
   );
 };
 export default DetailPage;
-
-const PreviewDiv = styled.input``;
-const ThumbnailDiv = styled.div``;
-const ThumbnailInput = styled.input``;
-const ThumbnailBtn = styled.div``;
-const ContentsDiv = styled.div``;
-const TitleDiv = styled.div``;
 
 export const DetailPageBox = styled.div``;
 export const DetailPageBoxCard = styled.div`
