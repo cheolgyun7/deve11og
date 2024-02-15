@@ -15,14 +15,6 @@ const firebaseConfig = {
   messagingSenderId: process.env.REACT_APP_MESSAGING_SENDER_ID,
   appId: process.env.REACT_APP_APP_ID
 };
-// const firebaseConfig = {
-//   apiKey: 'AIzaSyD0H9YwNzpGGG3kMRGV6MS-odOE92Hy_ms',
-//   authDomain: 'insert-board.firebaseapp.com',
-//   projectId: 'insert-board',
-//   storageBucket: 'insert-board.appspot.com',
-//   messagingSenderId: '179893443594',
-//   appId: '1:179893443594:web:79a3c43aa03462569cd3f3'
-// };
 
 // Initialize Firebase
 export const app = initializeApp(firebaseConfig);
