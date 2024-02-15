@@ -130,6 +130,7 @@ export const CommunityListBox = styled.article`
   ${cardSharedBox}
   width: 18%;
   margin-bottom: 1rem;
+  background-color: red;
   div {
     h4 {
       margin-bottom: 1rem;
