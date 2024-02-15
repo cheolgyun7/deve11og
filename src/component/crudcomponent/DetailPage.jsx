@@ -204,6 +204,7 @@ const DetailPage = () => {
 };
 export default DetailPage;
 
+const ContentsDiv = styled.div``;
 export const DetailPageBox = styled.div``;
 export const DetailPageBoxCard = styled.div`
   width: 75%;
@@ -265,6 +266,7 @@ export const DetailPageBoxCard = styled.div`
     }
   }
 `;
+
 export const UpdateSelectBox = styled.select`
   position: absolute;
   top: 1rem;
