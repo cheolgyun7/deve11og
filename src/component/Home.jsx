@@ -24,11 +24,7 @@ const Home = () => {
     fetchData();
   }, []);
   return (
-    <Section
-      style={{
-        background: 'red'
-      }}
-    >
+    <Section>
       <Read />
       <AskRespond />
       <About />
