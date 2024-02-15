@@ -47,7 +47,7 @@ export const LayoutStyle = styled.div`
 // 카드 공통css
 const cardSharedBox = `
 flex-wrap: wrap;
-width: 17%;
+width: 19%;
 background-color: #f1f1f1;
 margin-right: 0.5rem;
 box-shadow: 0 0 0;
