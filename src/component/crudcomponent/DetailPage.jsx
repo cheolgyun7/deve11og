@@ -228,6 +228,7 @@ export const DetailPageBoxCard = styled.div`
     width: 70%;
     height: 50%;
     resize: none;
+    border: none;
   }
   span {
     display: block;
