@@ -38,7 +38,6 @@ export default function MyBoardList() {
       });
 
       // firestore에서 가져온 데이터를 state에 전달
-      console.log(initial);
       setBoards(initial);
     };
 
