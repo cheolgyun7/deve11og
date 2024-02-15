@@ -86,13 +86,13 @@ const DetailPage = () => {
     const file = e.target.files[0];
     setIsImageDelete(true);
     setimgFile(file);
+  };
+
+  const handleUpdate = async (id) => {
     const imgRef = ref(storage, 'thumbnail/' + imgFile.name);
     await uploadBytes(imgRef, imgFile);
     const imageUrl = await getDownloadURL(imgRef);
     setImageURL(imageUrl);
-  };
-
-  const handleUpdate = async (id) => {
     if (isEdit) {
       try {
         const updatedBoard = {
@@ -177,7 +177,7 @@ const DetailPage = () => {
             <>
               <h2>{updateData.title}</h2>
               <span>{updateData.regDate}</span>
-              <div>{<img src={imageURL} alt="미리보기" />}</div>
+              <ContentsDiv>{<img src={imageURL} alt="미리보기" />}</ContentsDiv>
               <span>{updateData.contents}</span>
             </>
           )}
