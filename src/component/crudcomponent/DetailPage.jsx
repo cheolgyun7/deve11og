@@ -61,7 +61,6 @@ const DetailPage = () => {
 
   // input의 change이벤트 묶음
   const handleInputChange = (e) => {
-    console.log(e);
     if (isEdit) {
       // 입력 필드의 이름을 가져옴 (title 또는 contents)
       const fieldName = e.target.name;
@@ -108,7 +107,6 @@ const DetailPage = () => {
         await updateDoc(doc(db, 'board', id), updatedBoard);
 
         dispatch(updateBoard(updatedBoard));
-        console.log('updatedBoard', updatedBoard);
 
         alert('게시물이 수정되었습니다.');
         setIsImageDelete(false);
@@ -144,7 +142,6 @@ const DetailPage = () => {
 
   // 이미지 삭제
   const handleRemove = () => setimgFile('');
-  console.log(updateData);
   return (
     <Section>
       <DetailPageBox>
@@ -163,7 +160,7 @@ const DetailPage = () => {
                 {/* 등록된 이미지 */}
                 {imageURL ? <img src={imageURL} alt="이미지" /> : <div>등록된 이미지가 없습니다</div>}
                 <p>
-                  <label>이미지 업로드</label>
+                  {/* <label>이미지 업로드</label> */}
                   <input type="file" onChange={fileSelect} accept="image/*" />
                   {!isImageDelete ? <></> : <div onClick={handleRemove}>이미지 제거</div>}
                 </p>
@@ -223,7 +220,7 @@ export const DetailPageBoxCard = styled.div`
     }
   }
   textarea {
-    display: inline-block;
+    display: inline-flex;
     padding: 1rem;
     vertical-align: top;
     width: 70%;
@@ -234,7 +231,6 @@ export const DetailPageBoxCard = styled.div`
     display: block;
     margin-bottom: 1rem;
     &:last-of-type {
-      display: inline-flex;
       vertical-align: top;
       padding: 1rem;
     }
@@ -258,7 +254,7 @@ export const DetailPageBoxCard = styled.div`
     position: relative;
     p {
       position: absolute;
-      bottom: -5rem;
+      bottom: -3rem;
       input {
         font-size: 1rem;
       }
