@@ -7,20 +7,17 @@ import {
   GoogleAuthProvider,
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
-  signInWithPopup,
-  updateProfile
+  signInWithPopup
 } from 'firebase/auth';
 import styled from 'styled-components';
 import gitIcon from '../../image/github-mark-white.svg';
 import { collection, doc, getDocs, query, setDoc } from 'firebase/firestore';
-import { uuidv4 } from '@firebase/util';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [pwd, setPwd] = useState('');
   const navigate = useNavigate();
   const collectionRef = collection(db, 'usersDB');
-  const newGitGoogleName = uuidv4();
 
   // 로그인
   const formOnSubmit = async (event) => {
@@ -41,8 +38,7 @@ const Login = () => {
 
     try {
       // signInWithEmailAndPassword 현재 입력된 이메일이 파이어베이스에 있는 계정과 같은지 비교
-      const userCredential = await signInWithEmailAndPassword(auth, email, pwd);
-      console.log(userCredential);
+      await signInWithEmailAndPassword(auth, email, pwd);
       navigate('/');
     } catch (error) {
       const errorCode = error.code;
@@ -72,29 +68,6 @@ const Login = () => {
       // signInWithPopup 연동되는 것을 팝업창으로 확인
       const result = await signInWithPopup(auth, provier);
       const user = result.user;
-      // const q = query(collection(db, 'usersDB'));
-      // const querySnapshot = await getDocs(q);
-      // const initial = [];
-      // querySnapshot.forEach((doc) => {
-      //   initial.push({ ...doc.data() });
-      // });
-
-      // // const userDB = localStorage.getItem('usersDB');
-      // // const json = JSON.parse(userDB);
-      // const nicknameIncludes = initial.some((prev) => prev.nickname === user.displayName);
-
-      // if (nicknameIncludes) {
-      //   // 닉네임이 이미 존재하는 경우 새로운 닉네임 생성
-      //   const newNickname = newGitGoogleName;
-
-      //   // 새로운 닉네임으로 프로필 업데이트
-      //   await updateProfile(user, {
-      //     displayName: newNickname
-      //   });
-
-      //   // 사용자 정보에 새로운 닉네임 반영
-      //   user.displayName = newNickname;
-      // }
       const newData = {
         nickname: user.displayName,
         email: user.email,
@@ -105,7 +78,6 @@ const Login = () => {
       const docRef = doc(collectionRef, user.uid);
       await setDoc(docRef, newData);
       navigate('/');
-      console.log(user);
     } catch (error) {
       alert('이미 있는 이메일 입니다!');
       console.log('error', error);
@@ -118,34 +90,8 @@ const Login = () => {
     const provier = new GithubAuthProvider();
     try {
       // signInWithPopup 연동되는 것을 팝업창으로 확인
-
       const result = await signInWithPopup(auth, provier);
       const user = result.user;
-      // console.log('name', user.displayName);
-      // const q = query(collection(db, 'usersDB'));
-      // const querySnapshot = await getDocs(q);
-      // const initial = [];
-      // querySnapshot.forEach((doc) => {
-      //   initial.push({ ...doc.data() });
-      // });
-
-      // const nicknameIncludes = initial.some((prev) => prev.nickname === user.displayName);
-      // console.log('initial', initial);
-      // console.log('name ggg', user.displayName);
-
-      // if (nicknameIncludes) {
-      //   // 닉네임이 이미 존재하는 경우 새로운 닉네임 생성
-      //   const newNickname = newGitGoogleName;
-
-      //   // 새로운 닉네임으로 프로필 업데이트
-      //   await updateProfile(user, {
-      //     displayName: newNickname
-      //   });
-
-      //   // 사용자 정보에 새로운 닉네임 반영
-      //   user.displayName = newNickname;
-      // }
-
       const newData = {
         nickname: user.displayName,
         email: user.email,
@@ -157,7 +103,6 @@ const Login = () => {
       await setDoc(docRef, newData);
 
       navigate('/');
-      console.log(user);
     } catch (error) {
       alert('이미 있는 이메일 입니다!');
       console.log(error);
