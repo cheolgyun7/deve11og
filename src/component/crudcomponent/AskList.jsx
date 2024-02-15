@@ -5,37 +5,44 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart } from '@fortawesome/free-solid-svg-icons';
 import { AskRespondListBox, AskRespondThumbnail, LikeIcon, Section } from 'styles/SharedStyle';
 import { AskRespondDetail } from 'styles/SharedStyle';
+import { useNavigate } from 'react-router-dom';
 
 const AskList = () => {
   const answer = useSelector((state) => state.list.board);
-  console.log(answer);
-  console.log('123');
+  const { data } = useSelector((state) => state.comment);
   const filteredAskRespondAll = answer.filter((list) => list.category === 'asklist');
-  console.log(filteredAskRespondAll);
+  const navigate = useNavigate();
+  const ModifyButton = (id) => {
+    navigate(`/detailPage/${id}`);
+  };
   return (
     <Section>
       <AskRespondDetail>
         <h2>질문 및 답변</h2>
         <AskListBox>
-          {filteredAskRespondAll.map((card) => (
-            <AskRespondListBox key={card.user_id}>
-              <AskRespondThumbnail></AskRespondThumbnail>
-              <div>
-                <h4>{card.title}</h4>
-                <span>{card.contents}</span>
-                <p>
-                  <span>{card.reg_date}</span>
-                  <span>개의 댓글</span>
-                  <span>
-                    <LikeIcon>
-                      <FontAwesomeIcon icon={faHeart} />
-                    </LikeIcon>
-                    {card.liked}
-                  </span>
-                </p>
-              </div>
-            </AskRespondListBox>
-          ))}
+          {filteredAskRespondAll.map((card) => {
+            const commentCount = data.filter((comment) => comment.board_id === card.id).length;
+            return (
+              <AskRespondListBox key={card.id}>
+                <AskRespondThumbnail onClick={() => ModifyButton(card.id)}>
+                  <img src={card.imageUrl} alt="썸네일" />
+                </AskRespondThumbnail>
+                <div>
+                  <h4 onClick={() => ModifyButton(card.id)}>{card.title}</h4>
+                  <span>{card.contents}</span>
+                  <p>
+                    <span>{card.regDate.slice(0, -6)}</span>
+                    {commentCount > 0 ? <span>{commentCount}개의 댓글</span> : <span>등록된 댓글0</span>}
+                    <span>
+                      <LikeIcon>
+                        <FontAwesomeIcon icon={faHeart} />
+                      </LikeIcon>
+                    </span>
+                  </p>
+                </div>
+              </AskRespondListBox>
+            );
+          })}
         </AskListBox>
       </AskRespondDetail>
     </Section>
