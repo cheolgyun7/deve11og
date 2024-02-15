@@ -82,28 +82,33 @@ const DetailPage = () => {
   };
 
   // 수정
-  const fileSelect = (e) => {
+  const fileSelect = async (e) => {
     const file = e.target.files[0];
     setIsImageDelete(true);
     setimgFile(file);
+    const imgRef = ref(storage, 'thumbnail/' + imgFile.name);
+    await uploadBytes(imgRef, imgFile);
+    const imageUrl = await getDownloadURL(imgRef);
+    setImageURL(imageUrl);
   };
+
   const handleUpdate = async (id) => {
     if (isEdit) {
       try {
-        const imgRef = ref(storage, 'thumbnail/' + imgFile.name);
-        await uploadBytes(imgRef, imgFile);
-        const imageUrl = await getDownloadURL(imgRef);
-        setImageURL(imageUrl);
-
         const updatedBoard = {
           ...question,
           title: updateData.title,
           contents: updateData.contents,
           regDate: updateData.regDate,
           category: updateData.category,
-          thumbnail: imgFile.name ? imgFile.name : question.thumbnail,
-          imageUrl
+          thumbnail: imgFile.name ? imgFile.name : question.thumbnail
         };
+        // 이미지 파일이 있다는것은 이미지 파일이 수정되었다는것.
+        if (imgFile) {
+          // 수정된 파일을 기존 파일 위에 덮어씌우기
+          const imgRef = ref(storage, 'thumbnail/' + question.thumbnail);
+          await uploadBytes(imgRef, imgFile);
+        }
         await updateDoc(doc(db, 'board', id), updatedBoard);
 
         dispatch(updateBoard(updatedBoard));
@@ -172,8 +177,8 @@ const DetailPage = () => {
             <>
               <h2>{updateData.title}</h2>
               <span>{updateData.regDate}</span>
-              <ContentsDiv>{<img src={imageURL} alt="미리보기" />}</ContentsDiv>
-              <textarea value={updateData.contents} readOnly></textarea>
+              <div>{<img src={imageURL} alt="미리보기" />}</div>
+              <span>{updateData.contents}</span>
             </>
           )}
           {user_id && updateData.user_id === user_id ? (
@@ -227,7 +232,6 @@ export const DetailPageBoxCard = styled.div`
     width: 70%;
     height: 50%;
     resize: none;
-    border: none;
   }
   span {
     display: block;
@@ -267,6 +271,7 @@ export const DetailPageBoxCard = styled.div`
     }
   }
 `;
+
 export const UpdateSelectBox = styled.select`
   position: absolute;
   top: 1rem;

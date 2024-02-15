@@ -44,6 +44,7 @@ const Read = () => {
   const ModifyButton = (id) => {
     navigate(`/detailPage/${id}`);
   };
+  console.log('filteredList', filteredList);
   return (
     <MainContents>
       <h2>커뮤니티</h2>

@@ -86,7 +86,7 @@ const Write = () => {
       // 파이어베이스 게시물 등록
       const collectionRef = collection(db, 'board');
       await addDoc(collectionRef, newBoard);
-
+      console.log('newBoard', newBoard);
       dispatch(insertBoard(newBoard));
 
       setTitle('');
