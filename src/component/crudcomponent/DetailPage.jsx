@@ -82,18 +82,29 @@ const DetailPage = () => {
   };
 
   // 수정
-  const fileSelect = (e) => {
+  const fileSelect = async (e) => {
     const file = e.target.files[0];
     setIsImageDelete(true);
     setimgFile(file);
+    // const imgRef = ref(storage, 'thumbnail/' + imgFile.name);
+    // await uploadBytes(imgRef, imgFile);
+    // const imageUrl = await getDownloadURL(imgRef);
+    // setImageURL(imageUrl);
   };
+
+  // const fileSelect = (e) => {
+  //   const file = e.target.files[0];
+  //   setIsImageDelete(true);
+  //   setimgFile(file);
+  // };
   const handleUpdate = async (id) => {
     if (isEdit) {
       try {
-        const imgRef = ref(storage, 'thumbnail/' + imgFile.name);
-        await uploadBytes(imgRef, imgFile);
-        const imageUrl = await getDownloadURL(imgRef);
-        setImageURL(imageUrl);
+        // console.log('fileName', fileName);
+        // const imgRef = ref(storage, 'thumbnail/' + fileName);
+        // await uploadBytes(imgRef, imgFile);
+        // const imageUrl = await getDownloadURL(imgRef);
+        // setImageURL(imageUrl);
 
         const updatedBoard = {
           ...question,
@@ -101,9 +112,14 @@ const DetailPage = () => {
           contents: updateData.contents,
           regDate: updateData.regDate,
           category: updateData.category,
-          thumbnail: imgFile.name ? imgFile.name : question.thumbnail,
-          imageUrl
+          thumbnail: imgFile.name ? imgFile.name : question.thumbnail
         };
+        // 이미지 파일이 있다는것은 이미지 파일이 수정되었다는것.
+        if (imgFile) {
+          // 수정된 파일을 기존 파일 위에 덮어씌우기
+          const imgRef = ref(storage, 'thumbnail/' + question.thumbnail);
+          await uploadBytes(imgRef, imgFile);
+        }
         await updateDoc(doc(db, 'board', id), updatedBoard);
 
         dispatch(updateBoard(updatedBoard));
