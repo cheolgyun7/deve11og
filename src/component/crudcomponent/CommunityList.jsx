@@ -5,37 +5,39 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeart } from '@fortawesome/free-solid-svg-icons';
 import { CommunityListBox, CommunityThumbnail, LikeIcon, Section } from 'styles/SharedStyle';
 import { CommunityDetail } from 'styles/SharedStyle';
+import { useNavigate } from 'react-router-dom';
 
 const CommunityList = () => {
   const answer = useSelector((state) => state.list.board);
   const { data } = useSelector((state) => state.comment);
-  console.log(answer);
   const filteredCommunityRespondAll = answer.filter((list) => list.category === 'discussion');
-  console.log(filteredCommunityRespondAll);
+  const navigate = useNavigate();
+  const ModifyButton = (id) => {
+    navigate(`/detailPage/${id}`);
+  };
   return (
     <Section>
       <CommunityDetail>
-        <h2>질문 및 답변</h2>
+        <h2>커뮤니티</h2>
         <CommunityBox>
           {filteredCommunityRespondAll.map((card) => {
             const commentCount = data.filter((comment) => comment.board_id === card.id).length;
 
             return (
               <CommunityListBox key={card.id}>
-                <CommunityThumbnail>
+                <CommunityThumbnail onClick={() => ModifyButton(card.id)}>
                   <img src={card.imageUrl} alt="썸네일" />
                 </CommunityThumbnail>
                 <div>
-                  <h4>{card.title}</h4>
+                  <h4 onClick={() => ModifyButton(card.id)}>{card.title}</h4>
                   <span>{card.contents}</span>
                   <p>
-                    <span>{card.reg_date}</span>
+                    <span>{card.regDate.slice(0, -6)}</span>
                     <span>{commentCount}개의 댓글</span>
                     <span>
                       <LikeIcon>
                         <FontAwesomeIcon icon={faHeart} />
                       </LikeIcon>
-                      {card.liked}
                     </span>
                   </p>
                 </div>

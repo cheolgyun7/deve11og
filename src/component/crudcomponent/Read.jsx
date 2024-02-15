@@ -19,7 +19,6 @@ const Read = () => {
   const dispatch = useDispatch();
   const filteredList = listBoard.filter((list) => list.category === 'discussion');
   const { data } = useSelector((state) => state.comment);
-  console.log('listBoard', listBoard);
   useEffect(() => {
     // const boardId = boardTestData[0].id;
     const fetchCommentData = async () => {
@@ -41,12 +40,10 @@ const Read = () => {
   // 좋아요 토글 핸들러 함수
   const handleToggleLike = (id, isLiked) => {
     dispatch(toggleLike(id, isLiked));
-    console.log(dispatch(toggleLike(id, isLiked)));
   };
   const ModifyButton = (id) => {
     navigate(`/detailPage/${id}`);
   };
-  console.log('filteredList', filteredList);
   return (
     <MainContents>
       <h2>커뮤니티</h2>

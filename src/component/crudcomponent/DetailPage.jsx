@@ -61,6 +61,7 @@ const DetailPage = () => {
 
   // input의 change이벤트 묶음
   const handleInputChange = (e) => {
+    console.log(e);
     if (isEdit) {
       // 입력 필드의 이름을 가져옴 (title 또는 contents)
       const fieldName = e.target.name;
@@ -154,28 +155,27 @@ const DetailPage = () => {
           </UpdateSelectBox>
           {/* 수정 상태를 확인하는 삼항 연산자 */}
           {isEdit === true ? (
-            <div>
+            <>
               <input type="text" name="title" value={updateData.title} onChange={handleInputChange} />
               <input type="text" name="regDate" value={updateData.regDate} onChange={handleInputChange} readOnly />
 
               <ContentsDiv>
                 {/* 등록된 이미지 */}
                 {imageURL ? <img src={imageURL} alt="이미지" /> : <div>등록된 이미지가 없습니다</div>}
-
-                <label>
-                  이미지 업로드
+                <p>
+                  <label>이미지 업로드</label>
                   <input type="file" onChange={fileSelect} accept="image/*" />
-                </label>
-                {!isImageDelete ? <></> : <div onClick={handleRemove}>이미지 제거</div>}
-
-                <textarea type="text" name="contents" value={updateData.contents} onChange={handleInputChange} />
+                  {!isImageDelete ? <></> : <div onClick={handleRemove}>이미지 제거</div>}
+                </p>
               </ContentsDiv>
-            </div>
+
+              <textarea type="text" name="contents" value={updateData.contents} onChange={handleInputChange} />
+            </>
           ) : (
             <>
               <h2>{updateData.title}</h2>
               <span>{updateData.regDate}</span>
-              <div>{<img src={imageURL} alt="미리보기" />}</div>
+              <ContentsDiv>{<img src={imageURL} alt="미리보기" />}</ContentsDiv>
               <span>{updateData.contents}</span>
             </>
           )}
@@ -256,12 +256,20 @@ export const DetailPageBoxCard = styled.div`
     font-weight: bold;
     margin-bottom: 1rem;
   }
-  div {
+  ${ContentsDiv} {
     display: inline-flex;
     justify-content: center;
     width: 30%;
     height: 70%;
     background-color: black;
+    position: relative;
+    p {
+      position: absolute;
+      bottom: -5rem;
+      input {
+        font-size: 1rem;
+      }
+    }
     img {
       max-width: 100%;
       max-height: 100%;
