@@ -86,6 +86,10 @@ const DetailPage = () => {
     const file = e.target.files[0];
     setIsImageDelete(true);
     setimgFile(file);
+    const imgRef = ref(storage, 'thumbnail/' + imgFile.name);
+    await uploadBytes(imgRef, imgFile);
+    const imageUrl = await getDownloadURL(imgRef);
+    setImageURL(imageUrl);
   };
 
   const handleUpdate = async (id) => {
@@ -173,8 +177,8 @@ const DetailPage = () => {
             <>
               <h2>{updateData.title}</h2>
               <span>{updateData.regDate}</span>
-              <ContentsDiv>{<img src={imageURL} alt="미리보기" />}</ContentsDiv>
-              <textarea value={updateData.contents} readOnly></textarea>
+              <div>{<img src={imageURL} alt="미리보기" />}</div>
+              <span>{updateData.contents}</span>
             </>
           )}
           {user_id && updateData.user_id === user_id ? (
@@ -228,7 +232,6 @@ export const DetailPageBoxCard = styled.div`
     width: 70%;
     height: 50%;
     resize: none;
-    border: none;
   }
   span {
     display: block;
