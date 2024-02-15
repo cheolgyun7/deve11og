@@ -45,7 +45,6 @@ const Login = () => {
       if (errorCode === 'auth/invalid-credential') {
         // 비밀번호 에러
         alert('비밀번호를 확인해주세요');
-        console.log('비밀번호', errorCode);
       }
     }
   };
