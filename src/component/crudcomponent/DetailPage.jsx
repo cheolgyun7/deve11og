@@ -178,7 +178,7 @@ const DetailPage = () => {
               <h2>{updateData.title}</h2>
               <span>{updateData.regDate}</span>
               <ContentsDiv>{<img src={imageURL} alt="미리보기" />}</ContentsDiv>
-              <span>{updateData.contents}</span>
+              <textarea value={updateData.contents} readOnly></textarea>
             </>
           )}
           {user_id && updateData.user_id === user_id ? (
