@@ -8,33 +8,26 @@ import { updateBoard, setDeleteBoard } from '../../redux/modules/list';
 import styled from 'styled-components';
 import { deleteObject, getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import CommentSection from './CommentSection';
-
 const DetailPage = () => {
   const { user_id } = useSelector((state) => state.user.nowUser);
   const dispatch = useDispatch();
   const { id } = useParams();
-
   // 게시판 이미지URL state
   const [imageURL, setImageURL] = useState('');
   // 미리보기 이미지 state
   const [imgFile, setimgFile] = useState('');
-
   const navigate = useNavigate();
-
   // question - 회원이 클릭한 게시물 (데이터베이스에 등록된 게시물)
   const question = useSelector((state) => {
     return state.list.board.find((item) => item.id === id);
   });
-
   // 수정데이터를 담을 state
   const [updateData, setUpdateData] = useState({
     ...question
   });
-
   // 수정 가능여부를 확인하는 state
   const [isEdit, setIsEdit] = useState(false);
   const [isImageDelete, setIsImageDelete] = useState(false);
-
   useEffect(() => {
     const fetchImage = async () => {
       const docRef = doc(db, 'board', id);
@@ -58,29 +51,23 @@ const DetailPage = () => {
     };
     fetchImage();
   }, [id]);
-
   // input의 change이벤트 묶음
   const handleInputChange = (e) => {
     if (isEdit) {
       // 입력 필드의 이름을 가져옴 (title 또는 contents)
       const fieldName = e.target.name;
-
       // 입력된 값
       const fieldValue = e.target.value;
-
       // 기존 boardData 복사
       const updatedData = { ...updateData };
-
       // 해당 필드 업데이트
       updatedData[fieldName] = fieldValue;
-
       // 업데이트된 데이터로 boardData 업데이트
       setUpdateData(updatedData);
     } else {
       alert('수정버튼을 누르고 수정하세요');
     }
   };
-
   // 수정
   const fileSelect = async (e) => {
     const file = e.target.files[0];
@@ -110,9 +97,7 @@ const DetailPage = () => {
           await uploadBytes(imgRef, imgFile);
         }
         await updateDoc(doc(db, 'board', id), updatedBoard);
-
         dispatch(updateBoard(updatedBoard));
-
         alert('게시물이 수정되었습니다.');
         setIsImageDelete(false);
         navigate('/');
@@ -122,7 +107,6 @@ const DetailPage = () => {
     }
     setIsEdit(!isEdit);
   };
-
   // 삭제
   const removeBoard = async (id, thumbnail) => {
     if (window.confirm('게시물을 삭제하시겠습니까?')) {
@@ -130,13 +114,10 @@ const DetailPage = () => {
         // 이미지 삭제
         const imgRef = ref(storage, 'thumbnail/' + thumbnail);
         deleteObject(imgRef);
-
         // 게시물 삭제
         const boardRef = doc(db, 'board', id);
         await deleteDoc(boardRef);
-
         dispatch(setDeleteBoard(id, thumbnail));
-
         alert('게시물이 삭제되었습니다.');
         navigate('/');
       } catch (error) {
@@ -144,7 +125,6 @@ const DetailPage = () => {
       }
     }
   };
-
   // 이미지 삭제
   const handleRemove = () => setimgFile('');
   return (
@@ -160,7 +140,6 @@ const DetailPage = () => {
             <>
               <input type="text" name="title" value={updateData.title} onChange={handleInputChange} />
               <input type="text" name="regDate" value={updateData.regDate} onChange={handleInputChange} readOnly />
-
               <ContentsDiv>
                 {/* 등록된 이미지 */}
                 {imageURL ? <img src={imageURL} alt="이미지" /> : <div>등록된 이미지가 없습니다</div>}
@@ -170,7 +149,6 @@ const DetailPage = () => {
                   {!isImageDelete ? <></> : <div onClick={handleRemove}>이미지 제거</div>}
                 </p>
               </ContentsDiv>
-
               <textarea type="text" name="contents" value={updateData.contents} onChange={handleInputChange} />
             </>
           ) : (
@@ -208,7 +186,6 @@ const DetailPage = () => {
   );
 };
 export default DetailPage;
-
 const ContentsDiv = styled.div``;
 export const DetailPageBox = styled.div``;
 export const DetailPageBoxCard = styled.div`
@@ -272,7 +249,6 @@ export const DetailPageBoxCard = styled.div`
     }
   }
 `;
-
 export const UpdateSelectBox = styled.select`
   position: absolute;
   top: 1rem;
