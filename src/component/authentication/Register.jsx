@@ -6,9 +6,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { LoginBtn, LoginDiv, LoginForm, LoginInput, LoginMain } from './Login';
 import { collection, setDoc, doc, query, getDocs } from 'firebase/firestore';
 import { db } from '../../firebase';
-import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
-import { setUserNowDB, updateImage, updateNickname } from '../../redux/modules/user';
+import { updateImage, updateNickname } from '../../redux/modules/user';
 
 const Register = () => {
   const [nickname, setNickname] = useState('');
@@ -18,7 +17,6 @@ const Register = () => {
 
   const navigate = useNavigate();
   const collectionRef = collection(db, 'usersDB');
-  const userState = useSelector((state) => state.user.nowUser);
   const dispatch = useDispatch();
 
   // 회원가입
@@ -31,9 +29,6 @@ const Register = () => {
     querySnapshot.forEach((doc) => {
       initial.push({ ...doc.data() });
     });
-    // localStorage.setItem('usersDB', JSON.stringify(initial));
-    // const userDB = localStorage.getItem('usersDB');
-    // const json = JSON.parse(userDB);
     const nicknameIncludes = initial.some((prev) => prev.nickname === nickname);
     if (nicknameIncludes) {
       alert('닉네임이 이미 존재합니다.');

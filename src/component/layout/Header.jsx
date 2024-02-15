@@ -7,8 +7,6 @@ import { auth } from '../../firebase';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { useDispatch, useSelector } from 'react-redux';
 import { setUserNowDB } from '../../redux/modules/user';
-import { collection, getDocs } from 'firebase/firestore';
-import { db } from '../../firebase';
 
 const Header = () => {
   const [logoutBool, setLogoutBool] = useState(false);
@@ -19,19 +17,6 @@ const Header = () => {
   const location = useLocation();
   const { user_img: userImage } = useSelector((state) => state.user.nowUser);
 
-  const showAllDocuments = async () => {
-    try {
-      const querySnapshot = await getDocs(collection(db, 'usersDB'));
-      const arr = [];
-      querySnapshot.forEach((doc) => {
-        arr.push(doc.data());
-      });
-    } catch (error) {
-      console.error('Error getting documents: ', error);
-    }
-  };
-
-  showAllDocuments();
   // location의 정보에 로그인창, 회원가입창 이면 true
   const loginPage = location.pathname === '/login';
   const registerPage = location.pathname === '/register';
@@ -86,7 +71,6 @@ const Header = () => {
       // 현재 유저가 로그인 되어있는지 확인
       onAuthStateChanged(auth, (user) => {
         if (user) {
-          console.log('user', user);
           // 쿠키
           let todayDate = new Date();
           // 쿠키 1시간 유효기간 설정
@@ -97,7 +81,6 @@ const Header = () => {
           const email = user.email;
           const nickname = user.displayName;
           const user_img = user.photoURL;
-          // dispatch(updateImage(user_img));
           dispatch(
             setUserNowDB({
               user_id: user_id,

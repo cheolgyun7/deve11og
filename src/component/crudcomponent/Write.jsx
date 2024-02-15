@@ -205,6 +205,7 @@ const PreviewDiv = styled.div`
     font-size: 1rem;
     &:hover {
       transform: scale(1.1);
+      /* ss */
     }
   }
 `;

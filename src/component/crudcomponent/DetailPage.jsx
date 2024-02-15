@@ -86,26 +86,11 @@ const DetailPage = () => {
     const file = e.target.files[0];
     setIsImageDelete(true);
     setimgFile(file);
-    // const imgRef = ref(storage, 'thumbnail/' + imgFile.name);
-    // await uploadBytes(imgRef, imgFile);
-    // const imageUrl = await getDownloadURL(imgRef);
-    // setImageURL(imageUrl);
   };
 
-  // const fileSelect = (e) => {
-  //   const file = e.target.files[0];
-  //   setIsImageDelete(true);
-  //   setimgFile(file);
-  // };
   const handleUpdate = async (id) => {
     if (isEdit) {
       try {
-        // console.log('fileName', fileName);
-        // const imgRef = ref(storage, 'thumbnail/' + fileName);
-        // await uploadBytes(imgRef, imgFile);
-        // const imageUrl = await getDownloadURL(imgRef);
-        // setImageURL(imageUrl);
-
         const updatedBoard = {
           ...question,
           title: updateData.title,
@@ -188,8 +173,8 @@ const DetailPage = () => {
             <>
               <h2>{updateData.title}</h2>
               <span>{updateData.regDate}</span>
-              <div>{<img src={imageURL} alt="미리보기" />}</div>
-              <span>{updateData.contents}</span>
+              <ContentsDiv>{<img src={imageURL} alt="미리보기" />}</ContentsDiv>
+              <textarea value={updateData.contents} readOnly></textarea>
             </>
           )}
           {user_id && updateData.user_id === user_id ? (

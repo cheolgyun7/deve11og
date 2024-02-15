@@ -8,21 +8,13 @@ import { getStorage } from 'firebase/storage';
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: 'AIzaSyBQdIe9qX9RtyflTQ6WOxqUHrsZwn-f_cs',
-  authDomain: 'deve11og.firebaseapp.com',
-  projectId: 'deve11og',
-  storageBucket: 'deve11og.appspot.com',
-  messagingSenderId: '320210316524',
-  appId: '1:320210316524:web:2dccecd838fb5f40da89c9'
+  apiKey: process.env.REACT_APP_FB_API_KEY,
+  authDomain: process.env.REACT_APP_FB_AUTH_DOMAIN,
+  projectId: process.env.REACT_APP_PROJECT_ID,
+  storageBucket: process.env.REACT_APP_STORAGE_BUCKET,
+  messagingSenderId: process.env.REACT_APP_MESSAGING_SENDER_ID,
+  appId: process.env.REACT_APP_APP_ID
 };
-// const firebaseConfig = {
-//   apiKey: 'AIzaSyD0H9YwNzpGGG3kMRGV6MS-odOE92Hy_ms',
-//   authDomain: 'insert-board.firebaseapp.com',
-//   projectId: 'insert-board',
-//   storageBucket: 'insert-board.appspot.com',
-//   messagingSenderId: '179893443594',
-//   appId: '1:179893443594:web:79a3c43aa03462569cd3f3'
-// };
 
 // Initialize Firebase
 export const app = initializeApp(firebaseConfig);
