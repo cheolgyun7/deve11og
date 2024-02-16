@@ -152,10 +152,4 @@ $ npm install
 
 # ♯ Database Tables
 
-- User
-  
-![표1](https://github.com/cheolgyun7/deve11og/assets/134026105/58476c95-9fec-44c3-ab56-eb34d6fc00f3)
-
-- Post
-  
-![표2](https://github.com/cheolgyun7/deve11og/assets/134026105/4ff8faa1-4b09-4691-89f0-88e921865dfd)
+![표3](https://github.com/cheolgyun7/deve11og/assets/134026105/9a3ece4a-4e89-431f-9508-df082c86d5dc)
