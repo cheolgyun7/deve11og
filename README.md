@@ -35,7 +35,10 @@
 
 ### 개발 기간 : 2024. 02.08 ~ 2024.02.15
 
-[배포 링크](https://deve11og.vercel.app/) : https://deve11og.vercel.app/
+[Deve11og 배포 링크](https://deve11og.vercel.app/) : https://deve11og.vercel.app/
+
+[프로젝트 소개](https://www.notion.so/11-222f93576f9a473c95c1c0d978279a34)
+
 </br></br>
 
 ### 💻️ 개발 환경
@@ -92,7 +95,7 @@
 $ git clone https://github.com/cheolgyun7/deve11og.git
 $ npm install
 ```
-<br/><br/>
+<br/>
 
 ### 📃 페이지 소개
 
