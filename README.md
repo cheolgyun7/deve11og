@@ -102,7 +102,7 @@ $ npm install
 ### 📃 페이지 소개
 
 #### 메인 페이지
-![홈](https://github.com/cheolgyun7/deve11og/assets/134026105/1faca00b-2c3a-4552-858a-a7751ff2b8c5)
+<img src ="https://github.com/cheolgyun7/deve11og/assets/134026105/1faca00b-2c3a-4552-858a-a7751ff2b8c5" width="50%">
 
 - 카테고리는 커뮤니티, 질문 및 답변, About으로 구성되어 있습니다.
 - 각 카테고리는 최대 5개만 표시되며, 우측 하단의 화살표를 클릭하면 해당 카테고리의 게시물 리스트가 표시됩니다.
@@ -113,7 +113,7 @@ $ npm install
 <br/><br/>
 
 #### 로그인, 회원가입 페이지
-![로그인, 회원가입](https://github.com/cheolgyun7/deve11og/assets/134026105/e2756e64-fe62-413f-9395-6633c6504066)
+<img src ="https://github.com/cheolgyun7/deve11og/assets/134026105/e2756e64-fe62-413f-9395-6633c6504066" width="50%">
 
 - 로그인 및 회원가입 페이지의 각 입력란은 미입력시 자동으로 포커스되어 유효성 검사를 통해 사용자의 편의성을 높였습니다.
 - Firebase에서 제공하는 Authentication API를 이용하여 Google, Github등 소셜 로그인을 통한 간편 회원 가입 기능을 추가했습니다.
@@ -122,7 +122,7 @@ $ npm install
 <br/><br/>
 
 #### 마이페이지
-![마이](https://github.com/cheolgyun7/deve11og/assets/134026105/2cfca085-0cfb-4456-95a5-1801b5bc6556)
+<img src ="https://github.com/cheolgyun7/deve11og/assets/134026105/2cfca085-0cfb-4456-95a5-1801b5bc6556" width="50%">
 
 - 사용자가 원하는 프로필 사진을 선택하여 업로드할 수 있습니다.
 - 사용자의 이메일과 닉네임이 표시되며, 닉네임은 수정 버튼을 클릭하여 변경할 수 있습니다.
@@ -132,7 +132,7 @@ $ npm install
 <br/><br/>
 
 #### 게시물 등록
-![작성](https://github.com/cheolgyun7/deve11og/assets/134026105/bd2a8773-c1f5-4f3e-a7cf-913d5c58ebb1)
+<img src ="https://github.com/cheolgyun7/deve11og/assets/134026105/bd2a8773-c1f5-4f3e-a7cf-913d5c58ebb1" width="50%">
 
 - 페이지의 각 입력란은 미입력시 자동으로 포커스되어 유효성 검사를 통해 사용자의 편의성을 높였습니다.
 - 사용자가 원하는 사진을 선택하여 업로드할 수 있습니다.
@@ -140,7 +140,7 @@ $ npm install
 <br/><br/>
 
 #### 게시물 상세보기
-![상세](https://github.com/cheolgyun7/deve11og/assets/134026105/bc54a9db-da43-4e47-a86f-ac443aa70c42)
+<img src ="https://github.com/cheolgyun7/deve11og/assets/134026105/bc54a9db-da43-4e47-a86f-ac443aa70c42" width="50%">
 
 - 게시물 작성자에게만 수정 및 삭제 권한이 있습니다.
 - 수정 시에는 이미지와 게시물 내용을 수정할 수 있습니다.
@@ -152,4 +152,5 @@ $ npm install
 
 # ♯ Database Tables
 
-![표3](https://github.com/cheolgyun7/deve11og/assets/134026105/9a3ece4a-4e89-431f-9508-df082c86d5dc)
+<img src ="https://github.com/cheolgyun7/deve11og/assets/134026105/9a3ece4a-4e89-431f-9508-df082c86d5dc" width="100%">
+
