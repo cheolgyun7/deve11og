@@ -27,6 +27,8 @@
 - 게시물 등록
 - 게시물 상세
 
+**# Database Tables**
+
 #
 <br/>
 
@@ -146,5 +148,14 @@ $ npm install
 - 각 댓글은 사용자의 프로필 이미지, 닉네임, 등록일, 내용 등이 표시됩니다.
 - 댓글을 입력한 사용자에게만 수정 및 삭제 권한이 있습니다.
 
+<br/>
 
+# ♯ Database Tables
 
+- User
+  
+![표1](https://github.com/cheolgyun7/deve11og/assets/134026105/58476c95-9fec-44c3-ab56-eb34d6fc00f3)
+
+- Post
+  
+![표2](https://github.com/cheolgyun7/deve11og/assets/134026105/4ff8faa1-4b09-4691-89f0-88e921865dfd)
