@@ -87,7 +87,7 @@
 |강지수|김연재|김철균|서가희|
 |:---:|:---:|:---:|:---:|
 |![강지수](https://github.com/cheolgyun7/deve11og/assets/134026105/9ed50fea-2495-4a9f-8e9e-1a70a68c64ca)|![김연재](https://github.com/cheolgyun7/deve11og/assets/134026105/6a31c74e-4bf2-487b-bc3d-86185aff8404)|![김철균](https://github.com/cheolgyun7/deve11og/assets/134026105/30359e02-e495-4b7a-b882-111ac5918b71)|![main](https://github.com/cheolgyun7/deve11og/assets/134026105/a156cdf2-5d3d-44e3-b41e-97e22bddf3b3)|
-|[jigico](https://github.comjigico)|[porosadporosad](github.com/porosadporosad)|[cheolgyun7](github.com/cheolgyun7)|[seokahee](https://github.com/seokahee)|
+|[jigico](https://github.com/jigico)|[porosadporosad](https://github.com/porosadporosad)|[cheolgyun7](https://github.com/cheolgyun7)|[seokahee](https://github.com/seokahee)|
 
 <br/>
 
